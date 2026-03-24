@@ -166,6 +166,45 @@ export default function PublicarPage() {
       photosUrls = await uploadMedia(supabase, user.id);
     }
 
+    // Geocoding manual con fallbacks para obtener coordenadas
+    let lat: number | null = null;
+    let lng: number | null = null;
+    
+    const geocode = async (query: string) => {
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`,
+          { headers: { "Accept-Language": "es" } }
+        );
+        const data = await res.json();
+        if (data[0]) return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
+      } catch (e) {
+        console.error("Geocoding error:", e);
+      }
+      return null;
+    };
+
+    // 1. Intentar Dirección + Barrio + Formosa
+    const geo1 = await geocode(`${address.trim()}, ${barrio}, Formosa, Argentina`);
+    if (geo1) {
+      lat = geo1.lat;
+      lng = geo1.lon;
+    } else {
+      // 2. Intentar solo Dirección + Formosa
+      const geo2 = await geocode(`${address.trim()}, Formosa, Argentina`);
+      if (geo2) {
+        lat = geo2.lat;
+        lng = geo2.lon;
+      } else {
+        // 3. Intentar solo Barrio + Formosa (Ubicación menos precisa pero útil)
+        const geo3 = await geocode(`${barrio}, Formosa, Argentina`);
+        if (geo3) {
+          lat = geo3.lat;
+          lng = geo3.lon;
+        }
+      }
+    }
+
     const { data: jobData, error } = await supabase
       .from("jobs")
       .insert({
@@ -175,6 +214,8 @@ export default function PublicarPage() {
         description,
         barrio,
         address: address.trim(), // Guardar domicilio
+        lat,
+        lng,
         availability: availability.trim() || null,
         photos_urls: photosUrls.length > 0 ? photosUrls : null,
         status: "open",

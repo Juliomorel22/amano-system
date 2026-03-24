@@ -11,6 +11,16 @@ import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import NextImage from "next/image";
 import { cn } from "@/lib/utils";
+import dynamic from 'next/dynamic'
+
+const MapaAproximado = dynamic(
+  () => import('@/components/amano/mapa-aproximado'),
+  {
+    ssr: false,
+    loading: () => <div className="h-[220px] rounded-2xl bg-surface-container-low animate-pulse" />
+  }
+)
+
 import {
   Avatar,
   AvatarImage,
@@ -536,6 +546,31 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
             </div>
             )}
             </section>
+
+            {/* Mapa de ubicación */}
+            {job.lat && job.lng && (
+              <section className="px-5 pb-4">
+                <p className="text-[10px] uppercase font-bold tracking-wider text-on-secondary-container mb-2">
+                  Ubicación del trabajo
+                </p>
+                <MapaAproximado
+                  lat={Number(job.lat)}
+                  lng={Number(job.lng)}
+                  exact={job.status === 'paid' || job.status === 'in_progress' || job.status === 'completed' || job.status === 'finished'}
+                />
+                {(job.status === 'open' || job.status === 'accepted') && (
+                  <p className="text-[10px] text-outline mt-1.5 text-center">
+                    Ubicación aproximada · La dirección exacta se revela cuando el trabajo esté abonado
+                  </p>
+                )}
+                {(job.status === 'paid' || job.status === 'in_progress' || job.status === 'completed' || job.status === 'finished') && (
+                  <div className="flex items-center gap-2 mt-2 px-1">
+                    <MSymbol icon="location_on" size={16} className="text-primary" filled />
+                    <p className="text-sm font-medium text-on-surface">{job.address}</p>
+                  </div>
+                )}
+              </section>
+            )}
 
       {/* Datos del Solicitante (Visible para el Prestador Asignado y Admin una vez aprobado el pago) */}
       {((job.status === "in_progress" || job.status === "completed") && (userId === assignedProvider?.id || isAdmin)) && (
