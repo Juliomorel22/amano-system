@@ -1,0 +1,21 @@
+export const BARRIOS_FORMOSA = [
+  "12 de Octubre", "16 de Julio", "17 de Octubre", "2 de Abril",
+  "7 de Mayo", "8 de Marzo", "Altos de Caacupé", "Antenor Gauna",
+  "Arturo Illia", "Barrio Militar", "Barrio Municipal", "Barrio Piero",
+  "Barrio Vial", "Belgrano", "Caracolito", "Collucio",
+  "Divino Niño Jesús", "Don Bosco", "Dr. Ricardo Balbín", "El Mistol",
+  "El Palomar", "El Resguardo", "Emilio Tomas", "Eva Perón",
+  "Facundo Quiroga", "Federación", "Guadalupe", "Hipólito Irigoyen",
+  "Independencia", "Islas Malvinas", "J.F. Kennedy", "Juan D. Perón",
+  "Juan M. de Rosas", "La Floresta", "La Nueva Formosa", "La Paz",
+  "La Santa Rosa", "La Virgen Niña", "Las Delicias", "La Estrella",
+  "Libertad", "Liborsi", "Los Lapachos", "Manuel Belgrano",
+  "Mariano Moreno", "Namqom", "Nuestra Señora de Luján", "Obrero",
+  "Parque Industrial", "Pellegrini", "Pompeya", "Pte. Illia",
+  "República Argentina", "Roberto Sotelo", "Sagrado Corazón de María", "San Agustín",
+  "San Andrés", "San Cayetano", "San Francisco", "San Isidro",
+  "San Isidro Labrador", "San José Obrero", "San Juan Bautista", "San Martín",
+  "San Miguel", "San Pedro", "San Pío X", "Santa Lucía",
+  "Tiro Federal", "Venezuela", "Villa Hermosa", "Villa La Pilar",
+  "Villa Lourdes", "Villa del Parque", "Virgen de Itatí II"
+].sort();

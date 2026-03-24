@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-on-surface": "#eaf1ff",
+              "surface-container-highest": "#d9e3f6",
+              "on-secondary-container": "#475a7f",
+              "on-error-container": "#93000a",
+              "on-error": "#ffffff",
+              "outline": "#727784",
+              "surface-bright": "#f8f9ff",
+              "on-primary": "#ffffff",
+              "primary": "#003f87",
+              "surface": "#f8f9ff",
+              "error": "#ba1a1a",
+              "on-secondary": "#ffffff",
+              "secondary-fixed-dim": "#b3c7f1",
+              "tertiary-fixed": "#ffdbcc",
+              "tertiary-container": "#983c00",
+              "on-secondary-fixed-variant": "#34476a",
+              "background": "#f8f9ff",
+              "inverse-surface": "#27313f",
+              "secondary-fixed": "#d7e2ff",
+              "primary-fixed": "#d7e2ff",
+              "surface-tint": "#115cb9",
+              "on-tertiary-fixed": "#351000",
+              "on-secondary-fixed": "#041b3c",
+              "tertiary": "#722b00",
+              "error-container": "#ffdad6",
+              "on-tertiary": "#ffffff",
+              "tertiary-fixed-dim": "#ffb694",
+              "surface-variant": "#d9e3f6",
+              "inverse-primary": "#acc7ff",
+              "on-primary-container": "#bbd0ff",
+              "primary-fixed-dim": "#acc7ff",
+              "surface-container-high": "#dee9fc",
+              "on-primary-fixed-variant": "#004491",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-low": "#eff4ff",
+              "on-primary-fixed": "#001a40",
+              "surface-dim": "#d0dbed",
+              "on-tertiary-container": "#ffc2a7",
+              "outline-variant": "#c2c6d4",
+              "secondary-container": "#bfd2fd",
+              "on-tertiary-fixed-variant": "#7b2f00",
+              "primary-container": "#0056b3",
+              "on-background": "#121c2a",
+              "on-surface-variant": "#424752",
+              "surface-container": "#e6eeff",
+              "on-surface": "#121c2a",
+              "secondary": "#4c5e84"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .signature-gradient {
+        background: linear-gradient(135deg, #003f87 0%, #0056b3 100%);
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface font-body text-on-surface">
+<!-- TopAppBar -->
+<header class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl flex justify-between items-center w-full px-6 py-4 docked full-width top-0 sticky z-50">
+<div class="flex items-center gap-4">
+<button class="text-slate-500 hover:bg-slate-100 p-2 rounded-full transition-colors active:opacity-70 active:scale-95">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="text-2xl font-extrabold tracking-tighter text-blue-700 dark:text-blue-500 font-headline">Amano</h1>
+</div>
+<div class="flex gap-2">
+<button class="text-slate-500 hover:bg-slate-100 p-2 rounded-full transition-colors active:opacity-70 active:scale-95">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+</div>
+</header>
+<main class="max-w-2xl mx-auto px-6 pt-8 pb-32">
+<!-- Job Summary Section -->
+<section class="mb-12">
+<div class="flex flex-col gap-6">
+<div class="space-y-2">
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-xs font-semibold tracking-wider font-label">PENDIENTE</span>
+<h2 class="text-4xl font-extrabold font-headline tracking-tight leading-tight text-on-surface">Reparación de termotanque eléctrico</h2>
+<div class="flex items-center gap-2 text-on-secondary-container">
+<span class="material-symbols-outlined text-sm" data-icon="location_on">location_on</span>
+<span class="text-sm font-medium">Barrio Norte, CABA</span>
+</div>
+</div>
+<!-- Asymmetric Bento-style Gallery -->
+<div class="grid grid-cols-4 grid-rows-2 gap-3 h-64">
+<div class="col-span-3 row-span-2 overflow-hidden rounded-lg">
+<img class="w-full h-full object-cover" data-alt="Close up of a water heater with tools" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTY7z46uW3GBjqxiZkZUa1U4jUAEobzA2MVdQ8T5WA2z2qt-dQpUf_UXKzEb3EON3TA82UYIheX0yLDQCfE28g4vIbako6Zs_3ZCkxj2Db2rhQ-ubnWX2vDeAZwLE6GdaxhUlHQOUco5w9C3a743brYuAavNWmzEzO0p489Qd9hwAR2aGkZvzaXr2VJzCqP-cFJUKqtBHUGMkjqFO9px_aDqMeEdNe0YqtgmcCwNCKKRcMvWIYSSVG-TAobFe1irHCMf6uGF3TI7ew"/>
+</div>
+<div class="col-span-1 row-span-1 overflow-hidden rounded-lg">
+<img class="w-full h-full object-cover" data-alt="Plumbing pipes under a sink" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_AdN1pPGymbwLjQaeyV_yACbOqc8F2aP3wjBzBS2zjqK-OngPUEMF5Rc-G2ApmvUaXI7GOSNyImC_VgEScPpGUBt68piXtIVoqtLCnokidatFmoXFxMXXK7CIqerDclgxa628aBdp1RsOdQIP7bFzN_vMVixmRbpoCAHPtyMxRy0uEuiF5fkcPPQZN6ioeLZB4p3_zJmbV7EZEXY48hwbjB9d-OJP2P3Eeuaxi49c-4nN7ga4CwLdKHQHGVi0cWDbpIA4Hqjs-J7H"/>
+</div>
+<div class="col-span-1 row-span-1 relative overflow-hidden rounded-lg bg-surface-container-highest flex items-center justify-center">
+<img class="w-full h-full object-cover opacity-40" data-alt="Electrical control panel" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8JFxaVtjzmenJPTwZIfqGNt5UM1y076dklzHpTpqfuRplHllxnvAWdzHSK4ygkdKALRv4h1LzJaqKoBbB-TYaRqnVUzFKdR-BmBHbpgH_CCb1r1Ez0jr7D-JUOzx2AuIsLgS5RfM_8Pe6vfG31tCbROMkwH8qlI1casjYSbfH767mfKNy56WAvYWrSdWgmWY5Ela2lAMKLLGF1gQuKXmeFgkj6GW5AOOSzmVyqVgYxNkgO_ksekHVL-qfQgx9vO5mxfg9psqh-pew"/>
+<span class="absolute inset-0 flex items-center justify-center font-bold text-on-surface-variant">+2</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-lg shadow-sm">
+<p class="text-on-surface-variant leading-relaxed">
+                        El termotanque dejó de calentar anoche. No salta la térmica pero la luz de encendido no prende. Es un Rheem de 80 litros. Necesito presupuesto para hoy si es posible.
+                    </p>
+</div>
+</div>
+</section>
+<!-- Offers Header -->
+<div class="flex items-center justify-between mb-8">
+<h3 class="text-2xl font-bold font-headline text-on-surface">Ofertas de Profesionales (3)</h3>
+<div class="bg-surface-container-high px-4 py-2 rounded-full flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="filter_list">filter_list</span>
+<span class="text-xs font-semibold font-label text-on-secondary-container">RECIENTES</span>
+</div>
+</div>
+<!-- Offers List -->
+<div class="space-y-6">
+<!-- Offer Card 1 -->
+<div class="bg-surface-container-lowest p-6 rounded-lg shadow-[0_12px_40px_rgba(18,28,42,0.06)] border border-outline-variant/15">
+<div class="flex justify-between items-start mb-4">
+<div class="flex gap-4">
+<div class="w-14 h-14 rounded-full overflow-hidden border-2 border-primary-container/20">
+<img class="w-full h-full object-cover" data-alt="Professional male plumber portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD60SoYjPxRE8MjzYuoJOi2xA9j_V3-I6q8VG4Itnti0buXVK1suEsovRA9CVb0QbpA7WIPRHF2y68enMoIsg8SBJgPTAZwuGkE7NL0OiiaTcHO9cJalTiYc4Wdn4opJs7J__pCM5hxAFlbeHGWGmnXrzR645eqN_-xR5qqXbha1iOQntmXrJGALeouvdOBWuImyZ7PeFrraEQoQAM6gCA2cWhaDgQU86vei-UsmpoQdK8yYCptgi8ZpTln6uw3a_dKpYSxHJCUSbh_"/>
+</div>
+<div>
+<h4 class="font-bold text-lg text-on-surface">Carlos G.</h4>
+<div class="flex items-center gap-2">
+<div class="flex text-amber-500">
+<span class="material-symbols-outlined text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" data-icon="star_half" style="font-variation-settings: 'FILL' 1;">star_half</span>
+</div>
+<span class="text-xs font-medium text-on-secondary-container">124 trabajos</span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<div class="text-primary text-3xl font-black font-headline tracking-tighter">$15.000</div>
+<div class="text-[10px] uppercase font-bold text-on-secondary-container tracking-widest mt-1">Precio Final</div>
+</div>
+</div>
+<p class="text-sm text-on-surface-variant mb-6 italic leading-relaxed">
+                    "Hola! Puedo pasar hoy a las 18hs. Tengo los repuestos originales para Rheem por si es la resistencia."
+                </p>
+<div class="flex gap-3">
+<button class="flex-1 py-3 px-4 rounded-full border border-primary/20 text-primary font-bold text-sm tracking-wide font-label hover:bg-primary/5 transition-colors uppercase">
+                        Chatear
+                    </button>
+<button class="flex-1 py-3 px-4 rounded-full signature-gradient text-white font-bold text-sm tracking-wide font-label shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity uppercase">
+                        Aceptar Oferta
+                    </button>
+</div>
+</div>
+<!-- Offer Card 2 -->
+<div class="bg-surface-container-lowest p-6 rounded-lg shadow-[0_12px_40px_rgba(18,28,42,0.06)] border border-outline-variant/15">
+<div class="flex justify-between items-start mb-4">
+<div class="flex gap-4">
+<div class="w-14 h-14 rounded-full overflow-hidden border-2 border-primary-container/20">
+<img class="w-full h-full object-cover" data-alt="Professional female technician portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmQdjbn00Rb1zbHrTvC3UCuxR0iK48Hz8N_He5la3343POp0nP6vK6auDyoIkw9bB4RIHMJ_n7DWUWzE2_Y7W7nBY4sODuRBv6uZtl-xtjkpYpg3jzym8NiYmPQgZ1DqsNG0dN8bRB5gsNVhjT-5Jve4TO-FkwInwC6NML_WcDPFOHwE4aFKiBfF_9d44ph1EuIwbrU81bh3ncKgH86Ct-0DdGiHhG9cVAJOacSVoPuDBfoVuhpcfEc9O5XVj5vGiMRh6AmnFr_gux"/>
+</div>
+<div>
+<h4 class="font-bold text-lg text-on-surface">Marina Lopez</h4>
+<div class="flex items-center gap-2">
+<div class="flex text-amber-500">
+<span class="material-symbols-outlined text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<span class="text-xs font-medium text-on-secondary-container">89 trabajos</span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<div class="text-primary text-3xl font-black font-headline tracking-tighter">$18.500</div>
+<div class="text-[10px] uppercase font-bold text-on-secondary-container tracking-widest mt-1">Estimado</div>
+</div>
+</div>
+<p class="text-sm text-on-surface-variant mb-6 italic leading-relaxed">
+                    "Especialista en calefones y termos eléctricos. El precio incluye limpieza de sarro si es necesario."
+                </p>
+<div class="flex gap-3">
+<button class="flex-1 py-3 px-4 rounded-full border border-primary/20 text-primary font-bold text-sm tracking-wide font-label hover:bg-primary/5 transition-colors uppercase">
+                        Chatear
+                    </button>
+<button class="flex-1 py-3 px-4 rounded-full signature-gradient text-white font-bold text-sm tracking-wide font-label shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity uppercase">
+                        Aceptar Oferta
+                    </button>
+</div>
+</div>
+<!-- Offer Card 3 (Alternate Tone for visual rhythm) -->
+<div class="bg-surface-container-low p-6 rounded-lg border border-outline-variant/10">
+<div class="flex justify-between items-start mb-4">
+<div class="flex gap-4">
+<div class="w-14 h-14 rounded-full overflow-hidden border-2 border-primary-container/20">
+<img class="w-full h-full object-cover" data-alt="Professional male handyman portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDo_AcsP26nu0YbUyknjiFA1mq1HRaMeS1Rpsik7QWKiVGrYq67ly1AI2qbmQTwEpa1tVkl9ySZ8EeNQE5mladCU_-nY6SM7KAOkIL_6I4nHsj1Cbf_9nnZ9Z3MUD3dC4QQ-Usjk5U9zqaaEuzWKNwlYis6zMfq3BJCnpDIT89wqMHSg0juivYM2oLtL3IAiBFdmV65nK4ZCYPG_8Wy99cO7oSrKBxv8tdeGGmf4RjUbMtV-KWgnUR46eF5u3DJUMPtbqu_mZJRLuy3"/>
+</div>
+<div>
+<h4 class="font-bold text-lg text-on-surface">Roberto Sans</h4>
+<div class="flex items-center gap-2">
+<div class="flex text-amber-500">
+<span class="material-symbols-outlined text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" data-icon="star" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-sm" data-icon="star">star</span>
+</div>
+<span class="text-xs font-medium text-on-secondary-container">15 trabajos</span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<div class="text-primary text-3xl font-black font-headline tracking-tighter">$14.200</div>
+<div class="text-[10px] uppercase font-bold text-on-secondary-container tracking-widest mt-1">Promoción</div>
+</div>
+</div>
+<p class="text-sm text-on-surface-variant mb-6 italic leading-relaxed">
+                    "Tengo disponibilidad inmediata por la zona. Podemos coordinar visita ahora mismo."
+                </p>
+<div class="flex gap-3">
+<button class="flex-1 py-3 px-4 rounded-full border border-primary/20 text-primary font-bold text-sm tracking-wide font-label hover:bg-primary/5 transition-colors uppercase">
+                        Chatear
+                    </button>
+<button class="flex-1 py-3 px-4 rounded-full signature-gradient text-white font-bold text-sm tracking-wide font-label shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity uppercase">
+                        Aceptar Oferta
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-2 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl z-50 rounded-t-[2rem] shadow-[0_-12px_40px_rgba(18,28,42,0.06)] tonal-shift bg-slate-100 dark:bg-slate-800">
+<button class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2 hover:text-blue-600 dark:hover:text-blue-300 transition-all active:scale-90 duration-200">
+<span class="material-symbols-outlined mb-1" data-icon="dashboard">dashboard</span>
+<span class="font-inter text-[11px] font-medium tracking-wide uppercase">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full px-5 py-2 transition-all active:scale-90 duration-200">
+<span class="material-symbols-outlined mb-1" data-icon="assignment">assignment</span>
+<span class="font-inter text-[11px] font-medium tracking-wide uppercase">Requests</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2 hover:text-blue-600 dark:hover:text-blue-300 transition-all active:scale-90 duration-200">
+<span class="material-symbols-outlined mb-1" data-icon="notifications">notifications</span>
+<span class="font-inter text-[11px] font-medium tracking-wide uppercase">Alerts</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2 hover:text-blue-600 dark:hover:text-blue-300 transition-all active:scale-90 duration-200">
+<span class="material-symbols-outlined mb-1" data-icon="person">person</span>
+<span class="font-inter text-[11px] font-medium tracking-wide uppercase">Profile</span>
+</button>
+</nav>
+</body></html>

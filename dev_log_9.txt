@@ -1,0 +1,1096 @@
+
+> amano@0.0.1 dev
+> next dev
+
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.54:3000
+- Environments: .env.local
+✓ Ready in 368ms
+
+ GET / 307 in 1160ms (next.js: 978ms, application-code: 182ms)
+ GET /login 200 in 74ms (next.js: 22ms, application-code: 52ms)
+ GET /login 200 in 118ms (next.js: 40ms, application-code: 78ms)
+ GET /dashboard 200 in 1199ms (next.js: 1153ms, application-code: 46ms)
+ GET /dashboard?view=orders 200 in 83ms (next.js: 31ms, application-code: 52ms)
+ GET /perfil 200 in 757ms (next.js: 722ms, application-code: 35ms)
+ GET / 307 in 522ms (next.js: 25ms, application-code: 497ms)
+ GET /dashboard 200 in 115ms (next.js: 5ms, application-code: 110ms)
+ GET /perfil 200 in 37ms (next.js: 9ms, application-code: 27ms)
+ GET /dashboard 200 in 74ms (next.js: 25ms, application-code: 49ms)
+ GET /perfil 200 in 48ms (next.js: 13ms, application-code: 35ms)
+ GET /dashboard 200 in 89ms (next.js: 34ms, application-code: 55ms)
+ GET /perfil 200 in 26ms (next.js: 5ms, application-code: 21ms)
+ GET /dashboard 200 in 70ms (next.js: 21ms, application-code: 50ms)
+ GET /publicar 200 in 1001ms (next.js: 964ms, application-code: 37ms)
+ GET /dashboard 200 in 92ms (next.js: 16ms, application-code: 76ms)
+ GET /trabajos/83edd857-4f46-4107-beec-7b190281952d 200 in 1777ms (next.js: 1734ms, application-code: 43ms)
+ GET /trabajos/83edd857-4f46-4107-beec-7b190281952d 200 in 28ms (next.js: 6ms, application-code: 22ms)
+ GET /trabajos/83edd857-4f46-4107-beec-7b190281952d 200 in 35ms (next.js: 4ms, application-code: 31ms)
+ GET /admin 200 in 780ms (next.js: 746ms, application-code: 34ms)
+ GET / 307 in 576ms (next.js: 27ms, application-code: 549ms)
+ GET /dashboard 200 in 57ms (next.js: 3ms, application-code: 55ms)
+ GET /perfil 200 in 73ms (next.js: 27ms, application-code: 46ms)
+ GET /login 200 in 45ms (next.js: 12ms, application-code: 33ms)
+ GET /dashboard 200 in 29ms (next.js: 10ms, application-code: 18ms)
+ GET /dashboard?view=orders 200 in 32ms (next.js: 4ms, application-code: 28ms)
+ GET /dashboard 200 in 14ms (next.js: 5ms, application-code: 9ms)
+ GET /dashboard 200 in 29ms (next.js: 4ms, application-code: 25ms)
+ GET /dashboard?view=orders 200 in 20ms (next.js: 6ms, application-code: 15ms)
+ GET /dashboard 200 in 7ms (next.js: 3ms, application-code: 4ms)
+ GET /dashboard 200 in 30ms (next.js: 4ms, application-code: 26ms)
+ GET /trabajos/83edd857-4f46-4107-beec-7b190281952d 200 in 38ms (next.js: 11ms, application-code: 27ms)
+ GET /dashboard 200 in 76ms (next.js: 25ms, application-code: 52ms)
+ GET /dashboard?view=orders 200 in 69ms (next.js: 27ms, application-code: 42ms)
+ GET /trabajos/83edd857-4f46-4107-beec-7b190281952d 200 in 44ms (next.js: 14ms, application-code: 31ms)
+ GET /trabajos/83edd857-4f46-4107-beec-7b190281952d/pago?offer=bb077f8f-b2a0-4811-a723-8ac2b6ce27ba 200 in 1686ms (next.js: 1661ms, application-code: 25ms)
+[browser] Error submitting proof: StorageApiError: mime type application/pdf is not supported (app/(app)
+ GET /dashboard 200 in 107ms (next.js: 49ms, application-code: 59ms)
+ GET /dashboard?view=orders 200 in 97ms (next.js: 59ms, application-code: 38ms)
+ GET /admin 200 in 30ms (next.js: 10ms, application-code: 20ms)
+ GET /login 200 in 41ms (next.js: 5ms, application-code: 36ms)
+ GET /login 200 in 33ms (next.js: 3ms, application-code: 30ms)
+ GET /dashboard 200 in 67ms (next.js: 17ms, application-code: 50ms)
+ GET /admin 200 in 45ms (next.js: 11ms, application-code: 34ms)
+ GET /dashboard?view=orders 200 in 84ms (next.js: 40ms, application-code: 44ms)
+ GET /dashboard 200 in 91ms (next.js: 33ms, application-code: 57ms)
+ GET /admin 200 in 106ms (next.js: 73ms, application-code: 33ms)
+✓ Compiled in 228ms
+ GET /admin 200 in 165ms (next.js: 65ms, application-code: 100ms)
+ GET /admin 200 in 17ms (next.js: 6ms, application-code: 11ms)
+ GET /admin 200 in 21ms (next.js: 3ms, application-code: 17ms)
+ GET /trabajos/83edd857-4f46-4107-beec-7b190281952d 200 in 83ms (next.js: 46ms, application-code: 37ms)
+✓ Compiled in 152ms
+✓ Compiled in 122ms
+ GET /admin 200 in 166ms (next.js: 70ms, application-code: 96ms)
+ GET /dashboard 200 in 84ms (next.js: 39ms, application-code: 45ms)
+ GET /admin 200 in 73ms (next.js: 35ms, application-code: 39ms)
+ GET /dashboard 200 in 62ms (next.js: 32ms, application-code: 30ms)
+ GET /dashboard?view=orders 200 in 26ms (next.js: 4ms, application-code: 22ms)
+ GET /admin 200 in 52ms (next.js: 11ms, application-code: 41ms)
+✓ Compiled in 159ms
+✓ Compiled in 67ms
+ GET /dashboard?view=orders 200 in 96ms (next.js: 43ms, application-code: 53ms)
+ GET /admin 200 in 51ms (next.js: 27ms, application-code: 24ms)
+ GET /perfil 200 in 85ms (next.js: 27ms, application-code: 58ms)
+ GET /login 200 in 55ms (next.js: 17ms, application-code: 37ms)
+ GET /dashboard 200 in 61ms (next.js: 20ms, application-code: 41ms)
+ GET /admin 200 in 32ms (next.js: 7ms, application-code: 25ms)
+ GET /trabajos/ee86b034-f29b-445c-8d9b-3f635b5e7d20 200 in 76ms (next.js: 35ms, application-code: 41ms)
+ GET /admin 200 in 32ms (next.js: 6ms, application-code: 25ms)
+ GET /dashboard 200 in 81ms (next.js: 32ms, application-code: 49ms)
+ GET /admin 200 in 80ms (next.js: 32ms, application-code: 49ms)
+✓ Compiled in 238ms
+✓ Compiled in 74ms
+ GET /dashboard 200 in 89ms (next.js: 49ms, application-code: 40ms)
+ GET /trabajos/194846f5-b0b1-4e9a-84a0-6e37731bf47a 200 in 47ms (next.js: 18ms, application-code: 28ms)
+ GET /perfil 200 in 39ms (next.js: 6ms, application-code: 32ms)
+ GET /admin 200 in 44ms (next.js: 23ms, application-code: 21ms)
+ GET /perfil 200 in 32ms (next.js: 4ms, application-code: 28ms)
+ GET /dashboard 200 in 38ms (next.js: 9ms, application-code: 29ms)
+ GET /admin 200 in 20ms (next.js: 3ms, application-code: 17ms)
+✓ Compiled in 221ms
+✓ Compiled in 149ms
+✓ Compiled in 67ms
+ GET /dashboard?view=orders 200 in 87ms (next.js: 50ms, application-code: 37ms)
+ GET /perfil 200 in 65ms (next.js: 21ms, application-code: 44ms)
+ GET / 307 in 199ms (next.js: 47ms, application-code: 152ms)
+ GET /login 200 in 35ms (next.js: 3ms, application-code: 32ms)
+ GET /dashboard 200 in 75ms (next.js: 13ms, application-code: 62ms)
+ GET /dashboard 200 in 80ms (next.js: 38ms, application-code: 42ms)
+✓ Compiled in 367ms
+✓ Compiled in 319ms
+ GET /dashboard 200 in 328ms (next.js: 112ms, application-code: 215ms)
+ GET /dashboard 200 in 332ms (next.js: 162ms, application-code: 170ms)
+ GET /admin 200 in 334ms (next.js: 233ms, application-code: 101ms)
+ GET /dashboard 200 in 84ms (next.js: 5ms, application-code: 79ms)
+ GET /dashboard 200 in 85ms (next.js: 25ms, application-code: 60ms)
+ GET /admin 200 in 50ms (next.js: 4ms, application-code: 45ms)
+✓ Compiled in 281ms
+✓ Compiled in 218ms
+ GET /admin 200 in 331ms (next.js: 103ms, application-code: 229ms)
+ GET /dashboard 200 in 339ms (next.js: 240ms, application-code: 99ms)
+ GET /dashboard 200 in 331ms (next.js: 282ms, application-code: 49ms)
+ GET /admin 200 in 90ms (next.js: 42ms, application-code: 48ms)
+ GET /perfil 200 in 132ms (next.js: 93ms, application-code: 40ms)
+ GET /perfil 200 in 49ms (next.js: 16ms, application-code: 33ms)
+ GET /perfil 200 in 40ms (next.js: 8ms, application-code: 33ms)
+ GET /login 200 in 93ms (next.js: 58ms, application-code: 35ms)
+ GET /dashboard 200 in 47ms (next.js: 14ms, application-code: 33ms)
+ GET /dashboard?view=orders 200 in 63ms (next.js: 27ms, application-code: 36ms)
+ GET /dashboard 200 in 30ms (next.js: 3ms, application-code: 26ms)
+ GET /dashboard?view=orders 200 in 31ms (next.js: 6ms, application-code: 25ms)
+ GET /perfil 200 in 91ms (next.js: 34ms, application-code: 56ms)
+ GET /admin 200 in 22ms (next.js: 4ms, application-code: 18ms)
+ GET /login 200 in 53ms (next.js: 6ms, application-code: 47ms)
+ GET /login 200 in 23ms (next.js: 2ms, application-code: 21ms)
+ GET /dashboard 200 in 83ms (next.js: 37ms, application-code: 46ms)
+ GET /dashboard?view=orders 200 in 30ms (next.js: 4ms, application-code: 26ms)
+ GET /admin 200 in 43ms (next.js: 11ms, application-code: 32ms)
+ GET /dashboard?view=orders 200 in 69ms (next.js: 25ms, application-code: 44ms)
+ GET /trabajos/2b653c74-0727-4fda-803c-2a99204b0034 200 in 76ms (next.js: 57ms, application-code: 19ms)
+ GET /admin 200 in 50ms (next.js: 11ms, application-code: 39ms)
+ GET /perfil 200 in 33ms (next.js: 12ms, application-code: 22ms)
+ GET /dashboard?view=orders 200 in 28ms (next.js: 6ms, application-code: 22ms)
+ GET /dashboard 200 in 13ms (next.js: 4ms, application-code: 9ms)
+ GET /dashboard 200 in 21ms (next.js: 1963µs, application-code: 20ms)
+ GET /dashboard?view=orders 200 in 25ms (next.js: 1721µs, application-code: 24ms)
+ GET /trabajos/2b653c74-0727-4fda-803c-2a99204b0034 200 in 36ms (next.js: 12ms, application-code: 23ms)
+ GET /dashboard?view=orders 200 in 58ms (next.js: 21ms, application-code: 36ms)
+ GET /dashboard 200 in 56ms (next.js: 17ms, application-code: 39ms)
+ GET /dashboard 200 in 27ms (next.js: 9ms, application-code: 18ms)
+ GET /publicar 200 in 76ms (next.js: 55ms, application-code: 21ms)
+ GET /dashboard 200 in 88ms (next.js: 39ms, application-code: 49ms)
+ GET /trabajos/cbb3ae1f-3017-4a1a-b980-b90e655a8e9c 200 in 66ms (next.js: 24ms, application-code: 42ms)
+ GET /dashboard 200 in 281ms (next.js: 200ms, application-code: 81ms)
+ GET /dashboard 200 in 64ms (next.js: 20ms, application-code: 44ms)
+ GET /perfil 200 in 38ms (next.js: 7ms, application-code: 31ms)
+ GET /dashboard 200 in 52ms (next.js: 15ms, application-code: 38ms)
+ GET /trabajos/cbb3ae1f-3017-4a1a-b980-b90e655a8e9c 200 in 40ms (next.js: 10ms, application-code: 31ms)
+ GET /dashboard 200 in 82ms (next.js: 32ms, application-code: 49ms)
+ GET /dashboard?view=orders 200 in 47ms (next.js: 17ms, application-code: 31ms)
+ GET /trabajos/cbb3ae1f-3017-4a1a-b980-b90e655a8e9c 200 in 48ms (next.js: 12ms, application-code: 35ms)
+ GET /trabajos/cbb3ae1f-3017-4a1a-b980-b90e655a8e9c/pago?offer=e65e328a-a3c8-4643-aaea-b08e08948a09 200 in 100ms (next.js: 63ms, application-code: 37ms)
+ GET /dashboard 200 in 84ms (next.js: 40ms, application-code: 44ms)
+ GET /admin 200 in 88ms (next.js: 34ms, application-code: 54ms)
+ GET /dashboard 200 in 48ms (next.js: 12ms, application-code: 36ms)
+ GET /dashboard?view=orders 200 in 29ms (next.js: 4ms, application-code: 25ms)
+ GET /admin 200 in 49ms (next.js: 12ms, application-code: 37ms)
+ GET /dashboard?view=orders 200 in 92ms (next.js: 46ms, application-code: 46ms)
+✓ Compiled in 178ms
+✓ Compiled in 286ms
+ GET /dashboard?view=orders 200 in 104ms (next.js: 59ms, application-code: 45ms)
+ GET /dashboard?view=orders 200 in 207ms (next.js: 4ms, application-code: 202ms)
+ GET /dashboard?view=orders 200 in 28ms (next.js: 6ms, application-code: 22ms)
+ GET /dashboard 200 in 12ms (next.js: 4ms, application-code: 8ms)
+ GET /dashboard 200 in 21ms (next.js: 1970µs, application-code: 19ms)
+ GET /dashboard?view=orders 200 in 22ms (next.js: 3ms, application-code: 19ms)
+ GET /dashboard 200 in 10ms (next.js: 1743µs, application-code: 8ms)
+ GET /dashboard 200 in 21ms (next.js: 3ms, application-code: 19ms)
+ GET /dashboard?view=orders 200 in 73ms (next.js: 20ms, application-code: 53ms)
+ GET /admin 200 in 46ms (next.js: 26ms, application-code: 20ms)
+ GET /perfil 200 in 106ms (next.js: 59ms, application-code: 47ms)
+ GET /dashboard?view=orders 200 in 34ms (next.js: 6ms, application-code: 28ms)
+ GET /trabajos/cbb3ae1f-3017-4a1a-b980-b90e655a8e9c 200 in 60ms (next.js: 26ms, application-code: 34ms)
+ GET /trabajos/cbb3ae1f-3017-4a1a-b980-b90e655a8e9c/chat 404 in 1557ms (next.js: 1532ms, application-code: 25ms)
+ GET /trabajos/cbb3ae1f-3017-4a1a-b980-b90e655a8e9c/chat 404 in 89ms (next.js: 8ms, application-code: 81ms)
+ GET /trabajos/cbb3ae1f-3017-4a1a-b980-b90e655a8e9c 200 in 124ms (next.js: 43ms, application-code: 81ms)
+ GET /dashboard?view=orders 200 in 31ms (next.js: 7ms, application-code: 24ms)
+ GET /dashboard?view=orders 200 in 200ms (next.js: 12ms, application-code: 189ms)
+ GET /perfil 200 in 49ms (next.js: 12ms, application-code: 38ms)
+ GET /dashboard?view=orders 200 in 33ms (next.js: 7ms, application-code: 26ms)
+ GET /dashboard 200 in 13ms (next.js: 4ms, application-code: 9ms)
+ GET /dashboard 200 in 23ms (next.js: 3ms, application-code: 20ms)
+ GET /perfil 200 in 50ms (next.js: 12ms, application-code: 38ms)
+ GET /dashboard?view=orders 200 in 19ms (next.js: 4ms, application-code: 15ms)
+ GET /trabajos/2b653c74-0727-4fda-803c-2a99204b0034 200 in 53ms (next.js: 18ms, application-code: 35ms)
+ GET /dashboard?view=orders 200 in 24ms (next.js: 6ms, application-code: 18ms)
+ GET /trabajos/cbb3ae1f-3017-4a1a-b980-b90e655a8e9c 200 in 50ms (next.js: 15ms, application-code: 35ms)
+✓ Compiled in 222ms
+✓ Compiled in 412ms
+✓ Compiled in 223ms
+✓ Compiled in 345ms
+ GET /dashboard?view=orders 200 in 282ms (next.js: 217ms, application-code: 65ms)
+ GET /dashboard?view=orders 200 in 180ms (next.js: 30ms, application-code: 150ms)
+ GET /admin 200 in 222ms (next.js: 181ms, application-code: 41ms)
+ GET /dashboard 200 in 56ms (next.js: 16ms, application-code: 41ms)
+ GET /dashboard?view=orders 200 in 44ms (next.js: 13ms, application-code: 31ms)
+[browser] Uncaught Error: Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
+
+Check the render method of `DashboardContent`.
+    at eval (app/(app)/dashboard/page.tsx:268:23)
+    at Array.map (<anonymous>)
+    at DashboardContent (app/(app)/dashboard/page.tsx:253:27)
+    at DashboardPage (app/(app)/dashboard/page.tsx:15:7)
+  266 |                         ID: {job.id.split("-")[0]}
+  267 |                       </span>
+> 268 |                       <Badge className={cn(
+      |                       ^
+  269 |                         "text-[9px] px-2 py-0 h-4 uppercase font-bold",
+  270 |                         job.status === "paid" || job.status === "completed" ? "bg-success...
+  271 |                       )}>
+ GET /dashboard 200 in 353ms (next.js: 29ms, application-code: 324ms)
+ GET /dashboard?view=orders 200 in 54ms (next.js: 11ms, application-code: 43ms)
+[browser] Uncaught Error: Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
+
+Check the render method of `DashboardContent`.
+    at <unknown> (app/(app)/dashboard/page.tsx:268:23)
+    at Array.map (<anonymous>)
+    at DashboardContent (app/(app)/dashboard/page.tsx:253:27)
+    at DashboardPage (app/(app)/dashboard/page.tsx:15:7)
+  266 |                         ID: {job.id.split("-")[0]}
+  267 |                       </span>
+> 268 |                       <Badge className={cn(
+      |                       ^
+  269 |                         "text-[9px] px-2 py-0 h-4 uppercase font-bold",
+  270 |                         job.status === "paid" || job.status === "completed" ? "bg-success...
+  271 |                       )}>
+ GET /dashboard 200 in 103ms (next.js: 13ms, application-code: 91ms)
+ GET /admin 200 in 21ms (next.js: 4ms, application-code: 17ms)
+ GET /trabajos/cbb3ae1f-3017-4a1a-b980-b90e655a8e9c 200 in 76ms (next.js: 55ms, application-code: 21ms)
+ GET /dashboard?view=orders 200 in 74ms (next.js: 32ms, application-code: 42ms)
+[browser] Uncaught Error: Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
+
+Check the render method of `DashboardContent`.
+    at <unknown> (app/(app)/dashboard/page.tsx:268:23)
+    at Array.map (<anonymous>)
+    at DashboardContent (app/(app)/dashboard/page.tsx:253:27)
+    at DashboardPage (app/(app)/dashboard/page.tsx:15:7)
+  266 |                         ID: {job.id.split("-")[0]}
+  267 |                       </span>
+> 268 |                       <Badge className={cn(
+      |                       ^
+  269 |                         "text-[9px] px-2 py-0 h-4 uppercase font-bold",
+  270 |                         job.status === "paid" || job.status === "completed" ? "bg-success...
+  271 |                       )}>
+✓ Compiled in 238ms
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET /dashboard?view=orders 200 in 64ms (next.js: 10ms, application-code: 54ms)
+ GET /dashboard?view=orders 200 in 88ms (next.js: 30ms, application-code: 58ms)
+ GET /dashboard?view=orders 200 in 124ms (next.js: 67ms, application-code: 57ms)
+ GET /dashboard?view=orders 200 in 47ms (next.js: 5ms, application-code: 42ms)
+ GET /perfil 200 in 85ms (next.js: 64ms, application-code: 20ms)
+ GET /dashboard?view=orders 200 in 25ms (next.js: 3ms, application-code: 22ms)
+ GET /dashboard 200 in 12ms (next.js: 5ms, application-code: 7ms)
+ GET /dashboard 200 in 25ms (next.js: 2ms, application-code: 23ms)
+ GET /dashboard?view=orders 200 in 65ms (next.js: 16ms, application-code: 49ms)
+ GET /perfil 200 in 48ms (next.js: 13ms, application-code: 35ms)
+ GET /dashboard?view=orders 200 in 62ms (next.js: 21ms, application-code: 40ms)
+ GET /publicar 200 in 84ms (next.js: 69ms, application-code: 16ms)
+ GET /dashboard 200 in 44ms (next.js: 18ms, application-code: 26ms)
+ GET /dashboard 200 in 36ms (next.js: 7ms, application-code: 29ms)
+ GET /dashboard?view=orders 200 in 68ms (next.js: 30ms, application-code: 38ms)
+ GET /admin 200 in 21ms (next.js: 6ms, application-code: 15ms)
+ GET /dashboard 200 in 74ms (next.js: 25ms, application-code: 49ms)
+✓ Compiled in 222ms
+✓ Compiled in 187ms
+ GET /dashboard 200 in 98ms (next.js: 22ms, application-code: 76ms)
+✓ Compiled in 784ms
+ GET /dashboard 200 in 129ms (next.js: 78ms, application-code: 50ms)
+ GET /dashboard 200 in 22ms (next.js: 1735µs, application-code: 20ms)
+ GET /dashboard?view=orders 200 in 62ms (next.js: 28ms, application-code: 34ms)
+ GET /admin 200 in 124ms (next.js: 69ms, application-code: 54ms)
+ GET /perfil 200 in 100ms (next.js: 66ms, application-code: 34ms)
+ GET /dashboard?view=orders 200 in 32ms (next.js: 5ms, application-code: 27ms)
+ GET /dashboard 200 in 8ms (next.js: 1708µs, application-code: 6ms)
+ GET /dashboard 200 in 20ms (next.js: 1297µs, application-code: 19ms)
+[Server HMR] Update failed, full reload needed: SyntaxError: Identifier 'STATUS_LABELS' has already been declared
+    at eval (<anonymous>)
+[Server HMR] Listener error: SyntaxError: Identifier 'STATUS_LABELS' has already been declared
+    at eval (<anonymous>)
+✓ Compiled in 604ms
+⨯ ./components/amano/job-card.tsx:32:14
+the name `STATUS_LABELS` is defined multiple times
+  [90m30 |[0m [36mexport[0m [36mtype[0m [33mJobStatus[0m = [32m"open"[0m | [32m"accepted"[0m | [32m"paid"[0m | [32m"in_progress"[0m | [32m"completed"[0m | [32m"cancelled"[0m;
+  [90m31 |[0m
+[31m[1m>[0m [90m32 |[0m [36mexport[0m [36mconst[0m [33mSTATUS_LABELS[0m: [33mRecord[0m<[33mJobStatus[0m, string> = {
+  [90m   |[0m              [31m[1m^^^^^^^^^^^^^[0m
+  [90m33 |[0m   open: [32m"Recibiendo Ofertas"[0m,
+  [90m34 |[0m   accepted: [32m"Oferta Aceptada"[0m,
+  [90m35 |[0m   paid: [32m"Trabajo Aceptado"[0m,
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./components/amano/job-card.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/amano/job-card.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Server Component]
+
+
+[browser] ./components/amano/job-card.tsx:32:14
+the name `STATUS_LABELS` is defined multiple times
+  30 | export type JobStatus = "open" | "accepted" | "paid" | "in_progress" | "completed" | "cancelled";
+  31 |
+> 32 | export const STATUS_LABELS: Record<JobStatus, string> = {
+     |              ^^^^^^^^^^^^^
+  33 |   open: "Recibiendo Ofertas",
+  34 |   accepted: "Oferta Aceptada",
+  35 |   paid: "Trabajo Aceptado",
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./components/amano/job-card.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/amano/job-card.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Server Component] 
+[browser] ./components/amano/job-card.tsx:32:14
+the name `STATUS_LABELS` is defined multiple times
+  30 | export type JobStatus = "open" | "accepted" | "paid" | "in_progress" | "completed" | "cancelled";
+  31 |
+> 32 | export const STATUS_LABELS: Record<JobStatus, string> = {
+     |              ^^^^^^^^^^^^^
+  33 |   open: "Recibiendo Ofertas",
+  34 |   accepted: "Oferta Aceptada",
+  35 |   paid: "Trabajo Aceptado",
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./components/amano/job-card.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/amano/job-card.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Server Component] 
+[browser] ./components/amano/job-card.tsx:32:14
+the name `STATUS_LABELS` is defined multiple times
+  30 | export type JobStatus = "open" | "accepted" | "paid" | "in_progress" | "completed" | "cancelled";
+  31 |
+> 32 | export const STATUS_LABELS: Record<JobStatus, string> = {
+     |              ^^^^^^^^^^^^^
+  33 |   open: "Recibiendo Ofertas",
+  34 |   accepted: "Oferta Aceptada",
+  35 |   paid: "Trabajo Aceptado",
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./components/amano/job-card.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/amano/job-card.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Server Component] 
+[browser] ./components/amano/job-card.tsx:32:14
+the name `STATUS_LABELS` is defined multiple times
+  30 | export type JobStatus = "open" | "accepted" | "paid" | "in_progress" | "completed" | "cancelled";
+  31 |
+> 32 | export const STATUS_LABELS: Record<JobStatus, string> = {
+     |              ^^^^^^^^^^^^^
+  33 |   open: "Recibiendo Ofertas",
+  34 |   accepted: "Oferta Aceptada",
+  35 |   paid: "Trabajo Aceptado",
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./components/amano/job-card.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/amano/job-card.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Server Component] 
+ GET /dashboard 500 in 502ms (next.js: 338ms, application-code: 164ms)
+⨯ ./components/amano/job-card.tsx:32:14
+the name `STATUS_LABELS` is defined multiple times
+  [90m30 |[0m [36mexport[0m [36mtype[0m [33mJobStatus[0m = [32m"open"[0m | [32m"accepted"[0m | [32m"paid"[0m | [32m"in_progress"[0m | [32m"completed"[0m | [32m"cancelled"[0m;
+  [90m31 |[0m
+[31m[1m>[0m [90m32 |[0m [36mexport[0m [36mconst[0m [33mSTATUS_LABELS[0m: [33mRecord[0m<[33mJobStatus[0m, string> = {
+  [90m   |[0m              [31m[1m^^^^^^^^^^^^^[0m
+  [90m33 |[0m   open: [32m"Recibiendo Ofertas"[0m,
+  [90m34 |[0m   accepted: [32m"Oferta Aceptada"[0m,
+  [90m35 |[0m   paid: [32m"Trabajo Aceptado"[0m,
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./components/amano/job-card.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/amano/job-card.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Server Component]
+
+
+ GET /dashboard 500 in 21ms (next.js: 10ms, application-code: 10ms)
+⨯ ./components/amano/job-card.tsx:32:14
+the name `STATUS_LABELS` is defined multiple times
+  [90m30 |[0m [36mexport[0m [36mtype[0m [33mJobStatus[0m = [32m"open"[0m | [32m"accepted"[0m | [32m"paid"[0m | [32m"in_progress"[0m | [32m"completed"[0m | [32m"cancelled"[0m;
+  [90m31 |[0m
+[31m[1m>[0m [90m32 |[0m [36mexport[0m [36mconst[0m [33mSTATUS_LABELS[0m: [33mRecord[0m<[33mJobStatus[0m, string> = {
+  [90m   |[0m              [31m[1m^^^^^^^^^^^^^[0m
+  [90m33 |[0m   open: [32m"Recibiendo Ofertas"[0m,
+  [90m34 |[0m   accepted: [32m"Oferta Aceptada"[0m,
+  [90m35 |[0m   paid: [32m"Trabajo Aceptado"[0m,
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./components/amano/job-card.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/amano/job-card.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Server Component]
+
+
+ GET /dashboard 500 in 15ms (next.js: 6ms, application-code: 9ms)
+[browser] ./components/amano/job-card.tsx:32:14
+the name `STATUS_LABELS` is defined multiple times
+  30 | export type JobStatus = "open" | "accepted" | "paid" | "in_progress" | "completed" | "cancelled";
+  31 |
+> 32 | export const STATUS_LABELS: Record<JobStatus, string> = {
+     |              ^^^^^^^^^^^^^
+  33 |   open: "Recibiendo Ofertas",
+  34 |   accepted: "Oferta Aceptada",
+  35 |   paid: "Trabajo Aceptado",
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./components/amano/job-card.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/amano/job-card.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Server Component] 
+⨯ ./components/amano/job-card.tsx:32:14
+the name `STATUS_LABELS` is defined multiple times
+  [90m30 |[0m [36mexport[0m [36mtype[0m [33mJobStatus[0m = [32m"open"[0m | [32m"accepted"[0m | [32m"paid"[0m | [32m"in_progress"[0m | [32m"completed"[0m | [32m"cancelled"[0m;
+  [90m31 |[0m
+[31m[1m>[0m [90m32 |[0m [36mexport[0m [36mconst[0m [33mSTATUS_LABELS[0m: [33mRecord[0m<[33mJobStatus[0m, string> = {
+  [90m   |[0m              [31m[1m^^^^^^^^^^^^^[0m
+  [90m33 |[0m   open: [32m"Recibiendo Ofertas"[0m,
+  [90m34 |[0m   accepted: [32m"Oferta Aceptada"[0m,
+  [90m35 |[0m   paid: [32m"Trabajo Aceptado"[0m,
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./components/amano/job-card.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/amano/job-card.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Server Component]
+
+
+ GET /dashboard 500 in 17ms (next.js: 10ms, application-code: 8ms)
+[browser] Uncaught Error: ./components/amano/job-card.tsx:32:14
+the name `STATUS_LABELS` is defined multiple times
+  30 | export type JobStatus = "open" | "accepted" | "paid" | "in_progress" | "completed" | "cancelled";
+  31 |
+> 32 | export const STATUS_LABELS: Record<JobStatus, string> = {
+     |              ^^^^^^^^^^^^^
+  33 |   open: "Recibiendo Ofertas",
+  34 |   accepted: "Oferta Aceptada",
+  35 |   paid: "Trabajo Aceptado",
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./components/amano/job-card.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/amano/job-card.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Server Component]
+
+
+    at <unknown> (Error: ./components/amano/job-card.tsx:32:14)
+    at <unknown> (Error: (./components/amano/job-card.tsx:32:14)
+[browser] ./components/amano/job-card.tsx:32:14
+the name `STATUS_LABELS` is defined multiple times
+  30 | export type JobStatus = "open" | "accepted" | "paid" | "in_progress" | "completed" | "cancelled";
+  31 |
+> 32 | export const STATUS_LABELS: Record<JobStatus, string> = {
+     |              ^^^^^^^^^^^^^
+  33 |   open: "Recibiendo Ofertas",
+  34 |   accepted: "Oferta Aceptada",
+  35 |   paid: "Trabajo Aceptado",
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./components/amano/job-card.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/amano/job-card.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Server Component] 
+[browser] ./components/amano/job-card.tsx:32:14
+the name `STATUS_LABELS` is defined multiple times
+  30 | export type JobStatus = "open" | "accepted" | "paid" | "in_progress" | "completed" | "cancelled";
+  31 |
+> 32 | export const STATUS_LABELS: Record<JobStatus, string> = {
+     |              ^^^^^^^^^^^^^
+  33 |   open: "Recibiendo Ofertas",
+  34 |   accepted: "Oferta Aceptada",
+  35 |   paid: "Trabajo Aceptado",
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./components/amano/job-card.tsx [Client Component Browser]
+    ./app/(app)/trabajos/[id]/page.tsx [Client Component Browser]
+    ./app/(app)/trabajos/[id]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/amano/job-card.tsx [Client Component SSR]
+    ./app/(app)/trabajos/[id]/page.tsx [Client Component SSR]
+    ./app/(app)/trabajos/[id]/page.tsx [Server Component] 
+[browser] ./components/amano/job-card.tsx:32:14
+the name `STATUS_LABELS` is defined multiple times
+  30 | export type JobStatus = "open" | "accepted" | "paid" | "in_progress" | "completed" | "cancelled";
+  31 |
+> 32 | export const STATUS_LABELS: Record<JobStatus, string> = {
+     |              ^^^^^^^^^^^^^
+  33 |   open: "Recibiendo Ofertas",
+  34 |   accepted: "Oferta Aceptada",
+  35 |   paid: "Trabajo Aceptado",
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./components/amano/job-card.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/amano/job-card.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Server Component] 
+[browser] ./components/amano/job-card.tsx:32:14
+the name `STATUS_LABELS` is defined multiple times
+  30 | export type JobStatus = "open" | "accepted" | "paid" | "in_progress" | "completed" | "cancelled";
+  31 |
+> 32 | export const STATUS_LABELS: Record<JobStatus, string> = {
+     |              ^^^^^^^^^^^^^
+  33 |   open: "Recibiendo Ofertas",
+  34 |   accepted: "Oferta Aceptada",
+  35 |   paid: "Trabajo Aceptado",
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./components/amano/job-card.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/amano/job-card.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Server Component] 
+✓ Compiled in 145ms
+[browser] ./components/amano/job-card.tsx:32:14
+the name `STATUS_LABELS` is defined multiple times
+  30 | export type JobStatus = "open" | "accepted" | "paid" | "in_progress" | "completed" | "cancelled";
+  31 |
+> 32 | export const STATUS_LABELS: Record<JobStatus, string> = {
+     |              ^^^^^^^^^^^^^
+  33 |   open: "Recibiendo Ofertas",
+  34 |   accepted: "Oferta Aceptada",
+  35 |   paid: "Trabajo Aceptado",
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./components/amano/job-card.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/amano/job-card.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Server Component] 
+✓ Compiled in 116ms
+[browser] ./components/amano/job-card.tsx:32:14
+the name `STATUS_LABELS` is defined multiple times
+  30 | export type JobStatus = "open" | "accepted" | "paid" | "in_progress" | "completed" | "cancelled";
+  31 |
+> 32 | export const STATUS_LABELS: Record<JobStatus, string> = {
+     |              ^^^^^^^^^^^^^
+  33 |   open: "Recibiendo Ofertas",
+  34 |   accepted: "Oferta Aceptada",
+  35 |   paid: "Trabajo Aceptado",
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./components/amano/job-card.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/amano/job-card.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Server Component] 
+✓ Compiled in 60ms
+[browser] ./components/amano/job-card.tsx:32:14
+the name `STATUS_LABELS` is defined multiple times
+  30 | export type JobStatus = "open" | "accepted" | "paid" | "in_progress" | "completed" | "cancelled";
+  31 |
+> 32 | export const STATUS_LABELS: Record<JobStatus, string> = {
+     |              ^^^^^^^^^^^^^
+  33 |   open: "Recibiendo Ofertas",
+  34 |   accepted: "Oferta Aceptada",
+  35 |   paid: "Trabajo Aceptado",
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./components/amano/job-card.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/amano/job-card.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Server Component] 
+⚠ Found a change in next.config.mjs. Restarting the server to apply the changes...
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.54:3000
+- Environments: .env.local
+✓ Ready in 538ms
+
+⨯ ./components/amano/job-card.tsx:32:14
+the name `STATUS_LABELS` is defined multiple times
+  [90m30 |[0m [36mexport[0m [36mtype[0m [33mJobStatus[0m = [32m"open"[0m | [32m"accepted"[0m | [32m"paid"[0m | [32m"in_progress"[0m | [32m"completed"[0m | [32m"cancelled"[0m;
+  [90m31 |[0m
+[31m[1m>[0m [90m32 |[0m [36mexport[0m [36mconst[0m [33mSTATUS_LABELS[0m: [33mRecord[0m<[33mJobStatus[0m, string> = {
+  [90m   |[0m              [31m[1m^^^^^^^^^^^^^[0m
+  [90m33 |[0m   open: [32m"Recibiendo Ofertas"[0m,
+  [90m34 |[0m   accepted: [32m"Oferta Aceptada"[0m,
+  [90m35 |[0m   paid: [32m"Trabajo Aceptado"[0m,
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./components/amano/job-card.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/amano/job-card.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Server Component]
+
+
+ GET /dashboard 500 in 981ms (next.js: 749ms, application-code: 232ms)
+[browser] Uncaught Error: ./components/amano/job-card.tsx:32:14
+the name `STATUS_LABELS` is defined multiple times
+  30 | export type JobStatus = "open" | "accepted" | "paid" | "in_progress" | "completed" | "cancelled";
+  31 |
+> 32 | export const STATUS_LABELS: Record<JobStatus, string> = {
+     |              ^^^^^^^^^^^^^
+  33 |   open: "Recibiendo Ofertas",
+  34 |   accepted: "Oferta Aceptada",
+  35 |   paid: "Trabajo Aceptado",
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./components/amano/job-card.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/amano/job-card.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Server Component]
+
+
+    at <unknown> (Error: ./components/amano/job-card.tsx:32:14)
+    at <unknown> (Error: (./components/amano/job-card.tsx:32:14)
+[browser] ./components/amano/job-card.tsx:32:14
+the name `STATUS_LABELS` is defined multiple times
+  30 | export type JobStatus = "open" | "accepted" | "paid" | "in_progress" | "completed" | "cancelled";
+  31 |
+> 32 | export const STATUS_LABELS: Record<JobStatus, string> = {
+     |              ^^^^^^^^^^^^^
+  33 |   open: "Recibiendo Ofertas",
+  34 |   accepted: "Oferta Aceptada",
+  35 |   paid: "Trabajo Aceptado",
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./components/amano/job-card.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/amano/job-card.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Server Component] 
+[browser] ./components/amano/job-card.tsx:32:14
+the name `STATUS_LABELS` is defined multiple times
+  30 | export type JobStatus = "open" | "accepted" | "paid" | "in_progress" | "completed" | "cancelled";
+  31 |
+> 32 | export const STATUS_LABELS: Record<JobStatus, string> = {
+     |              ^^^^^^^^^^^^^
+  33 |   open: "Recibiendo Ofertas",
+  34 |   accepted: "Oferta Aceptada",
+  35 |   paid: "Trabajo Aceptado",
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./components/amano/job-card.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/amano/job-card.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Server Component] 
+[browser] ./components/amano/job-card.tsx:32:14
+the name `STATUS_LABELS` is defined multiple times
+  30 | export type JobStatus = "open" | "accepted" | "paid" | "in_progress" | "completed" | "cancelled";
+  31 |
+> 32 | export const STATUS_LABELS: Record<JobStatus, string> = {
+     |              ^^^^^^^^^^^^^
+  33 |   open: "Recibiendo Ofertas",
+  34 |   accepted: "Oferta Aceptada",
+  35 |   paid: "Trabajo Aceptado",
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./components/amano/job-card.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/amano/job-card.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Server Component] 
+[browser] ./components/amano/job-card.tsx:32:14
+the name `STATUS_LABELS` is defined multiple times
+  30 | export type JobStatus = "open" | "accepted" | "paid" | "in_progress" | "completed" | "cancelled";
+  31 |
+> 32 | export const STATUS_LABELS: Record<JobStatus, string> = {
+     |              ^^^^^^^^^^^^^
+  33 |   open: "Recibiendo Ofertas",
+  34 |   accepted: "Oferta Aceptada",
+  35 |   paid: "Trabajo Aceptado",
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./components/amano/job-card.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/amano/job-card.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Server Component] 
+[browser] ./components/amano/job-card.tsx:32:14
+the name `STATUS_LABELS` is defined multiple times
+  30 | export type JobStatus = "open" | "accepted" | "paid" | "in_progress" | "completed" | "cancelled";
+  31 |
+> 32 | export const STATUS_LABELS: Record<JobStatus, string> = {
+     |              ^^^^^^^^^^^^^
+  33 |   open: "Recibiendo Ofertas",
+  34 |   accepted: "Oferta Aceptada",
+  35 |   paid: "Trabajo Aceptado",
+
+Ecmascript file had an error
+
+Import traces:
+  Client Component Browser:
+    ./components/amano/job-card.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Client Component Browser]
+    ./app/(app)/dashboard/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/amano/job-card.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Client Component SSR]
+    ./app/(app)/dashboard/page.tsx [Server Component] 
+✓ Compiled in 286ms
+ GET /dashboard 200 in 452ms (next.js: 216ms, application-code: 236ms)
+[browser] Image with src "https://gocfqxpnacdxaedaosmp.supabase.co/storage/v1/object/public/job-media/d9c3bf54-0d0a-4b41-9952-40572b510f96/1774204179700-boruony7l7.webp" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "https://gocfqxpnacdxaedaosmp.supabase.co/storage/v1/object/public/job-media/4265f546-dd30-4854-b7b2-a13603260039/1774204379360-h29hm9slama.jpeg" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "https://gocfqxpnacdxaedaosmp.supabase.co/storage/v1/object/public/job-media/b36fb378-6fd5-4cd5-917d-2a831570c560/1774288998273-c1nmgu2kj2.jpg" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+✓ Compiled in 150ms
+✓ Compiled in 126ms
+ GET /trabajos/194846f5-b0b1-4e9a-84a0-6e37731bf47a 200 in 755ms (next.js: 721ms, application-code: 34ms)
+ GET /dashboard 200 in 94ms (next.js: 49ms, application-code: 44ms)
+ GET /dashboard 200 in 41ms (next.js: 14ms, application-code: 27ms)
+ GET /publicar 200 in 1331ms (next.js: 979ms, application-code: 352ms)
+ GET /dashboard 200 in 47ms (next.js: 19ms, application-code: 29ms)
+[browser] Image with src "https://gocfqxpnacdxaedaosmp.supabase.co/storage/v1/object/public/job-media/4265f546-dd30-4854-b7b2-a13603260039/1774204379360-h29hm9slama.jpeg" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "https://gocfqxpnacdxaedaosmp.supabase.co/storage/v1/object/public/job-media/d9c3bf54-0d0a-4b41-9952-40572b510f96/1774204179700-boruony7l7.webp" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+ GET /publicar 200 in 92ms (next.js: 32ms, application-code: 60ms)
+ GET /dashboard 200 in 96ms (next.js: 48ms, application-code: 48ms)
+[browser] Image with src "https://gocfqxpnacdxaedaosmp.supabase.co/storage/v1/object/public/job-media/b36fb378-6fd5-4cd5-917d-2a831570c560/1774293467248-xqr625w31r.jpg" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+ GET /trabajos/e937d4c1-923a-431a-8fbc-c988109b9cc8 200 in 95ms (next.js: 45ms, application-code: 50ms)
+✓ Compiled in 137ms
+ GET /dashboard?view=orders 200 in 108ms (next.js: 66ms, application-code: 42ms)
+ GET /dashboard 200 in 10ms (next.js: 4ms, application-code: 6ms)
+ GET /dashboard 200 in 22ms (next.js: 1766µs, application-code: 21ms)
+[browser] Image with src "https://gocfqxpnacdxaedaosmp.supabase.co/storage/v1/object/public/job-media/b36fb378-6fd5-4cd5-917d-2a831570c560/1774288998273-c1nmgu2kj2.jpg" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+ GET /trabajos/e937d4c1-923a-431a-8fbc-c988109b9cc8 200 in 86ms (next.js: 34ms, application-code: 52ms)
+✓ Compiled in 282ms
+✓ Compiled in 200ms
+✓ Compiled in 131ms
+ GET /trabajos/2b653c74-0727-4fda-803c-2a99204b0034 200 in 118ms (next.js: 71ms, application-code: 46ms)
+ GET /dashboard 200 in 106ms (next.js: 57ms, application-code: 49ms)
+[browser] Image with src "https://gocfqxpnacdxaedaosmp.supabase.co/storage/v1/object/public/job-media/b36fb378-6fd5-4cd5-917d-2a831570c560/1774293467248-xqr625w31r.jpg" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+ GET /trabajos/6663ab12-1049-4b19-8769-237c85bbbc71 200 in 47ms (next.js: 11ms, application-code: 36ms)
+ GET /dashboard 200 in 45ms (next.js: 11ms, application-code: 34ms)
+ GET /dashboard 200 in 12ms (next.js: 4ms, application-code: 8ms)
+ GET /dashboard 200 in 18ms (next.js: 1776µs, application-code: 16ms)
+✓ Compiled in 305ms
+ GET /trabajos/cbb3ae1f-3017-4a1a-b980-b90e655a8e9c 200 in 142ms (next.js: 82ms, application-code: 61ms)
+ GET /dashboard 200 in 92ms (next.js: 44ms, application-code: 48ms)
+✓ Compiled in 192ms
+ GET /trabajos/e937d4c1-923a-431a-8fbc-c988109b9cc8 200 in 91ms (next.js: 46ms, application-code: 45ms)
+✓ Compiled in 213ms
+ GET /notificaciones 200 in 2.1s (next.js: 2.1s, application-code: 53ms)
+✓ Compiled in 201ms
+ GET /dashboard 200 in 240ms (next.js: 51ms, application-code: 188ms)
+✓ Compiled in 269ms
+ GET /dashboard?view=orders 200 in 108ms (next.js: 65ms, application-code: 43ms)
+[browser] Uncaught TypeError: Failed to construct 'Image': Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+    at eval (app/(app)/dashboard/page.tsx:273:23)
+    at Array.map (<anonymous>)
+    at DashboardContent (app/(app)/dashboard/page.tsx:264:27)
+    at DashboardPage (app/(app)/dashboard/page.tsx:16:7)
+  271 |                   {job.photos_urls && job.photos_urls.length > 0 ? (
+  272 |                     <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 border ...
+> 273 |                       <Image
+      |                       ^
+  274 |                         src={job.photos_urls[0]}
+  275 |                         alt={job.description}
+  276 |                         fill
+ GET /dashboard 200 in 162ms (next.js: 41ms, application-code: 121ms)
+[browser] Image with src "https://gocfqxpnacdxaedaosmp.supabase.co/storage/v1/object/public/job-media/4265f546-dd30-4854-b7b2-a13603260039/1774204379360-h29hm9slama.jpeg" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "https://gocfqxpnacdxaedaosmp.supabase.co/storage/v1/object/public/job-media/d9c3bf54-0d0a-4b41-9952-40572b510f96/1774204179700-boruony7l7.webp" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "https://gocfqxpnacdxaedaosmp.supabase.co/storage/v1/object/public/job-media/b36fb378-6fd5-4cd5-917d-2a831570c560/1774293467248-xqr625w31r.jpg" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "https://gocfqxpnacdxaedaosmp.supabase.co/storage/v1/object/public/job-media/b36fb378-6fd5-4cd5-917d-2a831570c560/1774288998273-c1nmgu2kj2.jpg" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+ GET /admin 200 in 104ms (next.js: 75ms, application-code: 28ms)
+ GET /dashboard?view=orders 200 in 85ms (next.js: 35ms, application-code: 50ms)
+[browser] Uncaught TypeError: Failed to construct 'Image': Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+    at <unknown> (app/(app)/dashboard/page.tsx:273:23)
+    at Array.map (<anonymous>)
+    at DashboardContent (app/(app)/dashboard/page.tsx:264:27)
+    at DashboardPage (app/(app)/dashboard/page.tsx:16:7)
+  271 |                   {job.photos_urls && job.photos_urls.length > 0 ? (
+  272 |                     <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 border ...
+> 273 |                       <Image
+      |                       ^
+  274 |                         src={job.photos_urls[0]}
+  275 |                         alt={job.description}
+  276 |                         fill
+ GET /admin 200 in 88ms (next.js: 7ms, application-code: 81ms)
+ GET /dashboard?view=orders 200 in 28ms (next.js: 6ms, application-code: 22ms)
+[browser] Uncaught TypeError: Failed to construct 'Image': Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+    at <unknown> (app/(app)/dashboard/page.tsx:273:23)
+    at Array.map (<anonymous>)
+    at DashboardContent (app/(app)/dashboard/page.tsx:264:27)
+    at DashboardPage (app/(app)/dashboard/page.tsx:16:7)
+  271 |                   {job.photos_urls && job.photos_urls.length > 0 ? (
+  272 |                     <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0 border ...
+> 273 |                       <Image
+      |                       ^
+  274 |                         src={job.photos_urls[0]}
+  275 |                         alt={job.description}
+  276 |                         fill
+✓ Compiled in 414ms
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET /admin 200 in 68ms (next.js: 10ms, application-code: 58ms)
+Error [AuthApiError]: Invalid Refresh Token: Refresh Token Not Found
+    at ignore-listed frames {
+  __isAuthError: true,
+  status: 400,
+  code: 'refresh_token_not_found'
+}
+Error [AuthApiError]: Invalid Refresh Token: Refresh Token Not Found
+    at ignore-listed frames {
+  __isAuthError: true,
+  status: 400,
+  code: 'refresh_token_not_found'
+}
+ GET / 307 in 1003ms (next.js: 155ms, application-code: 848ms)
+ GET /login 200 in 97ms (next.js: 38ms, application-code: 59ms)
+⚠ Blocked cross-origin request to Next.js dev resource /_next/webpack-hmr from "192.168.1.54".
+Cross-origin access to Next.js dev resources is blocked by default for safety.
+
+To allow this host in development, add it to "allowedDevOrigins" in next.config.js and restart the dev server:
+
+// next.config.js
+module.exports = {
+  allowedDevOrigins: ['192.168.1.54'],
+}
+
+Read more: https://nextjs.org/docs/app/api-reference/config/next-config-js/allowedDevOrigins
+ GET /login? 200 in 74ms (next.js: 20ms, application-code: 54ms)
+ GET /login? 200 in 48ms (next.js: 9ms, application-code: 38ms)
+ GET /login? 200 in 94ms (next.js: 36ms, application-code: 58ms)
+ GET /login? 200 in 104ms (next.js: 35ms, application-code: 69ms)
+ GET /login? 200 in 55ms (next.js: 7ms, application-code: 48ms)
+ GET /login? 200 in 49ms (next.js: 4ms, application-code: 45ms)
+✓ Compiled in 171ms
+✓ Compiled in 165ms
+✓ Compiled in 362ms
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] Uncaught TypeError: Failed to construct 'Image': Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+    at Set.forEach (<anonymous>)
+    at JobCard (components/amano/job-card.tsx:48:13)
+    at eval (app/(app)/dashboard/page.tsx:268:30)
+    at Array.map (<anonymous>)
+    at DashboardContent (app/(app)/dashboard/page.tsx:262:11)
+    at DashboardPage (app/(app)/dashboard/page.tsx:16:99)
+  46 |         {firstPhoto && (
+  47 |           <div className="relative w-20 h-20 rounded-lg overflow-hidden shrink-0 border bo...
+> 48 |             <Image
+     |             ^
+  49 |               src={firstPhoto}
+  50 |               alt={title || description}
+  51 |               fill
+[browser] Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. Consider using template tag instead (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template). 
+    at Set.forEach (<anonymous>) (<anonymous>)
+ GET /dashboard 200 in 257ms (next.js: 94ms, application-code: 164ms)
+[browser] Uncaught TypeError: Failed to construct 'Image': Please use the 'new' operator, this DOM object constructor cannot be called as a function.
+    at JobCard (components/amano/job-card.tsx:48:13)
+    at <unknown> (app/(app)/dashboard/page.tsx:312:17)
+    at Array.map (<anonymous>)
+    at DashboardContent (app/(app)/dashboard/page.tsx:265:27)
+    at DashboardPage (app/(app)/dashboard/page.tsx:17:7)
+  46 |         {firstPhoto && (
+  47 |           <div className="relative w-20 h-20 rounded-lg overflow-hidden shrink-0 border bo...
+> 48 |             <Image
+     |             ^
+  49 |               src={firstPhoto}
+  50 |               alt={title || description}
+  51 |               fill
+✓ Compiled in 176ms
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+ GET /dashboard 200 in 83ms (next.js: 13ms, application-code: 71ms)
+[browser] Image with src "https://gocfqxpnacdxaedaosmp.supabase.co/storage/v1/object/public/job-media/b36fb378-6fd5-4cd5-917d-2a831570c560/1774293467248-xqr625w31r.jpg" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "https://gocfqxpnacdxaedaosmp.supabase.co/storage/v1/object/public/job-media/4265f546-dd30-4854-b7b2-a13603260039/1774204379360-h29hm9slama.jpeg" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "https://gocfqxpnacdxaedaosmp.supabase.co/storage/v1/object/public/job-media/d9c3bf54-0d0a-4b41-9952-40572b510f96/1774204179700-boruony7l7.webp" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+✓ Compiled in 413ms
+ GET /dashboard 200 in 402ms (next.js: 127ms, application-code: 274ms)
+ GET /dashboard 200 in 183ms (next.js: 24ms, application-code: 159ms)
+ GET /dashboard 200 in 38ms (next.js: 5ms, application-code: 33ms)
+✓ Compiled in 221ms
+ GET /dashboard 200 in 162ms (next.js: 68ms, application-code: 94ms)
+ GET /dashboard 200 in 41ms (next.js: 5ms, application-code: 37ms)
+ GET /trabajos/194846f5-b0b1-4e9a-84a0-6e37731bf47a 200 in 155ms (next.js: 98ms, application-code: 58ms)
+ GET /trabajos/e937d4c1-923a-431a-8fbc-c988109b9cc8 200 in 93ms (next.js: 37ms, application-code: 56ms)
+ GET /trabajos/ee86b034-f29b-445c-8d9b-3f635b5e7d20 200 in 97ms (next.js: 44ms, application-code: 52ms)
+✓ Compiled in 180ms
+✓ Compiled in 176ms
+✓ Compiled in 138ms
+ GET /admin 200 in 332ms (next.js: 129ms, application-code: 204ms)
+ GET /admin 200 in 139ms (next.js: 4ms, application-code: 135ms)
+ GET /admin 200 in 116ms (next.js: 8ms, application-code: 108ms)
+ GET /admin 200 in 45ms (next.js: 1883µs, application-code: 43ms)
+ GET /admin 200 in 25ms (next.js: 3ms, application-code: 23ms)
+ GET /dashboard?view=orders 200 in 101ms (next.js: 51ms, application-code: 49ms)
+ GET /dashboard?view=orders 200 in 106ms (next.js: 47ms, application-code: 59ms)
+ GET /dashboard?view=orders 200 in 43ms (next.js: 13ms, application-code: 30ms)
+ GET /dashboard?view=orders 200 in 33ms (next.js: 11ms, application-code: 22ms)
+ GET /dashboard?view=orders 200 in 23ms (next.js: 3ms, application-code: 19ms)
+ GET /admin 200 in 26ms (next.js: 7ms, application-code: 20ms)
+ GET /dashboard?view=orders 200 in 70ms (next.js: 21ms, application-code: 49ms)
+ GET /trabajos/e937d4c1-923a-431a-8fbc-c988109b9cc8 200 in 128ms (next.js: 70ms, application-code: 58ms)
+ GET /perfil 200 in 453ms (next.js: 338ms, application-code: 115ms)
+ GET /perfil 200 in 55ms (next.js: 6ms, application-code: 49ms)
+ GET /perfil 200 in 72ms (next.js: 19ms, application-code: 52ms)
+ GET /perfil 200 in 33ms (next.js: 5ms, application-code: 27ms)
+ GET /perfil 200 in 22ms (next.js: 7ms, application-code: 15ms)
+ GET /perfil 200 in 16ms (next.js: 1804µs, application-code: 15ms)
+ GET /dashboard 200 in 22ms (next.js: 6ms, application-code: 16ms)
+ GET /perfil 200 in 48ms (next.js: 11ms, application-code: 37ms)
+ GET /dashboard 200 in 50ms (next.js: 12ms, application-code: 39ms)
+ GET /publicar 200 in 208ms (next.js: 155ms, application-code: 53ms)
+ GET /dashboard 200 in 78ms (next.js: 26ms, application-code: 51ms)
+ GET /notificaciones 200 in 145ms (next.js: 97ms, application-code: 48ms)
+ GET /dashboard 200 in 78ms (next.js: 26ms, application-code: 52ms)
+ GET /dashboard?view=orders 200 in 377ms (next.js: 37ms, application-code: 340ms)
+ GET /dashboard 200 in 73ms (next.js: 40ms, application-code: 33ms)
+ GET /dashboard 200 in 42ms (next.js: 4ms, application-code: 39ms)
+ GET /perfil 200 in 74ms (next.js: 35ms, application-code: 39ms)
+ GET /dashboard?view=orders 200 in 88ms (next.js: 34ms, application-code: 54ms)
+ GET /dashboard 200 in 21ms (next.js: 10ms, application-code: 11ms)
+ GET /dashboard 200 in 17ms (next.js: 1316µs, application-code: 15ms)
+ GET /notificaciones 200 in 104ms (next.js: 36ms, application-code: 68ms)
+ GET /notificaciones 200 in 84ms (next.js: 28ms, application-code: 57ms)
+✓ Compiled in 503ms
+✓ Compiled in 597ms
+✓ Compiled in 84ms
+✓ Compiled in 95ms
+ GET /perfil 200 in 248ms (next.js: 98ms, application-code: 150ms)
+ GET /login 200 in 116ms (next.js: 63ms, application-code: 53ms)
+ GET /login 200 in 33ms (next.js: 3ms, application-code: 30ms)
+ GET /dashboard 200 in 217ms (next.js: 41ms, application-code: 176ms)
+[browser] AuthApiError: Invalid Refresh Token: Refresh Token Not Found
+ GET /perfil 200 in 63ms (next.js: 17ms, application-code: 46ms)
+ GET /login 200 in 586ms (next.js: 144ms, application-code: 443ms)
+ GET /login 200 in 105ms (next.js: 23ms, application-code: 82ms)
+ GET /dashboard 200 in 108ms (next.js: 39ms, application-code: 69ms)
+Error [AuthApiError]: Invalid Refresh Token: Refresh Token Not Found
+    at ignore-listed frames {
+  __isAuthError: true,
+  status: 400,
+  code: 'refresh_token_not_found'
+}
+Error [AuthApiError]: Invalid Refresh Token: Refresh Token Not Found
+    at ignore-listed frames {
+  __isAuthError: true,
+  status: 400,
+  code: 'refresh_token_not_found'
+}
+ GET / 307 in 740ms (next.js: 158ms, application-code: 582ms)
+ GET /login 200 in 66ms (next.js: 3ms, application-code: 63ms)
+ GET /login? 200 in 127ms (next.js: 46ms, application-code: 81ms)
+ GET /login? 200 in 82ms (next.js: 19ms, application-code: 63ms)
+ GET /perfil 200 in 81ms (next.js: 34ms, application-code: 47ms)
+ GET /login 200 in 72ms (next.js: 35ms, application-code: 37ms)
+ GET /dashboard 200 in 74ms (next.js: 23ms, application-code: 52ms)
+ GET /dashboard?view=orders 200 in 47ms (next.js: 10ms, application-code: 37ms)
+ GET /trabajos/6bf5643f-a5b5-4c14-b2ae-33508e446cdd 200 in 82ms (next.js: 54ms, application-code: 29ms)
+ GET /trabajos/6bf5643f-a5b5-4c14-b2ae-33508e446cdd/pago?offer=9a41e802-7b4a-43b6-90af-781459cf1550 200 in 525ms (next.js: 478ms, application-code: 46ms)
+ GET /publicar 200 in 62ms (next.js: 27ms, application-code: 35ms)
+ GET /perfil 200 in 61ms (next.js: 20ms, application-code: 41ms)
+ GET /dashboard 200 in 107ms (next.js: 43ms, application-code: 64ms)
+✓ Compiled in 586ms
+✓ Compiled in 90ms
+✓ Compiled in 239ms
+ GET /perfil 200 in 117ms (next.js: 51ms, application-code: 67ms)

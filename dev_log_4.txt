@@ -1,0 +1,19 @@
+
+> amano@0.0.1 dev
+> next dev --turbopack
+
+⚠ Port 3000 is in use by process 27848, using available port 3001 instead.
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.1.54:3001
+- Environments: .env.local
+✓ Ready in 446ms
+⨯ Another next dev server is already running.
+
+- Local:        http://localhost:3000
+- PID:          27848
+- Dir:          /Users/julio/Documents/amano/amano
+- Log:          .next/dev/logs/next-development.log
+
+Run kill 27848 to stop it.
+[?25h

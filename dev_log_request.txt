@@ -1,0 +1,29 @@
+
+> amano@0.0.1 dev
+> next dev --turbopack
+
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.54:3000
+- Environments: .env.local
+✓ Ready in 420ms
+Error: Cannot find module 'caniuse-lite/dist/unpacker/agents'
+Require stack:
+- /Users/julio/Documents/amano/amano/node_modules/next/dist/compiled/browserslist/index.js
+- /Users/julio/Documents/amano/amano/node_modules/next/dist/build/get-supported-browsers.js
+- /Users/julio/Documents/amano/amano/node_modules/next/dist/build/utils.js
+- /Users/julio/Documents/amano/amano/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js
+- /Users/julio/Documents/amano/amano/node_modules/next/dist/server/lib/router-server.js
+- /Users/julio/Documents/amano/amano/node_modules/next/dist/server/lib/start-server.js
+    at ignore-listed frames {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/Users/julio/Documents/amano/amano/node_modules/next/dist/compiled/browserslist/index.js',
+    '/Users/julio/Documents/amano/amano/node_modules/next/dist/build/get-supported-browsers.js',
+    '/Users/julio/Documents/amano/amano/node_modules/next/dist/build/utils.js',
+    '/Users/julio/Documents/amano/amano/node_modules/next/dist/server/lib/router-utils/setup-dev-bundler.js',
+    '/Users/julio/Documents/amano/amano/node_modules/next/dist/server/lib/router-server.js',
+    '/Users/julio/Documents/amano/amano/node_modules/next/dist/server/lib/start-server.js'
+  ]
+}
+[?25h

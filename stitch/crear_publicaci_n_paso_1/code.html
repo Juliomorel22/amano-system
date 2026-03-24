@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-on-surface": "#eaf1ff",
+              "surface-container-highest": "#d9e3f6",
+              "on-secondary-container": "#475a7f",
+              "on-error-container": "#93000a",
+              "on-error": "#ffffff",
+              "outline": "#727784",
+              "surface-bright": "#f8f9ff",
+              "on-primary": "#ffffff",
+              "primary": "#003f87",
+              "surface": "#f8f9ff",
+              "error": "#ba1a1a",
+              "on-secondary": "#ffffff",
+              "secondary-fixed-dim": "#b3c7f1",
+              "tertiary-fixed": "#ffdbcc",
+              "tertiary-container": "#983c00",
+              "on-secondary-fixed-variant": "#34476a",
+              "background": "#f8f9ff",
+              "inverse-surface": "#27313f",
+              "secondary-fixed": "#d7e2ff",
+              "primary-fixed": "#d7e2ff",
+              "surface-tint": "#115cb9",
+              "on-tertiary-fixed": "#351000",
+              "on-secondary-fixed": "#041b3c",
+              "tertiary": "#722b00",
+              "error-container": "#ffdad6",
+              "on-tertiary": "#ffffff",
+              "tertiary-fixed-dim": "#ffb694",
+              "surface-variant": "#d9e3f6",
+              "inverse-primary": "#acc7ff",
+              "on-primary-container": "#bbd0ff",
+              "primary-fixed-dim": "#acc7ff",
+              "surface-container-high": "#dee9fc",
+              "on-primary-fixed-variant": "#004491",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-low": "#eff4ff",
+              "on-primary-fixed": "#001a40",
+              "surface-dim": "#d0dbed",
+              "on-tertiary-container": "#ffc2a7",
+              "outline-variant": "#c2c6d4",
+              "secondary-container": "#bfd2fd",
+              "on-tertiary-fixed-variant": "#7b2f00",
+              "primary-container": "#0056b3",
+              "on-background": "#121c2a",
+              "on-surface-variant": "#424752",
+              "surface-container": "#e6eeff",
+              "on-surface": "#121c2a",
+              "secondary": "#4c5e84"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .signature-gradient {
+        background: linear-gradient(135deg, #003f87 0%, #0056b3 100%);
+      }
+      body {
+        -webkit-tap-highlight-color: transparent;
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface font-body text-on-surface min-h-screen">
+<!-- TopAppBar -->
+<header class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl font-manrope font-bold tracking-tight fixed top-0 sticky z-50 flex justify-between items-center w-full px-6 py-4 no-border bg-slate-50 dark:bg-slate-950 shadow-none">
+<div class="flex items-center gap-4">
+<button class="hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors p-2 rounded-full active:opacity-70 active:scale-95 transition-all text-slate-500">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+<span class="text-2xl font-extrabold tracking-tighter text-blue-700 dark:text-blue-500">Amano</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-on-secondary-container text-xs font-medium uppercase tracking-widest">Paso 1 de 2</span>
+</div>
+</header>
+<main class="max-w-xl mx-auto px-6 pt-8 pb-32">
+<!-- Section Header -->
+<div class="mb-10">
+<h1 class="font-headline text-4xl font-extrabold text-on-surface tracking-tight leading-tight mb-2">Contanos qué necesitás</h1>
+<p class="text-on-surface-variant text-lg">Seleccioná una categoría para empezar.</p>
+</div>
+<!-- Category Selector (Formosa Filter Style) -->
+<div class="mb-12">
+<div class="flex flex-wrap gap-3">
+<!-- Plumbing Active -->
+<button class="flex items-center gap-2 px-6 py-4 rounded-full bg-primary text-on-primary shadow-lg shadow-primary/20 transition-all scale-105">
+<span class="material-symbols-outlined" data-icon="water_drop" style="font-variation-settings: 'FILL' 1;">water_drop</span>
+<span class="font-semibold text-sm uppercase tracking-wider">Plomería</span>
+</button>
+<!-- Other Categories -->
+<button class="flex items-center gap-2 px-6 py-4 rounded-full bg-surface-container-highest text-on-surface-variant hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined" data-icon="bolt">bolt</span>
+<span class="font-semibold text-sm uppercase tracking-wider">Electricidad</span>
+</button>
+<button class="flex items-center gap-2 px-6 py-4 rounded-full bg-surface-container-highest text-on-surface-variant hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined" data-icon="format_paint">format_paint</span>
+<span class="font-semibold text-sm uppercase tracking-wider">Pintura</span>
+</button>
+<button class="flex items-center gap-2 px-6 py-4 rounded-full bg-surface-container-highest text-on-surface-variant hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span>
+</button>
+</div>
+</div>
+<!-- Description Field -->
+<section class="space-y-8">
+<div class="space-y-3">
+<label class="text-on-secondary-container font-label text-sm font-semibold uppercase tracking-widest ml-1">Descripción del problema</label>
+<textarea class="w-full min-h-[160px] p-6 bg-surface-container-lowest border-none rounded-lg text-lg focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-high transition-all outline-none resize-none shadow-sm" placeholder="Describe el problema (ej: Pierde agua el termotanque)"></textarea>
+</div>
+<!-- Media Upload -->
+<div class="relative group">
+<button class="w-full flex flex-col items-center justify-center gap-4 py-10 px-6 border-2 border-dashed border-outline-variant/30 rounded-lg hover:border-primary/40 hover:bg-surface-container-low transition-all bg-surface-container-low/50">
+<div class="w-16 h-16 rounded-full bg-white shadow-sm flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl" data-icon="add_a_photo">add_a_photo</span>
+</div>
+<div class="text-center">
+<span class="block font-headline font-bold text-lg text-primary">Subir Fotos/Video</span>
+<span class="text-on-surface-variant text-sm mt-1">Mostranos el problema para mejores presupuestos</span>
+</div>
+</button>
+</div>
+<!-- Neighborhood Dropdown -->
+<div class="space-y-3">
+<label class="text-on-secondary-container font-label text-sm font-semibold uppercase tracking-widest ml-1">Tu ubicación</label>
+<div class="relative">
+<select class="w-full appearance-none bg-surface-container-lowest p-5 pr-12 rounded-lg border-none shadow-sm text-on-surface focus:ring-2 focus:ring-primary/20 outline-none">
+<option disabled="" selected="" value="">Selector de Barrio</option>
+<option>Palermo</option>
+<option>Belgrano</option>
+<option>Recoleta</option>
+<option>Almagro</option>
+<option>Caballito</option>
+</select>
+<div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Section (Sticky Bottom for Reach) -->
+<div class="fixed bottom-0 left-0 w-full p-6 bg-white/80 backdrop-blur-xl flex justify-center items-center z-40">
+<button class="w-full max-w-lg signature-gradient text-on-primary py-5 rounded-full font-label font-bold text-sm uppercase tracking-widest shadow-xl shadow-primary/30 active:scale-95 duration-200">
+                Publicar y Recibir Ofertas
+            </button>
+</div>
+</main>
+<!-- BottomNavBar Suppressed (Transactional Page Rule) -->
+<!-- Header visual accent (Top line-free gradient) -->
+<div class="fixed top-0 left-0 w-full h-1 signature-gradient z-[60]"></div>
+</body></html>

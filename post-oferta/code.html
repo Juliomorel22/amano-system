@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-on-surface": "#eaf1ff",
+              "surface-container-highest": "#d9e3f6",
+              "on-secondary-container": "#475a7f",
+              "on-error-container": "#93000a",
+              "on-error": "#ffffff",
+              "outline": "#727784",
+              "surface-bright": "#f8f9ff",
+              "on-primary": "#ffffff",
+              "primary": "#003f87",
+              "surface": "#f8f9ff",
+              "error": "#ba1a1a",
+              "on-secondary": "#ffffff",
+              "secondary-fixed-dim": "#b3c7f1",
+              "tertiary-fixed": "#ffdbcc",
+              "tertiary-container": "#983c00",
+              "on-secondary-fixed-variant": "#34476a",
+              "background": "#f8f9ff",
+              "inverse-surface": "#27313f",
+              "secondary-fixed": "#d7e2ff",
+              "primary-fixed": "#d7e2ff",
+              "surface-tint": "#115cb9",
+              "on-tertiary-fixed": "#351000",
+              "on-secondary-fixed": "#041b3c",
+              "tertiary": "#722b00",
+              "error-container": "#ffdad6",
+              "on-tertiary": "#ffffff",
+              "tertiary-fixed-dim": "#ffb694",
+              "surface-variant": "#d9e3f6",
+              "inverse-primary": "#acc7ff",
+              "on-primary-container": "#bbd0ff",
+              "primary-fixed-dim": "#acc7ff",
+              "surface-container-high": "#dee9fc",
+              "on-primary-fixed-variant": "#004491",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-low": "#eff4ff",
+              "on-primary-fixed": "#001a40",
+              "surface-dim": "#d0dbed",
+              "on-tertiary-container": "#ffc2a7",
+              "outline-variant": "#c2c6d4",
+              "secondary-container": "#bfd2fd",
+              "on-tertiary-fixed-variant": "#7b2f00",
+              "primary-container": "#0056b3",
+              "on-background": "#121c2a",
+              "on-surface-variant": "#424752",
+              "surface-container": "#e6eeff",
+              "on-surface": "#121c2a",
+              "secondary": "#4c5e84"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .glass-effect {
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+      }
+      .signature-gradient {
+        background: linear-gradient(135deg, #003f87 0%, #0056b3 100%);
+      }
+      body {
+        background-color: #f8f9ff;
+        color: #121c2a;
+        font-family: 'Inter', sans-serif;
+      }
+      h1, h2, h3 {
+        font-family: 'Manrope', sans-serif;
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen pb-32">
+<!-- Top Navigation Bar (Shared Component Anchor) -->
+<header class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl flex justify-between items-center w-full px-6 py-4 docked full-width top-0 sticky z-50 no-border bg-slate-50 dark:bg-slate-950">
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors p-2 rounded-full">arrow_back</button>
+<h1 class="text-2xl font-extrabold tracking-tighter text-blue-700 dark:text-blue-500 font-manrope">Amano</h1>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400 p-2">notifications</span>
+<span class="material-symbols-outlined text-slate-500 dark:text-slate-400 p-2">menu</span>
+</div>
+</header>
+<main class="max-w-md mx-auto px-4 mt-6">
+<!-- Status Banner -->
+<div class="mb-8 px-2">
+<div class="flex items-center gap-3 mb-2">
+<span class="flex h-3 w-3 rounded-full bg-primary animate-pulse"></span>
+<span class="text-primary font-bold tracking-tight font-headline text-lg uppercase">Pago Confirmado</span>
+</div>
+<h2 class="text-3xl font-extrabold text-on-surface leading-tight font-headline">Ir al Domicilio</h2>
+<p class="text-on-secondary-container mt-2 font-medium">El cliente está esperando el servicio.</p>
+</div>
+<!-- Main Bento-Style Grid Layout -->
+<div class="grid grid-cols-1 gap-4">
+<!-- Featured Client & Location Card -->
+<section class="bg-surface-container-low rounded-lg p-6 relative overflow-hidden">
+<!-- Visual highlight gradient -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-10 -mt-10"></div>
+<div class="flex items-center gap-4 mb-6">
+<img alt="Avatar del cliente" class="w-16 h-16 rounded-full object-cover border-4 border-white shadow-sm" data-alt="Portrait of a smiling young woman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkUGErCMExglm7FpoNsWfx8zF6ISiNg6UEl22lIUWmn9VcVFDlq5g2Gt2Scbf3iA80kZ-IDIuYQkLSUL99hllbL5q4QZhnsPtWuisDne2JowyNb21m1caVaILdwbEVb4H2phqjWp7Po2xTGRfe2b-_aQ53-k-hcDh8GYG_hULazO0RyfoQNrqbU9B-OUC9eZ7atRbQQH0OsUCPXsHXnWLxDwpWpWZI3DVCFHohxzKEylt3Yby7C39kUeC2JL3T2j58vEALxdyyNUCn"/>
+<div>
+<h3 class="text-xl font-bold text-on-surface font-headline">Sofía Rodríguez</h3>
+<p class="text-on-secondary-container label-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">star</span> 4.9 · Cliente Premium
+                        </p>
+</div>
+</div>
+<div class="space-y-4">
+<div class="flex items-start gap-4">
+<div class="bg-white p-3 rounded-2xl shadow-sm">
+<span class="material-symbols-outlined text-primary" data-icon="location_on">location_on</span>
+</div>
+<div class="flex-1">
+<p class="text-xs font-bold uppercase tracking-widest text-on-secondary-container/60 mb-1">Dirección Exacta</p>
+<p class="text-lg font-bold text-on-surface">Av. Gutnisky 2100</p>
+<p class="text-sm text-on-secondary-container">Formosa, Argentina</p>
+</div>
+</div>
+<button class="w-full py-4 px-6 bg-white text-primary font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-surface-container-high transition-all active:scale-95 shadow-sm">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+                        Abrir en Maps
+                    </button>
+</div>
+</section>
+<!-- Quick Contact Actions -->
+<div class="grid grid-cols-2 gap-4">
+<button class="bg-white border border-outline-variant/20 p-5 rounded-lg flex flex-col items-center justify-center gap-3 hover:bg-surface-container-low transition-colors group">
+<div class="w-12 h-12 rounded-full bg-primary/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="call">call</span>
+</div>
+<span class="font-bold text-on-surface">Llamar</span>
+</button>
+<button class="bg-white border border-outline-variant/20 p-5 rounded-lg flex flex-col items-center justify-center gap-3 hover:bg-surface-container-low transition-colors group">
+<div class="w-12 h-12 rounded-full bg-[#25D366]/10 flex items-center justify-center text-[#25D366] group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="chat">chat</span>
+</div>
+<span class="font-bold text-on-surface">WhatsApp</span>
+</button>
+</div>
+<!-- Active Chat Preview Section -->
+<section class="bg-white rounded-lg p-1 border border-outline-variant/10 shadow-sm overflow-hidden">
+<div class="p-4 border-b border-surface-container flex justify-between items-center">
+<h4 class="font-bold text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-xl">forum</span>
+                        Chat con Sofía
+                    </h4>
+<span class="bg-primary text-on-primary text-[10px] font-bold px-2 py-0.5 rounded-full">ACTIVO</span>
+</div>
+<div class="p-4 space-y-4 max-h-48 overflow-y-auto bg-surface-container-lowest/50">
+<div class="flex justify-start">
+<div class="bg-surface-container rounded-2xl rounded-tl-none p-3 max-w-[80%]">
+<p class="text-sm text-on-surface">Hola! Ya realicé el pago. ¿A qué hora estarías llegando?</p>
+</div>
+</div>
+<div class="flex justify-end">
+<div class="signature-gradient text-on-primary rounded-2xl rounded-tr-none p-3 max-w-[80%]">
+<p class="text-sm">Hola Sofía, en 15 minutos estoy ahí.</p>
+</div>
+</div>
+</div>
+<div class="p-3 bg-white">
+<div class="flex items-center gap-2 bg-surface-container-low rounded-full px-4 py-2">
+<input class="bg-transparent border-none focus:ring-0 text-sm flex-1 placeholder:text-on-secondary-container/50" placeholder="Escribe un mensaje..." type="text"/>
+<button class="material-symbols-outlined text-primary">send</button>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Fixed Bottom Action Area -->
+<div class="fixed bottom-0 left-0 w-full z-40 px-4 pb-8 pt-4 glass-effect bg-white/70">
+<div class="max-w-md mx-auto">
+<button class="w-full signature-gradient text-on-primary py-5 rounded-xl font-bold text-lg shadow-lg flex items-center justify-center gap-3 hover:opacity-90 active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="check_circle">check_circle</span>
+                Marcar como Trabajo Finalizado
+            </button>
+</div>
+</div>
+<!-- Bottom Navigation (Shared Component Anchor) -->
+<!-- Suppressed on sub-page detail view as per rules, using action focus instead -->
+<!-- Secondary Map Visual Anchor (Bento Style) -->
+<div class="max-w-md mx-auto px-4 mt-4 mb-4">
+<div class="h-40 w-full rounded-lg overflow-hidden relative shadow-inner grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer">
+<img alt="Mapa de la ubicación" class="w-full h-full object-cover" data-alt="Simple minimalist map view with a blue pin" data-location="Formosa, Argentina" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdRl5UKDy1C5IcLDP32_9ExS62aOCBtRE6NqjjHu6c4GgCSv9-mUqyiQfhZkM02cEg4U4doepcZVVJFIZBsCfkqKYCwRbz2r58N4Nao1wqZkVRhPui7yrUq3nl-UWi7Z0iehN7P1BEByW_0QSL4vJXZDP3t_FUPFCz9RtA8nVk5lSmY7UJ4tvHM91kCKODjZbNmYNERn22aad6s-0WKAf2WNQ_GgRAi737abwGwPnqh4QQDRo6GxSYMtfgYKhDKEXX02ixG83aXE4L"/>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="bg-primary p-3 rounded-full shadow-xl ring-4 ring-white">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">location_on</span>
+</div>
+</div>
+</div>
+</div>
+</body></html>

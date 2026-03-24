@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-on-surface": "#eaf1ff",
+              "surface-container-highest": "#d9e3f6",
+              "on-secondary-container": "#475a7f",
+              "on-error-container": "#93000a",
+              "on-error": "#ffffff",
+              "outline": "#727784",
+              "surface-bright": "#f8f9ff",
+              "on-primary": "#ffffff",
+              "primary": "#003f87",
+              "surface": "#f8f9ff",
+              "error": "#ba1a1a",
+              "on-secondary": "#ffffff",
+              "secondary-fixed-dim": "#b3c7f1",
+              "tertiary-fixed": "#ffdbcc",
+              "tertiary-container": "#983c00",
+              "on-secondary-fixed-variant": "#34476a",
+              "background": "#f8f9ff",
+              "inverse-surface": "#27313f",
+              "secondary-fixed": "#d7e2ff",
+              "primary-fixed": "#d7e2ff",
+              "surface-tint": "#115cb9",
+              "on-tertiary-fixed": "#351000",
+              "on-secondary-fixed": "#041b3c",
+              "tertiary": "#722b00",
+              "error-container": "#ffdad6",
+              "on-tertiary": "#ffffff",
+              "tertiary-fixed-dim": "#ffb694",
+              "surface-variant": "#d9e3f6",
+              "inverse-primary": "#acc7ff",
+              "on-primary-container": "#bbd0ff",
+              "primary-fixed-dim": "#acc7ff",
+              "surface-container-high": "#dee9fc",
+              "on-primary-fixed-variant": "#004491",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-low": "#eff4ff",
+              "on-primary-fixed": "#001a40",
+              "surface-dim": "#d0dbed",
+              "on-tertiary-container": "#ffc2a7",
+              "outline-variant": "#c2c6d4",
+              "secondary-container": "#bfd2fd",
+              "on-tertiary-fixed-variant": "#7b2f00",
+              "primary-container": "#0056b3",
+              "on-background": "#121c2a",
+              "on-surface-variant": "#424752",
+              "surface-container": "#e6eeff",
+              "on-surface": "#121c2a",
+              "secondary": "#4c5e84"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body {
+        -webkit-font-smoothing: antialiased;
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body selection:bg-secondary-container">
+<!-- TopAppBar -->
+<header class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl flex justify-between items-center w-full px-6 py-4 no-border bg-slate-50 dark:bg-slate-950 shadow-none docked full-width top-0 sticky z-50">
+<div class="flex items-center gap-4">
+<button class="text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors p-2 rounded-full">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="text-2xl font-extrabold tracking-tighter text-blue-700 dark:text-blue-500 font-headline">Amano</h1>
+</div>
+<div class="flex items-center gap-2">
+<button class="text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors p-2 rounded-full relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="w-10 h-10 rounded-full overflow-hidden border-2 border-surface-container-high">
+<img class="w-full h-full object-cover" data-alt="User profile avatar smiling professional man" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1w7vMHrnFJ9OnwRdn_nwAsc1brsGNaAhRpzGNA_j6zeKBSqoEuJ3DxXXutBiAmDaFRa_IUOjxJh5DmLL8M6Dfg3fmkFdn36GwdxWzAIo_U12Z8BeVVfTtzDlgKRLGWDzojUcghOaBS64Z6A7bGDp78Rhvm1VGHGCGVCDCXQUWY05OXt8qfHQ0n-nfhHcDrDtEwMpFFCpTfKeNgS5yosZR_BXFbEMC45cXoJFsw5d6f7QOn9xDzEJLZ6Js_JAYveglToSw2amVpHAq"/>
+</button>
+</div>
+</header>
+<main class="max-w-screen-xl mx-auto px-6 pt-8 pb-32">
+<!-- Hero Search Section -->
+<section class="mb-12">
+<div class="mb-8">
+<h2 class="text-4xl md:text-5xl font-headline font-extrabold text-on-surface tracking-tight leading-tight max-w-2xl">
+                    ¿Qué servicio necesitás hoy en Formosa?
+                </h2>
+</div>
+<div class="relative group max-w-3xl">
+<div class="absolute inset-y-0 left-5 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline" data-icon="search">search</span>
+</div>
+<input class="w-full pl-14 pr-6 py-5 bg-surface-container-lowest border-none rounded-xl text-lg shadow-sm focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-outline-variant" placeholder="Buscá plomeros, fletes, limpieza..." type="text"/>
+</div>
+</section>
+<!-- Categories Bento Grid -->
+<section class="mb-12">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-xl font-headline font-bold text-on-surface">Categorías populares</h3>
+<button class="text-primary font-label font-semibold text-sm hover:underline">Ver todas</button>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+<!-- Plomería -->
+<button class="flex flex-col items-center justify-center p-6 bg-surface-container-lowest rounded-lg hover:bg-primary-container group transition-all duration-300">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center mb-3 group-hover:bg-white/20">
+<span class="material-symbols-outlined text-primary group-hover:text-white" data-icon="plumbing">plumbing</span>
+</div>
+<span class="text-sm font-label font-medium text-on-surface group-hover:text-white">Plomería</span>
+</button>
+<!-- Electricidad -->
+<button class="flex flex-col items-center justify-center p-6 bg-surface-container-lowest rounded-lg hover:bg-primary-container group transition-all duration-300">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center mb-3 group-hover:bg-white/20">
+<span class="material-symbols-outlined text-primary group-hover:text-white" data-icon="bolt">bolt</span>
+</div>
+<span class="text-sm font-label font-medium text-on-surface group-hover:text-white">Electricidad</span>
+</button>
+<!-- Fletes -->
+<button class="flex flex-col items-center justify-center p-6 bg-surface-container-lowest rounded-lg hover:bg-primary-container group transition-all duration-300">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center mb-3 group-hover:bg-white/20">
+<span class="material-symbols-outlined text-primary group-hover:text-white" data-icon="local_shipping">local_shipping</span>
+</div>
+<span class="text-sm font-label font-medium text-on-surface group-hover:text-white">Fletes</span>
+</button>
+<!-- Limpieza -->
+<button class="flex flex-col items-center justify-center p-6 bg-surface-container-lowest rounded-lg hover:bg-primary-container group transition-all duration-300">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center mb-3 group-hover:bg-white/20">
+<span class="material-symbols-outlined text-primary group-hover:text-white" data-icon="cleaning_services">cleaning_services</span>
+</div>
+<span class="text-sm font-label font-medium text-on-surface group-hover:text-white">Limpieza</span>
+</button>
+<!-- Jardinería -->
+<button class="flex flex-col items-center justify-center p-6 bg-surface-container-lowest rounded-lg hover:bg-primary-container group transition-all duration-300">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center mb-3 group-hover:bg-white/20">
+<span class="material-symbols-outlined text-primary group-hover:text-white" data-icon="yard">yard</span>
+</div>
+<span class="text-sm font-label font-medium text-on-surface group-hover:text-white">Jardinería</span>
+</button>
+<!-- Albañilería -->
+<button class="flex flex-col items-center justify-center p-6 bg-surface-container-lowest rounded-lg hover:bg-primary-container group transition-all duration-300">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center mb-3 group-hover:bg-white/20">
+<span class="material-symbols-outlined text-primary group-hover:text-white" data-icon="foundation">foundation</span>
+</div>
+<span class="text-sm font-label font-medium text-on-surface group-hover:text-white">Albañilería</span>
+</button>
+<!-- Manos Útiles -->
+<button class="flex flex-col items-center justify-center p-6 bg-surface-container-lowest rounded-lg hover:bg-primary-container group transition-all duration-300">
+<div class="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center mb-3 group-hover:bg-white/20">
+<span class="material-symbols-outlined text-primary group-hover:text-white" data-icon="construction">construction</span>
+</div>
+<span class="text-sm font-label font-medium text-on-surface group-hover:text-white">Manos Útiles</span>
+</button>
+</div>
+</section>
+<!-- Mis Pedidos Activos -->
+<section class="mb-12">
+<h3 class="text-xl font-headline font-bold text-on-surface mb-6">Mis Pedidos Activos</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Request Card 1 -->
+<div class="bg-surface-container-lowest p-6 rounded-lg shadow-sm flex items-start gap-4 border border-outline-variant/10">
+<div class="w-14 h-14 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-blue-700 text-3xl" data-icon="plumbing">plumbing</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center justify-between mb-1">
+<h4 class="font-headline font-bold text-lg text-on-surface">Arreglo de Cañería</h4>
+<span class="px-3 py-1 bg-blue-50 text-blue-700 text-[10px] font-bold uppercase tracking-wider rounded-full">Buscando</span>
+</div>
+<p class="text-on-surface-variant text-sm mb-4">Solicitado hace 10 min en Barrio San Francisco</p>
+<div class="flex items-center gap-2">
+<div class="flex -space-x-2">
+<img class="w-6 h-6 rounded-full border-2 border-white" data-alt="Worker profile small avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBv3smle5sXQVTePLodmTy5Pxa6VOtehZsYQsPgSlL-GLl1vuXoSToqrrlKbCY4IXHBliS_N0N00pJKfFcb2X76SUiuoBg508yi2zcuCjCCSOepuOpVun0va_WoBvz_hLGPA615dwSNgM2Xjtj0zU0eQnRv2C38lAKVENzcWooE091ItUR-qMXSRga8wNdO3Al4_NrD1AE4gu8Gf_mAlxjr10BpWbPaSEqAqUjvVw7BTKs4oVtCYQvOe_rc1Ksplw7sGXgQPl0PdzVt"/>
+<img class="w-6 h-6 rounded-full border-2 border-white" data-alt="Worker profile small avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4qE19jZtTSAMAQmmy82dlGUWJDCI1i38n4V1JTi8UGmGtPOvsnVSXh81H3u1a1R8DMOBZGSYPfh8gcZ1IXQ7eTKZGBbRJ2nBjBPyhCe0a_nZ9AKw-_DHwB6xhx56DNuei60KdnXwBJVrNPidE3xcg8dPIR27JIzLJ7fT_ystuWu9okFPrwqIa2rP6kSpKa2rqWXeNbaFNcCLwy7pGLB7vRYVIQmS8qiOSaLPkES_T0POboM8B48sOXGuHPCnAZiyoLAOdd8Qs_HnP"/>
+</div>
+<span class="text-xs text-on-secondary-container font-medium">3 profesionales interesados</span>
+</div>
+</div>
+</div>
+<!-- Request Card 2 -->
+<div class="bg-surface-container-lowest p-6 rounded-lg shadow-sm flex items-start gap-4 border border-outline-variant/10">
+<div class="w-14 h-14 rounded-lg bg-amber-50 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-amber-600 text-3xl" data-icon="local_shipping">local_shipping</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center justify-between mb-1">
+<h4 class="font-headline font-bold text-lg text-on-surface">Flete Residencial</h4>
+<span class="px-3 py-1 bg-amber-50 text-amber-700 text-[10px] font-bold uppercase tracking-wider rounded-full">Pago Pendiente</span>
+</div>
+<p class="text-on-surface-variant text-sm mb-4">Servicio finalizado por Carlos Gomez</p>
+<button class="w-full bg-gradient-to-br from-primary to-primary-container text-white py-3 rounded-xl font-label text-sm font-bold uppercase tracking-widest active:scale-95 transition-all">
+                            Pagar $4.500
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Recommended / Banner Section -->
+<section class="mt-8">
+<div class="relative rounded-lg overflow-hidden h-48 md:h-64 bg-primary-container">
+<img class="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay" data-alt="Professional electrician working on a panel" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlD5Y_iVs_29o3ohxa6BHd0JYZdj3J1uERkHWCqLd_pVV9wCT9Tz2aXE6BXfGGJgWRfSUAObuZRpKr7VMu8leDSVr06zjLWGkpPSiVh3D1WxHH0J7CROdQ8GhGn3OxMX7A4paxSrI-EIwqyzIrk2uKUYrxV3d6YR2FlQpwJRbz0BQZuTQ7tmwINCPYOHL0lwMQM88TUz0O-NKSfKnbO6JIF_MWRg0L4ZiXWRTkHu-TYrGGLkn47IYYOWP9qgJlIOFB-fnLyM4bHPXh"/>
+<div class="absolute inset-0 p-8 flex flex-col justify-center max-w-lg">
+<h4 class="text-2xl md:text-3xl font-headline font-bold text-white mb-2">Profesionales Verificados</h4>
+<p class="text-blue-100 mb-6">Todos nuestros expertos en Formosa pasan por un riguroso proceso de validación técnica.</p>
+<div>
+<button class="bg-white text-primary px-6 py-2 rounded-full font-label font-bold text-sm">Conocer más</button>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-2 z-50 rounded-t-[2rem] tonal-shift bg-slate-100 dark:bg-slate-800 shadow-[0_-12px_40px_rgba(18,28,42,0.06)]">
+<!-- Home (Active) -->
+<a class="flex flex-col items-center justify-center bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full px-5 py-2 active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-inter text-[11px] font-medium tracking-wide uppercase mt-1">Home</span>
+</a>
+<!-- Requests -->
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2 hover:text-blue-600 dark:hover:text-blue-300 active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+<span class="font-inter text-[11px] font-medium tracking-wide uppercase mt-1">Requests</span>
+</a>
+<!-- Alerts -->
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2 hover:text-blue-600 dark:hover:text-blue-300 active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="font-inter text-[11px] font-medium tracking-wide uppercase mt-1">Alerts</span>
+</a>
+<!-- Profile -->
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-5 py-2 hover:text-blue-600 dark:hover:text-blue-300 active:scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-inter text-[11px] font-medium tracking-wide uppercase mt-1">Profile</span>
+</a>
+</nav>
+</body></html>

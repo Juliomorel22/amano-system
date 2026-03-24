@@ -1,0 +1,11 @@
+
+> amano@0.0.1 dev
+> next dev --turbopack
+
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.54:3000
+- Environments: .env.local
+✓ Ready in 319ms
+
+ HEAD / 307 in 839ms (next.js: 712ms, application-code: 127ms)
