@@ -195,7 +195,7 @@ Antes de poder operar (publicar o cotizar), todo usuario debe completar:
 - **Ubicación:** Barrio (dropdown de barrios de Formosa Capital)
 - **Categorías (solo Prestador):** Selección múltiple:
   - Cerrajero · Electricista · Plomero · Community Manager · Piletero
-  - Jardinero · Limpieza doméstica · Albañil · Manos Útiles · Pinturería a domicilio
+  - Jardinero · Limpieza doméstica · Albañil · Changuitas · Pinturería a domicilio
 
 ---
 
@@ -291,7 +291,7 @@ Antes de poder operar (publicar o cotizar), todo usuario debe completar:
 | Jardinería | `yard` |
 | Albañilería | `construction` |
 | Cerrajería | `key` |
-| Manos Útiles | `handyman` |
+| Changuitas | `handyman` |
 | Piletero | `pool` |
 | Community Manager | `smartphone` |
 

@@ -306,7 +306,9 @@ function DashboardContent() {
                       </span>
                       <Badge className={cn(
                         "text-[9px] px-2 py-0.5 h-auto uppercase font-bold",
-                        job.status === "paid" || job.status === "completed" ? "bg-success text-on-success" : "bg-secondary-container text-on-secondary-container"
+                        job.status === "paid" || job.status === "completed" ? "bg-success text-on-success" : 
+                        job.status === "payment_rejected" ? "bg-error text-on-error" :
+                        "bg-secondary-container text-on-secondary-container"
                       )}>
                         {STATUS_LABELS[job.status as JobStatus] || job.status}
                       </Badge>
