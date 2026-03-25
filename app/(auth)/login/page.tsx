@@ -61,7 +61,7 @@ export default function LoginPage() {
         toast.error("Credenciales inválidas o cuenta no existe.");
       } else {
         toast.success("Sesión iniciada");
-        router.push("/dashboard");
+        router.push("/perfil");
       }
     }
     setLoading(false);
