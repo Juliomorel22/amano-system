@@ -251,7 +251,7 @@ export default function PublicarPage() {
   };
 
   return (
-    <div className="min-h-screen bg-surface flex flex-col max-w-md md:max-w-3xl lg:max-w-5xl mx-auto shadow-2xl relative">
+    <div className="bg-surface flex flex-col max-w-md md:max-w-3xl lg:max-w-5xl mx-auto shadow-2xl relative pb-0">
       <div className="px-5 pt-5 pb-4">
         <div className="flex items-center justify-between mb-5">
           <Link href="/dashboard" className="text-on-surface-variant">
@@ -550,7 +550,7 @@ export default function PublicarPage() {
       </section>
 
       {/* Disponibilidad horaria */}
-      <section className="px-5 mb-36">
+      <section className="px-5 mb-12">
         <p className="text-[10px] uppercase font-bold tracking-wider text-on-secondary-container mb-2">
           Disponibilidad horaria para el trabajo
         </p>

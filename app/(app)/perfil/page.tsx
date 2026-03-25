@@ -196,7 +196,7 @@ export default function PerfilPage() {
     : "AM";
 
   return (
-    <div className="min-h-screen bg-surface">
+    <div className="bg-surface">
       {/* Header Profile - Integrated look with AppHeader */}
       <div className="bg-cta-gradient pt-8 pb-32 px-5 md:px-10 rounded-b-[3rem] relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
@@ -220,7 +220,7 @@ export default function PerfilPage() {
       </div>
 
       {/* Main Content Container */}
-      <div className="max-w-4xl mx-auto px-5 md:px-10 -mt-20 relative z-20 pb-20">
+      <div className="max-w-4xl mx-auto px-5 md:px-10 -mt-20 relative z-20">
         
         {/* Floating Avatar Card */}
         <div className="bg-surface-container-lowest p-6 md:p-8 rounded-[2.5rem] shadow-2xl border border-outline-variant/10 flex flex-col md:flex-row items-center md:items-end gap-6 mb-10">

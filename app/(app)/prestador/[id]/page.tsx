@@ -114,7 +114,7 @@ export default function DatosDesbloqueadosPage({ params }: { params: Promise<{ i
   const rating = job.client?.rating || 5.0;
 
   return (
-    <div className="min-h-screen bg-background pb-32">
+    <div className="bg-background">
       {/* Top Navigation Bar */}
       <header className="glass-header flex justify-between items-center w-full px-6 py-4 sticky top-0 z-50 border-b border-outline-variant/10">
         <div className="flex items-center gap-4">

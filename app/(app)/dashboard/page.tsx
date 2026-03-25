@@ -159,7 +159,7 @@ function DashboardContent() {
   );
 
   return (
-    <div className="min-h-screen bg-surface">
+    <div className="bg-surface">
       {/* Hero - Solo en Inicio */}
       {view === "home" && (
         <section className="px-5 pt-6 pb-5">
@@ -220,7 +220,7 @@ function DashboardContent() {
       )}
 
       {/* Mis Pedidos Activos / Trabajos Disponibles */}
-      <section className={cn("px-5 mb-24", view === "orders" ? "pt-8" : "")}>
+      <section className={cn("px-5", view === "orders" ? "pt-8" : "")}>
         <div className="flex flex-col gap-4 mb-6">
           <div className="flex items-center justify-between">
             <h2 className="font-headline font-bold text-lg text-on-surface">

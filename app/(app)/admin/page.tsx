@@ -257,7 +257,7 @@ export default function AdminPage() {
   const monitoringJobs = activeJobs.filter(j => j.status !== 'finished');
 
   return (
-    <div className="min-h-screen bg-surface flex flex-col max-w-md md:max-w-4xl lg:max-w-6xl mx-auto shadow-2xl relative">
+    <div className="bg-surface flex flex-col max-w-md md:max-w-4xl lg:max-w-6xl mx-auto shadow-2xl relative">
       <div className="px-5 pt-8 pb-6 bg-surface-container-low border-b border-outline-variant/10">
         <div className="flex items-center gap-2 mb-1">
           <MSymbol icon="admin_panel_settings" size={28} className="text-primary" filled />
@@ -417,7 +417,7 @@ export default function AdminPage() {
       )}
 
       {/* Trabajos Activos */}
-      <section className="px-5 mb-16 flex-1">
+      <section className="px-5 flex-1">
         <h2 className="font-headline font-bold text-xl text-on-surface mb-4 flex items-center gap-2">
           <MSymbol icon="work" size={22} className="text-primary" />
           Monitoreo de Trabajos Activos

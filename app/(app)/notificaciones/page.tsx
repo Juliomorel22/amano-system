@@ -8,7 +8,7 @@ export default function NotificacionesPage() {
   const { notifications, loading, markAsRead, markAllAsRead } = useNotifications();
 
   return (
-    <div className="flex flex-col min-h-[calc(100vh-120px)] bg-surface pb-10">
+    <div className="flex flex-col bg-surface">
       <div className="px-5 pt-6 pb-2 flex items-center justify-between">
         <h1 className="font-headline font-extrabold text-3xl text-on-surface tracking-tight">
           Notificaciones

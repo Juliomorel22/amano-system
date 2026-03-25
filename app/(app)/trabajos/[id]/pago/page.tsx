@@ -116,7 +116,7 @@ export default function ConfirmarPagoPage({ params }: { params: Promise<{ id: st
   if (loading || !job || !offer) return <div className="min-h-screen bg-surface flex items-center justify-center">Cargando...</div>;
 
   return (
-    <div className="min-h-screen bg-surface flex flex-col max-w-md md:max-w-3xl lg:max-w-5xl mx-auto shadow-2xl relative">
+    <div className="bg-surface flex flex-col max-w-md md:max-w-3xl lg:max-w-5xl mx-auto shadow-2xl relative">
       <div className="flex items-center gap-3 px-5 pt-6 bg-surface-container-low text-on-surface">
         <button onClick={() => history.back()}><MSymbol icon="arrow_back" size={24} /></button>
         <span className="font-headline font-bold text-lg">Confirmar Pago</span>
@@ -191,7 +191,7 @@ export default function ConfirmarPagoPage({ params }: { params: Promise<{ id: st
       </section>
 
       {/* Trust */}
-      <section className="mx-5 mb-32">
+      <section className="mx-5">
         <div className="bg-surface-container-low rounded-lg p-4 flex items-start gap-3">
           <MSymbol icon="verified_user" size={20} className="text-primary flex-shrink-0 mt-0.5" filled />
           <p className="text-sm text-on-surface-variant leading-relaxed">

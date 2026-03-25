@@ -765,7 +765,7 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
 
       {/* Ofertas / Creación de Oferta */}
       {!isAssigned && (
-        <section className="px-5 pb-32">
+        <section className="px-5">
           {isOwner ? (
             <>
               <div className="flex items-center justify-between mb-4">
