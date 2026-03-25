@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
+import { useEffect, useState, use, useCallback } from "react";
 import { MSymbol } from "@/components/amano/m-symbol";
 import { OfferCard } from "@/components/amano/offer-card";
 import { Badge } from "@/components/ui/badge";
@@ -53,6 +53,7 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
   // Estado para la nueva oferta
   const [offerAmount, setOfferAmount] = useState("");
   const [submittingOffer, setSubmittingOffer] = useState(false);
+  const [isEditingOffer, setIsEditingOffer] = useState(false);
 
   // Estado para el diálogo de aceptación
   const [isAcceptDialogOpen, setIsAcceptDialogOpen] = useState(false);
@@ -61,82 +62,85 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
   // Estado para zoom de imagen
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function loadData() {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return router.push("/login");
-      setUserId(user.id);
+  const loadData = useCallback(async () => {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return router.push("/login");
+    setUserId(user.id);
 
-      const isUserAdmin = user.email === "administrator@amano.com";
-      setIsAdmin(isUserAdmin);
+    const isUserAdmin = user.email === "administrator@amano.com";
+    setIsAdmin(isUserAdmin);
 
-      const { data: profile } = await supabase.from("profiles").select("is_provider").eq("id", user.id).single();
-      setIsProvider(profile?.is_provider || false);
+    const { data: profile } = await supabase.from("profiles").select("is_provider").eq("id", user.id).single();
+    setIsProvider(profile?.is_provider || false);
 
-      const { data: jobData } = await supabase
-        .from("jobs")
-        .select(`
-          *,
-          provider:profiles!jobs_provider_id_fkey(*)
-        `)
-        .eq("id", id)
-        .single();
+    const { data: jobData } = await supabase
+      .from("jobs")
+      .select(`
+        *,
+        provider:profiles!jobs_provider_id_fkey(*)
+      `)
+      .eq("id", id)
+      .single();
 
-      if (jobData) {
-        setJob(jobData);
+    if (jobData) {
+      setJob(jobData);
 
-        // Siempre cargar info del cliente para mostrar quién publica
-        const { data: cData } = await supabase.from("profiles").select("*").eq("id", jobData.client_id).single();
-        setClientData(cData);
+      // Siempre cargar info del cliente para mostrar quién publica
+      const { data: cData } = await supabase.from("profiles").select("*").eq("id", jobData.client_id).single();
+      setClientData(cData);
 
-        // Asignar el prestador desde la relación directa (JOIN)
-        if (jobData.provider) {
-          setAssignedProvider(jobData.provider);
-        } else if (jobData.provider_id) {
-          // Fallback por si el join falla por RLS
-          const { data: pData } = await supabase.from("profiles").select("*").eq("id", jobData.provider_id).single();
-          if (pData) setAssignedProvider(pData);
-        }
+      // Asignar el prestador desde la relación directa (JOIN)
+      if (jobData.provider) {
+        setAssignedProvider(jobData.provider);
+      } else if (jobData.provider_id) {
+        // Fallback por si el join falla por RLS
+        const { data: pData } = await supabase.from("profiles").select("*").eq("id", jobData.provider_id).single();
+        if (pData) setAssignedProvider(pData);
+      }
 
-        if (isUserAdmin || jobData.client_id === user.id || profile?.is_provider) {
-          const { data: offersData } = await supabase
-            .from("offers")
-            .select(`*, provider:profiles(*)`)
-            .eq("job_id", id);
+      if (isUserAdmin || jobData.client_id === user.id || profile?.is_provider) {
+        const { data: offersData } = await supabase
+          .from("offers")
+          .select(`*, provider:profiles(*)`)
+          .eq("job_id", id);
 
-          if (offersData) {
-            setOffers(offersData.map(o => ({
-              id: o.id,
-              jobId: o.job_id,
-              providerId: o.provider_id,
-              providerName: o.provider?.full_name || "Prestador",
-              providerAvatar: o.provider?.avatar_url, // Se añade el mapeo de la foto
-              rating: o.provider?.rating || 5,
-              jobsCount: o.provider?.jobs_count || 0,
-              amount: o.amount,
-              status: o.status,
-              providerData: o.provider
-            })));
+        if (offersData) {
+          setOffers(offersData.map(o => ({
+            id: o.id,
+            jobId: o.job_id,
+            providerId: o.provider_id,
+            providerName: o.provider?.full_name || "Prestador",
+            providerAvatar: o.provider?.avatar_url,
+            rating: o.provider?.rating || 5,
+            jobsCount: o.provider?.jobs_count || 0,
+            amount: o.amount,
+            status: o.status,
+            providerData: o.provider
+          })));
 
-            // Si aún no tenemos assignedProvider (trabajo recién aceptado pero no actualizado en DB aún), 
-            // lo sacamos de la oferta aceptada
-            if (!jobData.provider_id && !jobData.provider) {
-              const accepted = offersData.find(o => o.status === "accepted");
-              if (accepted) {
-                setAssignedProvider(accepted.provider);
-              }
+          // Si aún no tenemos assignedProvider (trabajo recién aceptado pero no actualizado en DB aún), 
+          // lo sacamos de la oferta aceptada
+          if (!jobData.provider_id && !jobData.provider) {
+            const accepted = offersData.find(o => o.status === "accepted");
+            if (accepted) {
+              setAssignedProvider(accepted.provider);
             }
           }
         }
       }
-      setLoading(false);
     }
+    setLoading(false);
+  }, [id, router]);
+
+  useEffect(() => {
     loadData();
 
     // Suscribirse a cambios en tiempo real
     const supabase = createClient();
-    const channel = supabase
+    
+    // Cambios en el trabajo
+    const jobChannel = supabase
       .channel(`job-main-detail-${id}`)
       .on("postgres_changes", {
         event: "UPDATE",
@@ -148,10 +152,24 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
       })
       .subscribe();
 
+    // Cambios en las ofertas
+    const offersChannel = supabase
+      .channel(`job-offers-update-${id}`)
+      .on("postgres_changes", {
+        event: "*",
+        schema: "public",
+        table: "offers",
+        filter: `job_id=eq.${id}`
+      }, () => {
+        loadData();
+      })
+      .subscribe();
+
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(jobChannel);
+      supabase.removeChannel(offersChannel);
     };
-  }, [id, router]);
+  }, [id, loadData]);
 
   const handleDeleteJob = async () => {
     if (!isAdmin) return;
@@ -175,12 +193,27 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
     if (!offerAmount) return toast.error("Ingresá un monto para tu oferta.");
     setSubmittingOffer(true);
     const supabase = createClient();
-    const { error } = await supabase.from("offers").insert({
-      job_id: id,
-      provider_id: userId,
-      amount: parseFloat(offerAmount),
-      status: "pending",
-    });
+
+    const myOffer = offers.find(o => o.providerId === userId);
+    let error;
+
+    if (myOffer) {
+      // Actualizar oferta existente
+      const { error: updateError } = await supabase
+        .from("offers")
+        .update({ amount: parseFloat(offerAmount) })
+        .eq("id", myOffer.id);
+      error = updateError;
+    } else {
+      // Insertar nueva oferta
+      const { error: insertError } = await supabase.from("offers").insert({
+        job_id: id,
+        provider_id: userId,
+        amount: parseFloat(offerAmount),
+        status: "pending",
+      });
+      error = insertError;
+    }
 
     if (error) {
       toast.error(error.message);
@@ -193,16 +226,16 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
         await supabase.from("notifications").insert({
           user_id: currentJob.client_id,
           type: "new_offer",
-          title: "Nueva oferta recibida",
-          content: `Recibiste una oferta de $${parseFloat(offerAmount).toLocaleString("es-AR")} para: ${currentJob.title || currentJob.description}`,
+          title: myOffer ? "Oferta modificada" : "Nueva oferta recibida",
+          content: `${myOffer ? "Se actualizó la oferta a" : "Recibiste una oferta de"} $${parseFloat(offerAmount).toLocaleString("es-AR")} para: ${currentJob.title || currentJob.description}`,
           link: `/trabajos/${id}`,
         });
       }
 
-      toast.success("Oferta enviada.");
+      toast.success(myOffer ? "Oferta actualizada." : "Oferta enviada.");
       setOfferAmount("");
-      // Refresh local offers optionally or redirect
-      router.push("/dashboard");
+      setIsEditingOffer(false);
+      loadData();
     }
     setSubmittingOffer(false);
   };
@@ -311,12 +344,17 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
   const isAssigned = !!job.provider_id;
 
   return (
-    <div className="min-h-screen bg-surface flex flex-col max-w-md md:max-w-3xl lg:max-w-5xl mx-auto shadow-2xl relative">
+    <div className="min-h-screen bg-surface flex flex-col max-w-md md:max-w-3xl lg:max-w-5xl mx-auto shadow-2xl relative pb-20">
       <section className="px-5 pt-5 pb-4 bg-surface-container-low">
         <div className="flex items-center justify-between mb-4">
-          <Badge className="bg-secondary-container text-on-secondary-container rounded-full text-[10px] uppercase tracking-wider font-bold px-3 py-1">
-            {STATUS_LABELS[job.status as JobStatus] || job.status}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge className="bg-secondary-container text-on-secondary-container rounded-full text-[10px] uppercase tracking-wider font-bold px-3 py-1">
+              {STATUS_LABELS[job.status as JobStatus] || job.status}
+            </Badge>
+            <p className="text-[10px] font-bold text-outline-variant uppercase bg-surface-container-high px-1.5 py-0.5 rounded tracking-tighter">
+              ID: {id.split("-")[0]}
+            </p>
+          </div>
           <button onClick={() => history.back()} className="text-on-surface-variant">
             <MSymbol icon="close" size={20} />
           </button>
@@ -341,9 +379,6 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
         </div>
 
         <div className="flex flex-col gap-1 mb-2">
-          <p className="text-[10px] font-bold text-outline-variant uppercase bg-surface-container-high px-1.5 py-0.5 rounded w-fit tracking-tighter">
-            ID: {id.split("-")[0]}
-          </p>
           <h1 className="font-headline font-extrabold text-3xl text-on-surface tracking-tight leading-tight">
             {job.title || job.description}
           </h1>
@@ -351,6 +386,15 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
             <p className="text-on-surface-variant text-base mt-1">
               {job.description}
             </p>
+          )}
+          {job.availability && (
+            <div className="mt-4 flex items-start gap-2.5">
+              <MSymbol icon="event_available" size={18} className="text-secondary mt-0.5" filled />
+              <p className="text-sm text-on-surface-variant font-medium">
+                <span className="text-secondary font-bold">Fecha y horario deseado para hacer la tarea:</span>{" "}
+                <span className="text-on-surface font-extrabold text-base">{job.availability}</span>
+              </p>
+            </div>
           )}
         </div>
         <div className="flex flex-wrap items-center gap-3 mt-4">
@@ -378,14 +422,6 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
               {job.barrio}
             </span>
           </div>
-          {job.availability && (
-            <div className="flex items-center gap-2 bg-secondary/10 px-3 py-1.5 rounded-full border border-secondary/20">
-              <MSymbol icon="schedule" size={16} className="text-secondary" filled />
-              <span className="text-xs font-bold text-secondary uppercase tracking-tight leading-none">
-                {job.availability}
-              </span>
-            </div>
-          )}
         </div>
       </section>
 
@@ -620,6 +656,26 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
         </section>
       )}
 
+      {/* Aviso para Solicitantes (No proveedores) que ven el trabajo */}
+      {!isProvider && !isOwner && !isAdmin && (
+        <section className="px-5 mb-6">
+          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start gap-3 shadow-sm">
+            <MSymbol icon="error" size={20} className="text-amber-600 mt-0.5" filled />
+            <div>
+              <p className="text-sm font-bold text-amber-900 leading-tight mb-1 font-headline">
+                ¿Querés realizar este trabajo?
+              </p>
+              <p className="text-xs text-amber-800 leading-relaxed font-medium">
+                Para enviar una oferta y postularte, primero debés configurar y activar tu perfil de proveedor desde tu configuración.
+              </p>
+              <Link href="/perfil" className="inline-block mt-2.5 text-[10px] font-black text-amber-700 uppercase tracking-widest border-b-2 border-amber-700/20 pb-0.5">
+                Configurar mi perfil de prestador
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Datos del Solicitante (Visible para el Prestador Asignado y Admin una vez aprobado el pago) */}
       {((job.status === "in_progress" || job.status === "completed") && (userId === assignedProvider?.id || isAdmin)) && (
         <section className="px-5 mb-8">
@@ -802,7 +858,7 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
               "p-6 rounded-2xl shadow-sm border border-outline-variant/10",
               job.status === "payment_rejected" ? "bg-error-container/10 border-error/20" : "bg-surface-container-lowest"
             )}>
-              {hasMadeOffer ? (
+              {hasMadeOffer && !isEditingOffer ? (
                 (() => {
                   const myOffer = offers.find(o => o.providerId === userId);
                   if (myOffer?.status === "accepted") {
@@ -837,15 +893,41 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
                   }
 
                   return (
-                    <div className="text-center">
-                      <p className="text-primary font-semibold">Ya enviaste una oferta para este trabajo.</p>
-                      <p className="text-sm text-on-surface-variant mt-2">Te notificaremos si el cliente te elige.</p>
+                    <div className="text-center flex flex-col items-center gap-3">
+                      <div className="bg-primary/10 w-fit px-4 py-2 rounded-2xl border border-primary/20">
+                        <p className="text-[10px] font-bold text-primary uppercase tracking-widest mb-0.5">Tu Oferta Enviada</p>
+                        <p className="text-2xl font-black text-primary font-headline">
+                          ${myOffer?.amount?.toLocaleString("es-AR")}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-on-surface leading-tight">Ya enviaste una oferta para este trabajo.</p>
+                        <p className="text-xs text-on-surface-variant mt-1.5 leading-relaxed">Te notificaremos si el cliente acepta tu propuesta.</p>
+                      </div>
+                      <button 
+                        onClick={() => {
+                          setOfferAmount(myOffer?.amount?.toString() || "");
+                          setIsEditingOffer(true);
+                        }}
+                        className="text-xs font-bold text-primary uppercase tracking-widest mt-2 border-b border-primary/20 pb-0.5"
+                      >
+                        Modificar mi oferta
+                      </button>
                     </div>
                   );
                 })()
               ) : (
                 <>
-                  <h2 className="font-headline font-bold text-xl text-on-surface mb-4">Hacer una oferta</h2>
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="font-headline font-bold text-xl text-on-surface">
+                      {hasMadeOffer ? "Modificar mi oferta" : "Hacer una oferta"}
+                    </h2>
+                    {isEditingOffer && (
+                      <button onClick={() => setIsEditingOffer(false)} className="text-on-surface-variant">
+                        <MSymbol icon="close" size={20} />
+                      </button>
+                    )}
+                  </div>
                   <div className="flex flex-col gap-4">
                     <div className="relative">
                       <span className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface font-headline font-bold">$</span>
@@ -862,7 +944,7 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
                       onClick={handleSubmitOffer}
                       className="w-full py-3 bg-cta-gradient text-white font-headline font-bold text-sm rounded-xl uppercase tracking-wider hover:opacity-90 disabled:opacity-50"
                     >
-                      {submittingOffer ? "Enviando..." : "Enviar Oferta"}
+                      {submittingOffer ? "Enviando..." : hasMadeOffer ? "Guardar Cambios" : "Enviar Oferta"}
                     </button>
                   </div>
                 </>
