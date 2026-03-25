@@ -4,6 +4,8 @@ import { MSymbol } from "@/components/amano/m-symbol";
 import { CATEGORIES } from "@/components/amano/category-chip";
 import { cn } from "@/lib/utils";
 import NextImage from "next/image";
+import { formatDistanceToNow, isToday, isYesterday } from "date-fns";
+import { es } from "date-fns/locale";
 
 export type JobStatus = "open" | "accepted" | "paid" | "in_progress" | "finished" | "completed" | "cancelled" | "payment_rejected" | "pending_offer" | "offer_rejected";
 
@@ -31,12 +33,26 @@ interface JobCardProps {
   photos_urls?: string[] | null;
   isAssigned?: boolean;
   clientName?: string;
+  createdAt?: string;
 }
 
-export function JobCard({ id, category, title, description, barrio, status, offersCount = 0, photos_urls, isAssigned, clientName }: JobCardProps) {
+export function JobCard({ id, category, title, description, barrio, status, offersCount = 0, photos_urls, isAssigned, clientName, createdAt }: JobCardProps) {
   const cat = CATEGORIES.find((c) => c.id === category);
   const isAccepted = status === "accepted" || status === "paid" || status === "in_progress";
   const isRejected = status === "offer_rejected" || status === "cancelled" || status === "payment_rejected";
+  
+  // Formatear fecha
+  const dateObj = createdAt ? new Date(createdAt) : null;
+  let timeAgo = "";
+  if (dateObj) {
+    if (isToday(dateObj)) {
+      timeAgo = "Publicado hoy";
+    } else if (isYesterday(dateObj)) {
+      timeAgo = "Publicado ayer";
+    } else {
+      timeAgo = `Publicado ${formatDistanceToNow(dateObj, { addSuffix: true, locale: es })}`;
+    }
+  }
   
   // Para el proveedor, el rechazo de pago es "Amarillo" (Informativo), para el cliente es "Rojo" (Acción)
   const isProviderView = isAssigned;
@@ -69,27 +85,28 @@ export function JobCard({ id, category, title, description, barrio, status, offe
       )}
     >
       {isAssigned && !isRejected && (
-        <div className="absolute top-0 right-0 bg-primary text-on-primary text-[8px] font-black px-2 py-0.5 rounded-bl-lg uppercase tracking-tighter z-10">
+        <div className="absolute top-0 right-0 bg-primary text-on-primary text-[9px] font-black px-3 py-1 rounded-bl-xl rounded-tr-xl uppercase tracking-tight z-10 shadow-sm">
           Fuiste elegido
         </div>
       )}
       
       {isRejected && (
         <div className={cn(
-          "absolute top-0 right-0 text-white text-[8px] font-black px-2 py-0.5 rounded-bl-lg uppercase tracking-tighter z-10",
+          "absolute top-0 right-0 text-white text-[9px] font-black px-3 py-1 rounded-bl-xl rounded-tr-xl uppercase tracking-tight z-10 shadow-sm",
           isPaymentError && isProviderView ? "bg-amber-600" : "bg-error"
         )}>
           {isPaymentError && isProviderView ? "En espera" : "Atención"}
         </div>
       )}
       
-      <div className="flex gap-4">
-        {/* Thumbnail if photo exists */}
-        {firstPhoto && (
-          <div className={cn(
-            "relative w-20 h-20 rounded-lg overflow-hidden shrink-0 border border-outline-variant/10",
-            isRejected && "grayscale-[0.5] opacity-80"
-          )}>
+      <div className="flex gap-4 md:gap-6">
+        {/* Thumbnail container - Always visible to preserve alignment */}
+        <div className={cn(
+          "relative w-20 h-20 md:w-24 md:h-24 rounded-lg overflow-hidden shrink-0 border border-outline-variant/10",
+          !firstPhoto ? "bg-surface-container-high/40 flex items-center justify-center" : "",
+          isRejected && "grayscale-[0.5] opacity-80"
+        )}>
+          {firstPhoto ? (
             <NextImage
               src={firstPhoto}
               alt={title || description}
@@ -97,74 +114,83 @@ export function JobCard({ id, category, title, description, barrio, status, offe
               unoptimized
               className="object-cover"
             />
-          </div>
-        )}
+          ) : (
+            <MSymbol icon="image" size={24} className="text-outline-variant/30" />
+          )}
+        </div>
         
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-2 mb-1.5">
-            <div className="flex items-center gap-1.5">
-              <p className="text-[10px] font-bold text-outline-variant uppercase bg-surface-container-high px-1.5 py-0.5 rounded w-fit tracking-tighter">
-                ID: {id.split("-")[0]}
+        <div className="flex-1 min-w-0 flex flex-col justify-center">
+          {/* Fila Superior: Categoría y Estado */}
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className={cn(
+                "flex items-center justify-center w-5 h-5 rounded-full shrink-0",
+                isRejected ? (isPaymentError && isProviderView ? "bg-amber-500/20" : "bg-error/10") : "bg-primary/10"
+              )}>
+                <MSymbol icon={cat?.icon ?? "build"} size={12} className={isRejected ? (isPaymentError && isProviderView ? "text-amber-600" : "text-error") : "text-primary"} filled />
+              </span>
+              <p className={cn(
+                "text-[10px] md:text-xs font-black uppercase tracking-widest truncate",
+                isRejected ? (isPaymentError && isProviderView ? "text-amber-600" : "text-error") : "text-primary"
+              )}>
+                {cat?.label ?? category}
               </p>
-              {clientName && (
-                <div className="flex items-center gap-1 text-[10px] font-bold text-on-surface-variant truncate max-w-[100px]">
-                  <MSymbol icon="person" size={12} className="text-primary" filled />
-                  <span className="truncate">{clientName}</span>
-                </div>
-              )}
             </div>
             <Badge className={cn(
-              "rounded-full text-[9px] px-2.5 py-0.5 whitespace-nowrap font-bold uppercase tracking-wider h-fit border-none",
+              "rounded-full text-[9px] md:text-[10px] px-2.5 py-0.5 whitespace-nowrap font-bold uppercase tracking-wider h-fit border-none shrink-0",
               badgeColor
             )}>
               {STATUS_LABELS[status]}
             </Badge>
           </div>
           
-          <div className="flex items-center gap-2 mb-1">
-            <span className={cn(
-              "flex items-center justify-center w-5 h-5 rounded-full",
-              isRejected ? (isPaymentError && isProviderView ? "bg-amber-500/20" : "bg-error/10") : "bg-primary/10"
-            )}>
-              <MSymbol icon={cat?.icon ?? "build"} size={12} className={isRejected ? (isPaymentError && isProviderView ? "text-amber-600" : "text-error") : "text-primary"} filled />
-            </span>
-            <p className={cn(
-              "text-[11px] font-black uppercase tracking-widest",
-              isRejected ? (isPaymentError && isProviderView ? "text-amber-600" : "text-error") : "text-primary"
-            )}>
-              {cat?.label ?? category}
-            </p>
-          </div>
-          
+          {/* Título */}
           <h3 className={cn(
-            "font-headline font-bold text-base leading-tight truncate",
+            "font-headline font-bold text-base md:text-lg leading-tight truncate mb-0.5",
             isRejected ? (isPaymentError && isProviderView ? "text-amber-900" : "text-error") : "text-on-surface"
           )}>
             {title || description}
           </h3>
 
-          <p className="text-xs text-on-surface-variant mt-1 line-clamp-1 italic opacity-80">
+          {/* Nombre del Cliente y Fecha - Ahora con más espacio horizontal */}
+          <div className="flex items-center justify-between gap-2 mb-1.5 min-w-0">
+            {clientName && (
+              <div className="flex items-center gap-1 text-[11px] md:text-xs font-bold text-on-surface-variant/70 min-w-0">
+                <MSymbol icon="person" size={12} className="text-primary shrink-0" filled />
+                <span className="truncate">{clientName}</span>
+              </div>
+            )}
+            {timeAgo && (
+              <span className="text-[10px] md:text-[11px] text-on-surface-variant/80 font-bold whitespace-nowrap italic shrink-0">
+                {timeAgo}
+              </span>
+            )}
+          </div>
+
+          {/* Descripción corta */}
+          <p className="text-xs md:text-sm text-on-surface-variant line-clamp-1 italic opacity-70 mb-3">
             {description}
           </p>
           
-          <div className="flex items-center justify-between mt-4 pt-3 border-t border-outline-variant/5">
-            <div className="flex items-center gap-1.5 text-on-surface font-bold text-[11px] bg-surface-container-high/40 px-2 py-1 rounded-md">
-              <MSymbol icon="location_on" size={14} className={isRejected ? (isPaymentError && isProviderView ? "text-amber-600" : "text-error") : "text-primary"} filled />
-              <span className="tracking-tight uppercase">{barrio}</span>
+          {/* Footer: Ubicación y Ofertas */}
+          <div className="flex items-center justify-between pt-3 border-t border-outline-variant/5 gap-2">
+            <div className="flex items-center gap-1.5 text-on-surface font-bold text-[10px] md:text-[11px] bg-surface-container-high/40 px-2 py-1 rounded-md min-w-0">
+              <MSymbol icon="location_on" size={14} className={isRejected ? (isPaymentError && isProviderView ? "text-amber-600" : "text-error") : "text-primary"} filled shrink-0 />
+              <span className="tracking-tight uppercase truncate">{barrio}</span>
             </div>
             
             {offersCount > 0 && (
               <div className={cn(
-                "flex items-center gap-1.5 text-[10px] font-black px-2.5 py-1 rounded-full shadow-sm animate-in zoom-in duration-300",
+                "flex items-center gap-1.5 text-[9px] md:text-[10px] font-black px-2.5 py-1 rounded-full shadow-sm shrink-0",
                 isRejected 
                   ? (isPaymentError && isProviderView ? "bg-amber-100 text-amber-700 border border-amber-200" : "bg-error/10 text-error border border-error/20")
                   : isAssigned || isAccepted 
                     ? "bg-success/10 text-success border border-success/20" 
                     : "bg-amber-400 text-amber-950 border border-amber-500/20"
               )}>
-                <MSymbol icon={isRejected ? (isPaymentError && isProviderView ? "schedule" : "error") : (isAssigned || isAccepted ? "check_circle" : "bolt")} size={14} filled />
-                <span className="tracking-tighter uppercase">
-                  {isRejected ? (isPaymentError && isProviderView ? "PENDIENTE PAGO" : "RECHAZADO") : (isAssigned || isAccepted ? "ASIGNADO" : `${offersCount} ${offersCount === 1 ? "OFERTA" : "OFERTAS"}`)}
+                <MSymbol icon={isRejected ? (isPaymentError && isProviderView ? "schedule" : "error") : (isAssigned || isAccepted ? "check_circle" : "bolt")} size={12} filled />
+                <span className="tracking-tighter uppercase whitespace-nowrap">
+                  {isRejected ? (isPaymentError && isProviderView ? "PENDIENTE" : "RECHAZADO") : (isAssigned || isAccepted ? "ASIGNADO" : `${offersCount} ${offersCount === 1 ? "OFERTA" : "OFERTAS"}`)}
                 </span>
               </div>
             )}

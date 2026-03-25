@@ -12,11 +12,11 @@ export default async function HomePage() {
   // Verificar si el perfil está completo
   const { data: profile } = await supabase
     .from("profiles")
-    .select("barrio, phone")
+    .select("barrio, phone, full_name")
     .eq("id", session.user.id)
     .single();
 
-  if (!profile?.barrio || !profile?.phone) {
+  if (!profile?.barrio || !profile?.phone || !profile?.full_name) {
     return redirect("/perfil");
   }
 

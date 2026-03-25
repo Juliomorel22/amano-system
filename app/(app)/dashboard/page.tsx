@@ -125,7 +125,8 @@ function DashboardContent() {
           isAssigned: isMeAssigned,
           clientName: j.client?.full_name,
           clientPhone: j.client?.phone,
-          providerName: j.provider?.full_name
+          providerName: j.provider?.full_name,
+          createdAt: j.created_at
         };
       }));
     }
@@ -274,9 +275,7 @@ function DashboardContent() {
             </p>
           </div>
         ) : (
-          <div className={cn(
-            isAdmin && view === "orders" ? "flex flex-col gap-2" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"
-          )}>
+          <div className="flex flex-col gap-3 max-w-4xl mx-auto">
             {filteredJobs.map((job) => (
               isAdmin && view === "orders" ? (
                 <Link
@@ -300,12 +299,15 @@ function DashboardContent() {
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-[10px] font-bold text-outline-variant uppercase bg-surface-container-high px-1.5 py-0.5 rounded tracking-tighter">
-                        ID: {job.id.split("-")[0]}
-                      </span>
+                    <div className="flex items-center justify-between gap-2 mb-0.5">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="text-[10px] font-bold text-outline-variant uppercase bg-surface-container-high px-1.5 py-0.5 rounded tracking-tighter shrink-0">
+                          ID: {job.id.split("-")[0]}
+                        </span>
+                        <p className="font-headline font-bold text-on-surface truncate">{job.title || job.description}</p>
+                      </div>
                       <Badge className={cn(
-                        "text-[9px] px-2 py-0.5 h-auto uppercase font-bold",
+                        "text-[9px] px-2 py-0.5 h-auto uppercase font-bold shrink-0 whitespace-nowrap",
                         job.status === "paid" || job.status === "completed" ? "bg-success text-on-success" : 
                         job.status === "payment_rejected" ? "bg-error text-on-error" :
                         "bg-secondary-container text-on-secondary-container"
@@ -313,16 +315,17 @@ function DashboardContent() {
                         {STATUS_LABELS[job.status as JobStatus] || job.status}
                       </Badge>
                       </div>
-                      <p className="font-headline font-bold text-on-surface truncate">{job.title || job.description}</p>
                       {job.title && <p className="text-xs text-on-surface-variant truncate">{job.description}</p>}
-                      <div className="flex items-center gap-3 text-[11px] text-on-surface-variant mt-1">
-
-                      <span className="flex items-center gap-1"><MSymbol icon="person" size={12} /> {job.clientName || "Cliente"}</span>
-                      {job.providerName && (
-                        <span className="flex items-center gap-1 text-primary font-bold"><MSymbol icon="engineering" size={12} /> {job.providerName}</span>
-                      )}
-                      <span className="flex items-center gap-1 ml-auto"><MSymbol icon="location_on" size={12} /> {job.barrio}</span>
-                    </div>
+                      <div className="flex items-center gap-3 text-[11px] text-on-surface-variant mt-1 overflow-hidden">
+                        <span className="flex items-center gap-1 shrink-0 truncate max-w-[100px]"><MSymbol icon="person" size={12} /> {job.clientName || "Cliente"}</span>
+                        {job.providerName && (
+                          <span className="flex items-center gap-1 text-primary font-bold shrink-0 truncate max-w-[100px]"><MSymbol icon="engineering" size={12} /> {job.providerName}</span>
+                        )}
+                        <span className="flex items-center gap-1 ml-auto shrink-0 truncate text-[10px] opacity-60 italic">
+                          {job.created_at && new Date(job.created_at).toLocaleDateString('es-AR')}
+                        </span>
+                        <span className="flex items-center gap-1 shrink-0 truncate"><MSymbol icon="location_on" size={12} /> {job.barrio}</span>
+                      </div>
                   </div>
                   <MSymbol icon="chevron_right" size={20} className="text-outline-variant" />
                 </Link>

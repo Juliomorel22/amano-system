@@ -32,6 +32,20 @@ export async function GET(request: Request) {
     )
     
     await supabase.auth.exchangeCodeForSession(code)
+
+    // Check if profile is complete
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('full_name, phone, barrio')
+        .eq('id', user.id)
+        .single()
+
+      if (profile?.full_name && profile?.phone && profile?.barrio) {
+        return NextResponse.redirect(`${requestUrl.origin}/dashboard`)
+      }
+    }
   }
 
   // URL to redirect to after sign in process completes

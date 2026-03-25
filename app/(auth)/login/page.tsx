@@ -52,7 +52,7 @@ export default function LoginPage() {
         }
       }
     } else {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data: { user }, error } = await supabase.auth.signInWithPassword({
         email: loginEmail,
         password,
       });
@@ -61,7 +61,19 @@ export default function LoginPage() {
         toast.error("Credenciales inválidas o cuenta no existe.");
       } else {
         toast.success("Sesión iniciada");
-        router.push("/perfil");
+        
+        // Check if profile is complete
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("full_name, phone, barrio")
+          .eq("id", user?.id)
+          .single();
+
+        if (profile?.full_name && profile?.phone && profile?.barrio) {
+          router.push("/dashboard");
+        } else {
+          router.push("/perfil");
+        }
       }
     }
     setLoading(false);

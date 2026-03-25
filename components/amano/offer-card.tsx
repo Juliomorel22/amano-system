@@ -48,9 +48,9 @@ export function OfferCard({
         </Avatar>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <p className="font-headline font-bold text-lg text-on-surface truncate">{providerName}</p>
+            <p className="font-headline font-bold text-lg text-on-surface truncate flex-1">{providerName}</p>
             {isAccepted && (
-              <span className="bg-success text-on-success text-[8px] font-black px-1.5 py-0.5 rounded uppercase tracking-tighter">
+              <span className="bg-success text-on-success text-[8px] font-black px-1.5 py-0.5 rounded uppercase tracking-tighter shrink-0">
                 Elegido
               </span>
             )}

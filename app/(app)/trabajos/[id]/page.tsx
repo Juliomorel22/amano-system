@@ -11,7 +11,9 @@ import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
 import NextImage from "next/image";
 import { cn } from "@/lib/utils";
-import dynamic from 'next/dynamic'
+import dynamic from 'next/dynamic';
+import { formatDistanceToNow, isToday, isYesterday } from "date-fns";
+import { es } from "date-fns/locale";
 
 const MapaAproximado = dynamic(
   () => import('@/components/amano/mapa-aproximado'),
@@ -322,14 +324,14 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
 
         {/* User Info Header */}
         <div className="flex items-center gap-3 mb-6">
-          <Avatar size="default" className="border border-outline-variant/10 shadow-sm">
+          <Avatar size="default" className="border border-outline-variant/10 shadow-sm shrink-0">
             <AvatarImage src={clientData?.avatar_url || ""} />
             <AvatarFallback className="bg-primary/5 text-primary text-xs font-bold">
               {clientData?.full_name?.substring(0, 2).toUpperCase() || "AM"}
             </AvatarFallback>
           </Avatar>
-          <div className="flex flex-col">
-            <p className="text-sm font-headline font-bold text-on-surface leading-tight">
+          <div className="flex flex-col min-w-0">
+            <p className="text-sm font-headline font-bold text-on-surface leading-tight truncate">
               {clientData?.full_name || "Usuario"}
             </p>
             <p className="text-[11px] text-on-surface-variant font-medium">
@@ -352,6 +354,18 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
           )}
         </div>
         <div className="flex flex-wrap items-center gap-3 mt-4">
+          {job.created_at && (
+            <div className="flex items-center gap-2 bg-surface-container-highest px-3 py-1.5 rounded-full border border-outline-variant/10">
+              <MSymbol icon="schedule" size={16} className="text-on-surface-variant" filled />
+              <span className="text-[11px] font-bold text-on-surface-variant uppercase tracking-tight leading-none italic">
+                {isToday(new Date(job.created_at)) 
+                  ? "Publicado hoy" 
+                  : isYesterday(new Date(job.created_at)) 
+                    ? "Publicado ayer" 
+                    : `Publicado ${formatDistanceToNow(new Date(job.created_at), { addSuffix: true, locale: es })}`}
+              </span>
+            </div>
+          )}
           <div className="flex items-center gap-2 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
             <MSymbol icon="category" size={16} className="text-primary" filled />
             <span className="text-xs font-black text-primary uppercase tracking-widest leading-none">
