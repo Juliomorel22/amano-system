@@ -1,38 +1,58 @@
 "use client";
 
-import { useEffect, useState, use } from "react";
+import { useEffect, useState, use, useCallback } from "react";
 import { MSymbol } from "@/components/amano/m-symbol";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import Link from "next/link";
 import { cn } from "@/lib/utils";
+import NextImage from "next/image";
+
+interface PrestadorJob {
+  id: string;
+  title?: string;
+  description: string;
+  category: string;
+  barrio: string;
+  status: string;
+  client_id: string;
+  provider_id?: string;
+  provider_arrived_at?: string;
+  client?: {
+    full_name: string;
+    phone: string;
+    avatar_url?: string;
+    bio?: string;
+    rating?: number;
+  };
+}
 
 export default function DatosDesbloqueadosPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
 
-  const [job, setJob] = useState<any>(null);
+  const [job, setJob] = useState<PrestadorJob | null>(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
 
-  useEffect(() => {
-    async function loadJob() {
-      const supabase = createClient();
-      const { data: jobData } = await supabase
-        .from("jobs")
-        .select("*, client:profiles(full_name, phone, avatar_url, bio, rating)")
-        .eq("id", id)
-        .single();
+  const loadJob = useCallback(async () => {
+    const supabase = createClient();
+    const { data: jobData } = await supabase
+      .from("jobs")
+      .select("*, client:profiles(full_name, phone, avatar_url, bio, rating)")
+      .eq("id", id)
+      .single();
 
-      if (!jobData) {
-        router.push("/dashboard");
-      } else {
-        setJob(jobData);
-      }
-      setLoading(false);
+    if (!jobData) {
+      router.push("/dashboard");
+    } else {
+      setJob(jobData as unknown as PrestadorJob);
     }
+    setLoading(false);
+  }, [id, router]);
+
+  useEffect(() => {
     loadJob();
 
     // Suscribirse a cambios en tiempo real
@@ -45,16 +65,17 @@ export default function DatosDesbloqueadosPage({ params }: { params: Promise<{ i
         table: "jobs",
         filter: `id=eq.${id}` 
       }, (payload) => {
-        setJob((prev: any) => ({ ...prev, ...payload.new }));
+        setJob((prev) => prev ? ({ ...prev, ...payload.new as Partial<PrestadorJob> }) : null);
       })
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [id, router]);
+  }, [id, loadJob]);
 
   const handleComplete = async () => {
+    if (!job) return;
     setUpdating(true);
     const supabase = createClient();
     
@@ -65,7 +86,7 @@ export default function DatosDesbloqueadosPage({ params }: { params: Promise<{ i
       console.log("Prestador: Trabajo finalizado exitosamente en DB");
       
       // Actualización inmediata local
-      setJob((prev: any) => prev ? ({ ...prev, status: "finished" }) : prev);
+      setJob((prev) => prev ? ({ ...prev, status: "finished" }) : prev);
 
        // 1. Notificar al admin sobre la finalización
        const { data: adminUser } = await supabase.from("profiles").select("id").eq("email", "administrator@amano.com").single();
@@ -80,7 +101,7 @@ export default function DatosDesbloqueadosPage({ params }: { params: Promise<{ i
        }
 
        // 2. Notificar al cliente
-       if (job?.client_id) {
+       if (job.client_id) {
          await supabase.from("notifications").insert({
            user_id: job.client_id,
            type: "job_status",
@@ -107,10 +128,9 @@ export default function DatosDesbloqueadosPage({ params }: { params: Promise<{ i
   );
 
   const clientName = job.client?.full_name || "Cliente";
-  const initials = clientName.split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase();
+  const initials = clientName.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
   const phone = job.client?.phone || "";
   const avatarUrl = job.client?.avatar_url || "";
-  const bio = job.client?.bio || "";
   const rating = job.client?.rating || 5.0;
 
   return (
@@ -228,10 +248,12 @@ export default function DatosDesbloqueadosPage({ params }: { params: Promise<{ i
 
           {/* Secondary Map Visual Anchor */}
           <div className="h-40 w-full rounded-lg overflow-hidden relative shadow-inner grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all cursor-pointer border border-outline-variant/10">
-            <img 
+            <NextImage 
               alt="Mapa de la ubicación" 
-              className="w-full h-full object-cover" 
+              fill
+              className="object-cover" 
               src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdRl5UKDy1C5IcLDP32_9ExS62aOCBtRE6NqjjHu6c4GgCSv9-mUqyiQfhZkM02cEg4U4doepcZVVJFIZBsCfkqKYCwRbz2r58N4Nao1wqZkVRhPui7yrUq3nl-UWi7Z0iehN7P1BEByW_0QSL4vJXZDP3t_FUPFCz9RtA8nVk5lSmY7UJ4tvHM91kCKODjZbNmYNERn22aad6s-0WKAf2WNQ_GgRAi737abwGwPnqh4QQDRo6GxSYMtfgYKhDKEXX02ixG83aXE4L" 
+              unoptimized
             />
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="bg-primary p-3 rounded-full shadow-xl ring-4 ring-white">

@@ -6,6 +6,8 @@ import { MSymbol } from "@/components/amano/m-symbol";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNotifications } from "@/hooks/use-notifications";
 import { createClient } from "@/lib/supabase/client";
+import { useProfile } from "@/hooks/use-profile";
+import { toast } from "sonner";
 
 interface AppHeaderProps {
   showBack?: boolean;
@@ -17,6 +19,7 @@ export function AppHeader({ showBack = false, title, rightContent }: AppHeaderPr
   const { unreadCount } = useNotifications();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [initials, setInitials] = useState("AM");
+  const { isComplete, loading: profileLoading } = useProfile();
 
   useEffect(() => {
     async function getProfile() {
@@ -44,6 +47,18 @@ export function AppHeader({ showBack = false, title, rightContent }: AppHeaderPr
     // pero por ahora con el fetch inicial basta para el Header.
   }, []);
 
+  const handleNavClick = (e: React.MouseEvent, href: string) => {
+    // Si el perfil no está completo y no es la página de perfil, bloquear
+    if (!profileLoading && !isComplete && href !== "/perfil") {
+      e.preventDefault();
+      toast.error("Para explorar todas las funciones debés completar tus datos primero", {
+        className: "bg-error text-on-error border-none",
+        duration: 4000
+      });
+      return;
+    }
+  };
+
   return (
     <header className="glass-header sticky top-0 z-50 border-b border-outline-variant/10 backdrop-blur-xl">
       <div className="flex items-center justify-between px-5 h-14 max-w-md md:max-w-3xl lg:max-w-5xl mx-auto">
@@ -61,7 +76,11 @@ export function AppHeader({ showBack = false, title, rightContent }: AppHeaderPr
           {title ? (
             <span className="font-headline font-bold text-base text-on-surface truncate max-w-[150px]">{title}</span>
           ) : (
-            <Link href="/dashboard" className="active:scale-95 transition-transform">
+            <Link 
+              href="/dashboard" 
+              onClick={(e) => handleNavClick(e, "/dashboard")}
+              className="active:scale-95 transition-transform"
+            >
               <span className="font-headline font-extrabold text-xl text-primary tracking-tight">
                 amano
               </span>
@@ -71,7 +90,11 @@ export function AppHeader({ showBack = false, title, rightContent }: AppHeaderPr
 
         {rightContent ?? (
           <div className="flex items-center gap-3.5">
-            <Link href="/notificaciones" className="relative text-on-surface-variant hover:bg-surface-container-high p-1.5 rounded-full transition-all">
+            <Link 
+              href="/notificaciones" 
+              onClick={(e) => handleNavClick(e, "/notificaciones")}
+              className="relative text-on-surface-variant hover:bg-surface-container-high p-1.5 rounded-full transition-all"
+            >
               <MSymbol icon="notifications" size={26} />
               {unreadCount > 0 && (
                 <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-error border-2 border-surface shadow-sm animate-pulse" />

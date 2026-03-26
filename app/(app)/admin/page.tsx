@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { MSymbol } from "@/components/amano/m-symbol";
 import { Badge } from "@/components/ui/badge";
 import { STATUS_LABELS, type JobStatus } from "@/components/amano/job-card";
@@ -9,16 +9,61 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import NextImage from "next/image";
 
 const ADMIN_EMAIL = "administrator@amano.com";
 
+interface AdminPayment {
+  id: string;
+  job_id: string;
+  proof_url: string;
+  verified_at: string | null;
+  created_at: string;
+  jobs: {
+    id: string;
+    title?: string;
+    category: string;
+    description: string;
+    final_amount: number;
+    barrio: string;
+    client_id: string;
+    provider_id: string;
+    profiles?: { full_name: string } | { full_name: string }[];
+  } | {
+    id: string;
+    title?: string;
+    category: string;
+    description: string;
+    final_amount: number;
+    barrio: string;
+    client_id: string;
+    provider_id: string;
+    profiles?: { full_name: string } | { full_name: string }[];
+  }[];
+}
+
+interface AdminJob {
+  id: string;
+  title?: string;
+  category: string;
+  description: string;
+  status: JobStatus;
+  barrio: string;
+  final_amount: number;
+  client_id: string;
+  provider_id: string;
+  created_at: string;
+  client?: { full_name: string };
+  provider?: { full_name: string; phone?: string };
+}
+
 export default function AdminPage() {
   const router = useRouter();
-  const [payments, setPayments] = useState<any[]>([]);
-  const [activeJobs, setActiveJobs] = useState<any[]>([]);
+  const [payments, setPayments] = useState<AdminPayment[]>([]);
+  const [activeJobs, setActiveJobs] = useState<AdminJob[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
     
@@ -42,13 +87,11 @@ export default function AdminPage() {
       .is("verified_at", null)
       .order("created_at", { ascending: false });
 
-    console.log("Admin: Pendientes de pago:", paymentsData);
-
     if (payError) {
       console.error("Error detallado cargando pagos:", payError);
       toast.error("Error al cargar pagos: " + payError.message);
     } else if (paymentsData) {
-      setPayments(paymentsData);
+      setPayments(paymentsData as unknown as AdminPayment[]);
     }
 
     // Cargar todos los trabajos activos para el admin
@@ -63,11 +106,11 @@ export default function AdminPage() {
       .order("created_at", { ascending: false });
 
     if (!jobsError && jobsData) {
-      setActiveJobs(jobsData);
+      setActiveJobs(jobsData as unknown as AdminJob[]);
     }
 
     setLoading(false);
-  };
+  }, [router]);
 
   useEffect(() => {
     loadData();
@@ -86,7 +129,7 @@ export default function AdminPage() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [router]);
+  }, [loadData]);
 
   const handleApprove = async (paymentId: string, jobId: string) => {
     const supabase = createClient();
@@ -252,7 +295,7 @@ export default function AdminPage() {
 
   if (loading) return <div className="min-h-screen bg-surface flex items-center justify-center">Cargando panel...</div>;
 
-  const pendingPayments = payments;
+  const pendingPaymentsList = payments;
   const jobsToClose = activeJobs.filter(j => j.status === 'finished');
   const monitoringJobs = activeJobs.filter(j => j.status !== 'finished');
 
@@ -270,7 +313,7 @@ export default function AdminPage() {
       <section className="px-5 py-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[
-            { label: "Pagos Pendientes", value: pendingPayments.length, icon: "pending_actions", color: "text-tertiary" },
+            { label: "Pagos Pendientes", value: pendingPaymentsList.length, icon: "pending_actions", color: "text-tertiary" },
             { label: "Por Finalizar", value: jobsToClose.length, icon: "task_alt", color: "text-secondary" },
             { label: "Comisiones Estimadas", value: `$${calculateCommissions()}`, icon: "payments", color: "text-primary" },
           ].map((s) => (
@@ -292,21 +335,22 @@ export default function AdminPage() {
         <h2 className="font-headline font-bold text-xl text-on-surface mb-4 flex items-center gap-2">
           <MSymbol icon="pending_actions" size={22} className="text-tertiary" />
           Pagos por Validar
-          {pendingPayments.length > 0 && (
+          {pendingPaymentsList.length > 0 && (
             <span className="ml-1 bg-tertiary text-on-tertiary text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
-              {pendingPayments.length}
+              {pendingPaymentsList.length}
             </span>
           )}
         </h2>
         
-        {pendingPayments.length === 0 ? (
+        {pendingPaymentsList.length === 0 ? (
            <p className="text-on-surface-variant text-sm p-4 bg-surface-container-lowest rounded-lg">No hay pagos pendientes de validación.</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {pendingPayments.map((p) => {
+            {pendingPaymentsList.map((p) => {
               // Manejar tanto objeto como array (por si acaso)
               const jobData = Array.isArray(p.jobs) ? p.jobs[0] : p.jobs;
-              const profile = Array.isArray(jobData?.profiles) ? jobData.profiles[0] : jobData?.profiles;
+              const profilesData = jobData?.profiles;
+              const profile = Array.isArray(profilesData) ? profilesData[0] : profilesData;
               const clName = profile?.full_name || "Cliente";
               const shortId = jobData?.id?.split("-")[0] || "---";
 
@@ -319,8 +363,13 @@ export default function AdminPage() {
                         <span className="text-xs font-bold uppercase tracking-wider">Documento PDF</span>
                       </div>
                     ) : (
-                      /* eslint-disable-next-line @next/next/no-img-element */
-                      <img src={p.proof_url} alt="Comprobante" className="w-full h-full object-cover" />
+                      <NextImage 
+                        src={p.proof_url} 
+                        alt="Comprobante" 
+                        fill 
+                        className="object-cover" 
+                        unoptimized
+                      />
                     )}
                     <div className="absolute top-2 right-2 flex gap-2">
                       <span className="bg-surface/80 backdrop-blur-md text-on-surface text-[10px] font-bold px-2 py-1 rounded-md uppercase">

@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { MSymbol } from "@/components/amano/m-symbol";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
+import { useProfile } from "@/hooks/use-profile";
+import { toast } from "sonner";
 
 const navItems = [
   { icon: "home", label: "Inicio", href: "/dashboard", view: "home" },
@@ -18,9 +20,11 @@ const ADMIN_EMAIL = "administrator@amano.com";
 
 export function BottomNav() {
   const pathname = usePathname();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const currentView = searchParams.get("view") || "home";
   const [isAdmin, setIsAdmin] = useState(false);
+  const { isComplete, loading: profileLoading } = useProfile();
 
   useEffect(() => {
     async function checkAdmin() {
@@ -43,6 +47,18 @@ export function BottomNav() {
   const isHidden = pathname.endsWith("/pago") || pathname === "/publicar";
   if (isHidden) return null;
 
+  const handleNavClick = (e: React.MouseEvent, href: string) => {
+    // Si el perfil no está completo y no es la página de perfil, bloquear
+    if (!profileLoading && !isComplete && href !== "/perfil") {
+      e.preventDefault();
+      toast.error("Para explorar todas las funciones debés completar tus datos primero", {
+        className: "bg-error text-on-error border-none",
+        duration: 4000
+      });
+      return;
+    }
+  };
+
   return (
     <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md md:max-w-3xl lg:max-w-5xl z-[100] glass-header border-t border-outline-variant/10 shadow-ambient px-safe-bottom">
       <div className="flex items-center justify-around px-2 h-16 pb-[env(safe-area-inset-bottom)]">
@@ -57,6 +73,7 @@ export function BottomNav() {
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={(e) => handleNavClick(e, item.href)}
                 className="flex flex-col items-center gap-0.5 -mt-7 shrink-0"
               >
                 <div className="bg-cta-gradient w-14 h-14 rounded-full flex items-center justify-center shadow-lg shadow-primary/30">
@@ -72,6 +89,7 @@ export function BottomNav() {
             <Link
               key={item.href + item.view}
               href={item.href}
+              onClick={(e) => handleNavClick(e, item.href)}
               className={cn(
                 "flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all shrink-0",
                 isActive ? "text-primary" : "text-on-surface-variant"

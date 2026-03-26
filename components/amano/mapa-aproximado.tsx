@@ -5,7 +5,7 @@ import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 
 // Fix default marker icon issue in Leaflet with Next.js
-// @ts-ignore
+// @ts-expect-error - Leaflet internal property access
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
@@ -22,11 +22,17 @@ interface Props {
 export default function MapaAproximado({ lat, lng, exact = false }: Props) {
   const coords = useMemo(() => {
     if (exact) return { lat, lng }
-    // Add some random offset for privacy
-    const d = 0.001 + Math.random() * 0.001
+    
+    // Deterministic offset based on coordinates for React 19 purity
+    // This replaces Math.random() with a stable pseudo-random value
+    const seed = (lat * 1000 + lng * 1000) % 1;
+    const offset = 0.001 + Math.abs(seed) * 0.001;
+    const signLat = Math.sin(lat * 1000) > 0 ? 1 : -1;
+    const signLng = Math.cos(lng * 1000) > 0 ? 1 : -1;
+
     return {
-      lat: lat + (Math.random() > 0.5 ? d : -d),
-      lng: lng + (Math.random() > 0.5 ? d : -d),
+      lat: lat + signLat * offset,
+      lng: lng + signLng * offset,
     }
   }, [lat, lng, exact])
 

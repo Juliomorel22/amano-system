@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, Suspense, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { MSymbol } from "@/components/amano/m-symbol";
@@ -10,6 +10,27 @@ import { Badge } from "@/components/ui/badge";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import NextImage from "next/image";
+
+interface Job {
+  id: string;
+  category: string;
+  title?: string;
+  description: string;
+  barrio: string;
+  status: JobStatus;
+  offersCount?: number;
+  photos_urls?: string[] | null;
+  isAssigned?: boolean;
+  clientName?: string;
+  clientPhone?: string;
+  providerName?: string;
+  created_at?: string;
+  provider_id?: string;
+  client_id?: string;
+  client?: { full_name: string; phone?: string };
+  provider?: { full_name: string; phone?: string };
+  my_offer?: any; // Keeping any for complex nested join for now or use unknown
+}
 
 export default function DashboardPage() {
   return (
@@ -25,16 +46,19 @@ function DashboardContent() {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
-  const [jobs, setJobs] = useState<any[]>([]);
+  const [jobs, setJobs] = useState<Job[]>([]);
   const [isProvider, setIsProvider] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  async function loadJobs() {
+  const loadJobs = useCallback(async () => {
     setLoading(true);
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return setLoading(false);
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
     const isUserAdmin = user.email === "administrator@amano.com";
     setIsAdmin(isUserAdmin);
@@ -91,14 +115,14 @@ function DashboardContent() {
     const currentUserId = user.id;
 
     if (!error && data) {
-      setJobs(data.map(j => {
+      setJobs((data as any[]).map(j => {
         // Extraer mi oferta si existe
         const myOffer = Array.isArray(j.my_offer) 
           ? j.my_offer.find((o: any) => o.provider_id === currentUserId)
           : null;
         
         const offersCountData = Array.isArray(j.offersCount) ? j.offersCount[0] : j.offersCount;
-        const offersCount = typeof offersCountData === 'object' ? offersCountData?.count || 0 : (offersCountData || 0);
+        const offersCount = typeof offersCountData === 'object' ? (offersCountData as any)?.count || 0 : (offersCountData || 0);
         
         const isMeAssigned = j.provider_id === currentUserId || myOffer?.status === 'accepted';
         
@@ -131,7 +155,7 @@ function DashboardContent() {
       }));
     }
     setLoading(false);
-  }
+  }, [view]);
 
   useEffect(() => {
     loadJobs();
@@ -147,7 +171,7 @@ function DashboardContent() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [view]);
+  }, [loadJobs]);
 
   const filteredJobs = jobs.filter(job => 
     (!selectedCategory || job.category === selectedCategory) &&
