@@ -90,43 +90,37 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
       const { data: cData } = await supabase.from("profiles").select("*").eq("id", jobData.client_id).single();
       setClientData(cData);
 
-      // Asignar el prestador desde la relación directa (JOIN)
+      // Cargar ofertas para determinar si hay una aceptada
+      const { data: offersData } = await supabase
+        .from("offers")
+        .select(`*, provider:profiles(*)`)
+        .eq("job_id", id);
+
+      const mappedOffers = offersData ? offersData.map(o => ({
+        id: o.id,
+        jobId: o.job_id,
+        providerId: o.provider_id,
+        providerName: o.provider?.full_name || "Prestador",
+        providerAvatar: o.provider?.avatar_url,
+        rating: o.provider?.rating || 5,
+        jobsCount: o.provider?.jobs_count || 0,
+        amount: o.amount,
+        status: o.status,
+        providerData: o.provider
+      })) : [];
+      
+      setOffers(mappedOffers);
+
+      // Determinar el proveedor asignado (ya sea por provider_id o por oferta aceptada)
       if (jobData.provider) {
         setAssignedProvider(jobData.provider);
       } else if (jobData.provider_id) {
-        // Fallback por si el join falla por RLS
         const { data: pData } = await supabase.from("profiles").select("*").eq("id", jobData.provider_id).single();
         if (pData) setAssignedProvider(pData);
-      }
-
-      if (isUserAdmin || jobData.client_id === user.id || profile?.is_provider) {
-        const { data: offersData } = await supabase
-          .from("offers")
-          .select(`*, provider:profiles(*)`)
-          .eq("job_id", id);
-
-        if (offersData) {
-          setOffers(offersData.map(o => ({
-            id: o.id,
-            jobId: o.job_id,
-            providerId: o.provider_id,
-            providerName: o.provider?.full_name || "Prestador",
-            providerAvatar: o.provider?.avatar_url,
-            rating: o.provider?.rating || 5,
-            jobsCount: o.provider?.jobs_count || 0,
-            amount: o.amount,
-            status: o.status,
-            providerData: o.provider
-          })));
-
-          // Si aún no tenemos assignedProvider (trabajo recién aceptado pero no actualizado en DB aún), 
-          // lo sacamos de la oferta aceptada
-          if (!jobData.provider_id && !jobData.provider) {
-            const accepted = offersData.find(o => o.status === "accepted");
-            if (accepted) {
-              setAssignedProvider(accepted.provider);
-            }
-          }
+      } else {
+        const acceptedOffer = mappedOffers.find(o => o.status === "accepted");
+        if (acceptedOffer) {
+          setAssignedProvider(acceptedOffer.providerData);
         }
       }
     }
@@ -149,6 +143,8 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
         filter: `id=eq.${id}`
       }, (payload) => {
         setJob((prev: any) => ({ ...prev, ...payload.new }));
+        // Recargar datos completos si el status cambió para actualizar assignedProvider
+        loadData();
       })
       .subscribe();
 
@@ -335,13 +331,13 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
   if (!job) return <div className="min-h-screen bg-surface p-5">Trabajo no encontrado.</div>;
 
   const isOwner = job.client_id === userId;
-  const isAssignedProvider = job.provider_id === userId;
+  const isAssignedProvider = assignedProvider?.id === userId;
   const isAuthorized = isOwner || isAssignedProvider || isAdmin;
 
   const displayStatus = (job.status === "payment_rejected" && !isAuthorized) ? "accepted" : job.status;
 
   const hasMadeOffer = offers.some(o => o.providerId === userId);
-  const isAssigned = !!job.provider_id;
+  const isAssigned = !!assignedProvider;
 
   return (
     <div className="min-h-screen bg-surface flex flex-col max-w-md md:max-w-3xl lg:max-w-5xl mx-auto shadow-2xl relative pb-20">
@@ -427,6 +423,40 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
 
       {/* Mensajes de estado Críticos para la Publicación (Visibles para las partes involucradas) */}
       <section className="px-5 mt-4">
+        {(job.status === "paid" || job.status === "in_progress") && isAuthorized && (
+           <div className="mb-4 p-4 bg-success-container/30 border border-success/20 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-500">
+             <MSymbol icon="check_circle" size={20} className="text-success mt-0.5" filled />
+             <div>
+               <p className="text-sm font-black text-on-success-container uppercase tracking-tight mb-0.5">
+                 ¡Pago aprobado por administración!
+               </p>
+               <p className="text-sm font-semibold text-on-success-container/90 text-pretty leading-snug">
+                 {isAssignedProvider ? (
+                   <>
+                     La dirección del trabajo es en <span className="font-black text-on-success-container underline decoration-success/30 underline-offset-2">{job.address}</span> y el horario es <span className="font-black text-on-success-container underline decoration-success/30 underline-offset-2">{job.availability || "a convenir"}</span>. Estaremos en contacto con vos y el solicitante para coordinar la tarea.
+                   </>
+                 ) : (
+                   "El pago del solicitante ha sido aprobado por la administración de Amano. El domicilio y los celulares ahora están visibles para ambas partes. El equipo de Amano empezará a coordinar la tarea entre el solicitante y el colaborador."
+                 )}
+               </p>
+             </div>
+           </div>
+        )}
+
+        {job.status === "payment_under_review" && isAuthorized && (
+           <div className="mb-4 p-4 bg-tertiary-fixed border border-tertiary/20 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-500">
+             <MSymbol icon="schedule" size={20} className="text-tertiary mt-0.5" filled />
+             <div>
+               <p className="text-sm font-black text-on-tertiary-fixed uppercase tracking-tight mb-0.5">
+                 Pago bajo revisión
+               </p>
+               <p className="text-sm font-semibold text-on-tertiary-fixed/90 text-pretty leading-snug">
+                 El pago del solicitante está bajo revisión por el equipo de Amano. Una vez aceptado el pago se brindarán los datos del domicilio y celulares de ambos usuarios.
+               </p>
+             </div>
+           </div>
+        )}
+
         {job.status === "payment_rejected" && isAuthorized && (
           <div className={cn(
             "mb-4 p-4 border rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-500",
@@ -642,7 +672,7 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
             lng={Number(job.lng)}
             exact={job.status === 'paid' || job.status === 'in_progress' || job.status === 'completed' || job.status === 'finished'}
           />
-          {(job.status === 'open' || job.status === 'accepted') && (
+          {(job.status === 'open' || job.status === 'accepted' || job.status === 'payment_under_review') && (
             <p className="text-[10px] text-outline mt-1.5 text-center">
               Ubicación aproximada · La dirección exacta se revela cuando el solicitante acepte y abone una oferta por el trabajo
             </p>
@@ -677,7 +707,7 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
       )}
 
       {/* Datos del Solicitante (Visible para el Prestador Asignado y Admin una vez aprobado el pago) */}
-      {((job.status === "in_progress" || job.status === "completed") && (userId === assignedProvider?.id || isAdmin)) && (
+      {((job.status === "in_progress" || job.status === "completed" || job.status === "finished") && (isAssignedProvider || isAdmin)) && (
         <section className="px-5 mb-8">
           <div className="bg-secondary/5 border border-secondary/20 rounded-2xl p-5 shadow-sm">
             <div className="flex items-center gap-2 mb-4 text-secondary uppercase text-[10px] font-black tracking-widest">
@@ -753,7 +783,7 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
                   </span>
                 </div>
               </div>
-              {(isOwner || isAdmin) && (
+              {(isOwner || isAdmin) && (job.status === "in_progress" || job.status === "finished" || job.status === "completed") && (
                 <div className="flex flex-col gap-2">
                   <a
                     href={`tel:${assignedProvider.phone}`}
@@ -790,7 +820,7 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
                           ? "Informamos a administración que terminaste el trabajo."
                           : "El cliente confirmó tu llegada. ¡Podés comenzar a trabajar!"}
                     </p>
-                    {(job.provider_arrived_at && (userId === job.provider_id || isAdmin)) && (
+                    {(job.provider_arrived_at && (isAssignedProvider || isAdmin)) && (
                       <div className="flex flex-col gap-2">
                         <button
                           onClick={handleComplete}
@@ -872,9 +902,6 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
                             <h3 className="font-headline font-bold text-xl text-on-surface">¡Oferta Aceptada!</h3>
                             <p className="text-sm text-on-surface-variant mt-1">El pago del solicitante ha sido aceptado y en breve nos estaremos comunicando con vos para brindarte los datos para que realices el trabajo en el domicilio</p>
                           </div>
-                          <Link href={`/prestador/${job.id}`} className="mt-2 w-full py-4 bg-primary text-on-primary font-headline font-bold text-base rounded-xl shadow-lg shadow-primary/25 uppercase tracking-wider text-center">
-                            Ver Datos del Cliente
-                          </Link>
                         </div>
                       );
                     } else if (job.status === "payment_rejected") {
@@ -889,6 +916,18 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
                           </div>
                         </div>
                       );
+                    } else if (job.status === "payment_under_review") {
+                       return (
+                        <div className="flex flex-col items-center justify-center gap-4 text-center">
+                          <div className="w-16 h-16 bg-tertiary/10 rounded-full flex items-center justify-center">
+                            <MSymbol icon="schedule" size={32} className="text-tertiary" filled />
+                          </div>
+                          <div>
+                            <h3 className="font-headline font-bold text-xl text-on-surface">Oferta Pre-seleccionada</h3>
+                            <p className="text-sm text-on-surface-variant mt-1 italic">El cliente seleccionó tu oferta. El pago está siendo revisado por Amano. Una vez aprobado, serás asignado oficialmente.</p>
+                          </div>
+                        </div>
+                       );
                     }
                   }
 

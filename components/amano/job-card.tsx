@@ -7,13 +7,14 @@ import NextImage from "next/image";
 import { formatDistanceToNow, isToday, isYesterday } from "date-fns";
 import { es } from "date-fns/locale";
 
-export type JobStatus = "open" | "accepted" | "paid" | "in_progress" | "finished" | "completed" | "cancelled" | "payment_rejected" | "pending_offer" | "offer_rejected";
+export type JobStatus = "open" | "accepted" | "paid" | "in_progress" | "finished" | "completed" | "cancelled" | "payment_rejected" | "pending_offer" | "offer_rejected" | "payment_under_review";
 
 export const STATUS_LABELS: Record<JobStatus, string> = {
   open: "Recibiendo Ofertas",
   pending_offer: "Oferta Enviada",
   offer_rejected: "Oferta Rechazada",
   accepted: "Oferta Aceptada",
+  payment_under_review: "Pago en Revisión",
   paid: "Pago Verificado",
   in_progress: "En Proceso",
   finished: "Por cerrar (Admin)",

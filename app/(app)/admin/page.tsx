@@ -10,8 +10,30 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import NextImage from "next/image";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 const ADMIN_EMAIL = "administrator@amano.com";
+
+interface Profile {
+  id: string;
+  full_name: string;
+  phone: string;
+  is_provider: boolean;
+  rating: number;
+  avatar_url?: string;
+  barrio?: string;
+  created_at: string;
+}
 
 interface AdminPayment {
   id: string;
@@ -61,7 +83,9 @@ export default function AdminPage() {
   const router = useRouter();
   const [payments, setPayments] = useState<AdminPayment[]>([]);
   const [activeJobs, setActiveJobs] = useState<AdminJob[]>([]);
+  const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
+  const [userFilter, setUserFilter] = useState("all");
 
   const loadData = useCallback(async () => {
     const supabase = createClient();
@@ -74,7 +98,6 @@ export default function AdminPage() {
       return router.push("/dashboard");
     }
 
-    // Cargar pagos pendientes (donde verified_at es nulo)
     const { data: paymentsData, error: payError } = await supabase
       .from("payments")
       .select(`
@@ -94,7 +117,6 @@ export default function AdminPage() {
       setPayments(paymentsData as unknown as AdminPayment[]);
     }
 
-    // Cargar todos los trabajos activos para el admin
     const { data: jobsData, error: jobsError } = await supabase
       .from("jobs")
       .select(`
@@ -102,11 +124,20 @@ export default function AdminPage() {
         client:profiles!jobs_client_id_fkey(full_name),
         provider:profiles!jobs_provider_id_fkey(full_name, phone)
       `)
-      .not("status", "eq", "completed") // Traer todo lo que no esté cerrado aún
+      .not("status", "eq", "completed")
       .order("created_at", { ascending: false });
 
     if (!jobsError && jobsData) {
       setActiveJobs(jobsData as unknown as AdminJob[]);
+    }
+
+    const { data: profilesData, error: profilesError } = await supabase
+      .from("profiles")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (!profilesError && profilesData) {
+      setProfiles(profilesData as Profile[]);
     }
 
     setLoading(false);
@@ -124,6 +155,9 @@ export default function AdminPage() {
       .on("postgres_changes", { event: "*", schema: "public", table: "jobs" }, () => {
         loadData();
       })
+      .on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, () => {
+        loadData();
+      })
       .subscribe();
 
     return () => {
@@ -136,7 +170,16 @@ export default function AdminPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    // 1. Validar el pago
+    const { data: jobData, error: jobFetchError } = await supabase
+      .from("jobs")
+      .select("provider_id, title, description, category, client_id")
+      .eq("id", jobId)
+      .single();
+
+    if (jobFetchError || !jobData?.provider_id) {
+      return toast.error("No se pudo encontrar el colaborador asignado a este trabajo.");
+    }
+
     const { error: payError } = await supabase
       .from("payments")
       .update({ 
@@ -147,40 +190,31 @@ export default function AdminPage() {
 
     if (payError) return toast.error(payError.message);
 
-    // 2. Actualizar el trabajo a 'in_progress'
-    const { error: jobError } = await supabase
+    const { error: jobUpdateError } = await supabase
       .from("jobs")
-      .update({ status: "in_progress" })
+      .update({ 
+        status: "in_progress"
+      })
       .eq("id", jobId);
 
-    if (jobError) return toast.error(jobError.message);
+    if (jobUpdateError) return toast.error(jobUpdateError.message);
 
-    // 3. Notificar a las partes
-    const { data: jobData } = await supabase
-      .from("jobs")
-      .select("title, description, category, client_id, provider_id")
-      .eq("id", jobId)
-      .single();
+    await supabase.from("notifications").insert({
+      user_id: jobData.provider_id,
+      type: "payment_verified",
+      title: "Pago verificado",
+      content: `¡El pago fue verificado! Ya fuiste asignado oficialmente al trabajo. Ya podés ver los datos de contacto y comenzar.`,
+      link: `/trabajos/${jobId}`,
+    });
 
-    if (jobData) {
-      if (jobData.provider_id) {
-        await supabase.from("notifications").insert({
-          user_id: jobData.provider_id,
-          type: "payment_verified",
-          title: "Pago verificado",
-          content: `El pago para "${jobData.title || jobData.description || jobData.category}" fue verificado. ¡Ya podés comenzar el trabajo!`,
-          link: `/trabajos/${jobId}`,
-        });
-      }
-      if (jobData.client_id) {
-        await supabase.from("notifications").insert({
-          user_id: jobData.client_id,
-          type: "payment_verified",
-          title: "Pago aprobado",
-          content: `Tu pago para "${jobData.title || jobData.description || jobData.category}" fue aprobado por administración.`,
-          link: `/trabajos/${jobId}`,
-        });
-      }
+    if (jobData.client_id) {
+      await supabase.from("notifications").insert({
+        user_id: jobData.client_id,
+        type: "payment_verified",
+        title: "Pago aprobado",
+        content: `Tu pago para "${jobData.title || jobData.description || jobData.category}" fue aprobado. El colaborador ya tiene tus datos y se pondrá en contacto.`,
+        link: `/trabajos/${jobId}`,
+      });
     }
 
     toast.success("Pago aprobado y trabajo habilitado.");
@@ -189,8 +223,6 @@ export default function AdminPage() {
 
   const handleReject = async (paymentId: string, jobId: string) => {
     const supabase = createClient();
-    
-    // 1. Marcar el trabajo como pago rechazado
     const { error: jobError } = await supabase
       .from("jobs")
       .update({ status: "payment_rejected" })
@@ -198,7 +230,6 @@ export default function AdminPage() {
 
     if (jobError) return toast.error(jobError.message);
 
-    // 2. Eliminar el registro de pago para permitir re-subida
     const { error: payError } = await supabase
       .from("payments")
       .delete()
@@ -206,7 +237,6 @@ export default function AdminPage() {
 
     if (payError) return toast.error(payError.message);
 
-    // 3. Notificar al cliente
     const { data: jobData } = await supabase
       .from("jobs")
       .select("title, description, category, client_id")
@@ -229,8 +259,6 @@ export default function AdminPage() {
 
   const handleCompleteByAdmin = async (jobId: string) => {
     const supabase = createClient();
-    
-    // Marcar como 'finished' (por cerrar por admin)
     const { error } = await supabase
       .from("jobs")
       .update({ status: "finished" })
@@ -244,8 +272,6 @@ export default function AdminPage() {
 
   const handleCloseJob = async (jobId: string) => {
     const supabase = createClient();
-    
-    // 1. Marcar como completado definitivamente
     const { error: errorJob } = await supabase
       .from("jobs")
       .update({ status: "completed" })
@@ -253,7 +279,6 @@ export default function AdminPage() {
 
     if (errorJob) return toast.error(errorJob.message);
 
-    // 2. Notificar a ambas partes del cierre exitoso
     const { data: jobData } = await supabase
       .from("jobs")
       .select("title, description, category, client_id, provider_id")
@@ -299,237 +324,368 @@ export default function AdminPage() {
   const jobsToClose = activeJobs.filter(j => j.status === 'finished');
   const monitoringJobs = activeJobs.filter(j => j.status !== 'finished');
 
+  const filteredProfiles = profiles.filter(p => {
+    if (userFilter === "clients") return !p.is_provider;
+    if (userFilter === "providers") return p.is_provider;
+    return true;
+  });
+
   return (
-    <div className="bg-surface flex flex-col max-w-md md:max-w-4xl lg:max-w-6xl mx-auto shadow-2xl relative">
-      <div className="px-5 pt-8 pb-6 bg-surface-container-low border-b border-outline-variant/10">
-        <div className="flex items-center gap-2 mb-1">
-          <MSymbol icon="admin_panel_settings" size={28} className="text-primary" filled />
-          <h1 className="font-headline font-extrabold text-3xl text-on-surface">Panel Admin</h1>
+    <div className="bg-surface flex flex-col w-full max-w-7xl mx-auto md:my-8 md:rounded-3xl shadow-2xl overflow-hidden relative">
+      <div className="px-6 pt-10 pb-8 bg-surface-container-low border-b border-outline-variant/10 md:px-10">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-3 mb-1">
+              <MSymbol icon="admin_panel_settings" size={32} className="text-primary" filled />
+              <h1 className="font-headline font-extrabold text-3xl md:text-4xl text-on-surface">Panel Admin</h1>
+            </div>
+            <p className="text-on-surface-variant text-base md:text-lg">Gestión centralizada · A mano Formosa</p>
+          </div>
+          <div className="flex items-center gap-2 text-xs font-bold text-outline uppercase tracking-widest bg-surface-container-high px-3 py-1.5 rounded-full w-fit">
+            <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+            Sistema en Vivo
+          </div>
         </div>
-        <p className="text-on-surface-variant text-base">Gestión y Validación · A mano</p>
       </div>
 
-      {/* Stats */}
-      <section className="px-5 py-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {[
-            { label: "Pagos Pendientes", value: pendingPaymentsList.length, icon: "pending_actions", color: "text-tertiary" },
-            { label: "Por Finalizar", value: jobsToClose.length, icon: "task_alt", color: "text-secondary" },
-            { label: "Comisiones Estimadas", value: `$${calculateCommissions()}`, icon: "payments", color: "text-primary" },
-          ].map((s) => (
-            <div key={s.label} className="bg-surface-container-lowest rounded-xl p-5 shadow-sm flex items-center gap-4">
-              <div className={`p-3 rounded-full bg-surface-container-low ${s.color}`}>
-                <MSymbol icon={s.icon} size={28} filled />
-              </div>
-              <div>
-                <p className={`font-headline font-extrabold text-2xl ${s.color}`}>{s.value}</p>
-                <p className="text-xs text-on-surface-variant font-medium mt-0.5">{s.label}</p>
-              </div>
+      {/* Stats Section */}
+      <section className="px-6 py-8 md:px-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          <div className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/5 flex items-center gap-5 transition-transform hover:scale-[1.02] h-full">
+            <div className="p-4 rounded-2xl bg-tertiary/10 text-tertiary shrink-0">
+              <MSymbol icon="pending_actions" size={32} filled />
             </div>
-          ))}
+            <div className="min-w-0 flex-1">
+              <p className="font-headline font-black text-2xl md:text-3xl text-tertiary truncate">{pendingPaymentsList.length}</p>
+              <p className="text-xs text-on-surface-variant font-bold uppercase tracking-tight mt-0.5 truncate">Pagos Pendientes</p>
+            </div>
+          </div>
+
+          <div className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/5 flex items-center gap-5 transition-transform hover:scale-[1.02] h-full">
+            <div className="p-4 rounded-2xl bg-secondary/10 text-secondary shrink-0">
+              <MSymbol icon="task_alt" size={32} filled />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="font-headline font-black text-2xl md:text-3xl text-secondary truncate">{jobsToClose.length}</p>
+              <p className="text-xs text-on-surface-variant font-bold uppercase tracking-tight mt-0.5 truncate">Por Finalizar</p>
+            </div>
+          </div>
+
+          <div className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/5 flex items-center gap-5 transition-transform hover:scale-[1.02] h-full overflow-hidden">
+            <div className="p-4 rounded-2xl bg-primary/10 text-primary shrink-0">
+              <MSymbol icon="payments" size={32} filled />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="font-headline font-black text-xl md:text-2xl text-primary break-all leading-tight">
+                ${calculateCommissions()}
+              </p>
+              <p className="text-xs text-on-surface-variant font-bold uppercase tracking-tight mt-1 truncate">Comisiones</p>
+            </div>
+          </div>
+
+          <Dialog>
+            <DialogTrigger asChild>
+              <button className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/5 flex items-center gap-5 transition-all hover:scale-[1.02] hover:bg-surface-container-low text-left group h-full">
+                <div className="p-4 rounded-2xl bg-[#0066FF]/10 text-[#0066FF] group-hover:bg-[#0066FF] group-hover:text-white transition-colors shrink-0">
+                  <MSymbol icon="group" size={32} filled />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-headline font-black text-2xl md:text-3xl text-[#0066FF] truncate">{profiles.length}</p>
+                  <p className="text-xs text-on-surface-variant font-bold uppercase tracking-tight mt-0.5 truncate">Usuarios</p>
+                </div>
+              </button>
+            </DialogTrigger>
+            <DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-4xl h-[90vh] flex flex-col p-0 overflow-hidden md:rounded-3xl border-none shadow-2xl">
+              <DialogHeader className="p-8 border-b border-outline-variant/10 shrink-0 bg-surface-container-low">
+                <DialogTitle className="text-3xl font-headline font-black text-on-surface">Gestión de Usuarios</DialogTitle>
+                <DialogDescription className="text-base text-on-surface-variant">
+                  Explora y filtra la base de datos de usuarios registrados.
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="px-8 py-5 border-b border-outline-variant/10 bg-surface-container-lowest shrink-0">
+                <Tabs value={userFilter} onValueChange={setUserFilter} className="w-full">
+                  <TabsList className="grid w-full grid-cols-3 h-12 p-1.5 bg-surface-container-high rounded-xl">
+                    <TabsTrigger value="all" className="rounded-lg font-bold">Todos ({profiles.length})</TabsTrigger>
+                    <TabsTrigger value="clients" className="rounded-lg font-bold">Clientes ({profiles.filter(p => !p.is_provider).length})</TabsTrigger>
+                    <TabsTrigger value="providers" className="rounded-lg font-bold">Proveedores ({profiles.filter(p => p.is_provider).length})</TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              </div>
+
+              <ScrollArea className="flex-1 min-h-0">
+                <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {filteredProfiles.length === 0 ? (
+                    <div className="col-span-full py-20 flex flex-col items-center justify-center text-on-surface-variant opacity-50">
+                       <MSymbol icon="person_search" size={64} />
+                       <p className="text-lg font-bold mt-4">No se encontraron usuarios.</p>
+                    </div>
+                  ) : (
+                    filteredProfiles.map((p) => (
+                      <div key={p.id} className="flex items-center gap-4 p-5 rounded-2xl border border-outline-variant/10 bg-surface-container-lowest shadow-sm hover:border-primary/30 transition-all group">
+                        <Avatar size="lg" className="ring-2 ring-transparent group-hover:ring-primary/20 transition-all shrink-0">
+                          <AvatarImage src={p.avatar_url} />
+                          <AvatarFallback className="text-lg font-bold">{p.full_name?.charAt(0) || "U"}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className="font-bold text-on-surface text-lg leading-tight break-words">{p.full_name || "Sin nombre"}</p>
+                            <Badge className={cn(
+                              "text-[9px] px-2 py-0.5 rounded-full font-black uppercase tracking-tighter shrink-0",
+                              p.is_provider ? "bg-primary text-on-primary" : "bg-secondary-container text-on-secondary-container"
+                            )}>
+                              {p.is_provider ? "Proveedor" : "Solicitante"}
+                            </Badge>
+                          </div>
+                          <div className="flex flex-col gap-1 mt-2">
+                            <p className="text-xs text-on-surface-variant font-medium flex items-center gap-2">
+                              <MSymbol icon="phone" size={16} className="text-outline" /> {p.phone || "---"}
+                            </p>
+                            <p className="text-xs text-on-surface-variant font-medium flex items-center gap-2">
+                              <MSymbol icon="location_on" size={16} className="text-outline" /> {p.barrio || "---"}
+                            </p>
+                          </div>
+                        </div>
+                        {p.is_provider && (
+                          <div className="text-right shrink-0 bg-primary/5 p-3 rounded-xl ml-2">
+                            <div className="flex items-center justify-end gap-1 text-primary">
+                              <span className="text-lg font-black">{p.rating?.toFixed(1) || "0.0"}</span>
+                              <MSymbol icon="star" size={18} filled />
+                            </div>
+                            <p className="text-[9px] text-outline font-black uppercase mt-0.5">Score</p>
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  )}
+                </div>
+              </ScrollArea>
+            </DialogContent>
+          </Dialog>
         </div>
       </section>
 
-      {/* Pagos por Validar */}
-      <section className="px-5 mb-8">
-        <h2 className="font-headline font-bold text-xl text-on-surface mb-4 flex items-center gap-2">
-          <MSymbol icon="pending_actions" size={22} className="text-tertiary" />
-          Pagos por Validar
-          {pendingPaymentsList.length > 0 && (
-            <span className="ml-1 bg-tertiary text-on-tertiary text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
-              {pendingPaymentsList.length}
-            </span>
-          )}
-        </h2>
+      {/* Main Content Grids */}
+      <div className="px-6 pb-12 md:px-10 grid grid-cols-1 gap-10">
         
-        {pendingPaymentsList.length === 0 ? (
-           <p className="text-on-surface-variant text-sm p-4 bg-surface-container-lowest rounded-lg">No hay pagos pendientes de validación.</p>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {pendingPaymentsList.map((p) => {
-              // Manejar tanto objeto como array (por si acaso)
-              const jobData = Array.isArray(p.jobs) ? p.jobs[0] : p.jobs;
-              const profilesData = jobData?.profiles;
-              const profile = Array.isArray(profilesData) ? profilesData[0] : profilesData;
-              const clName = profile?.full_name || "Cliente";
-              const shortId = jobData?.id?.split("-")[0] || "---";
-
-              return (
-                <div key={p.id} className="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm border border-outline-variant/10">
-                  <div className="relative h-40 bg-surface-container">
-                    {p.proof_url?.toLowerCase().endsWith('.pdf') ? (
-                      <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-surface-container-high text-on-surface-variant">
-                        <MSymbol icon="picture_as_pdf" size={40} className="text-error" filled />
-                        <span className="text-xs font-bold uppercase tracking-wider">Documento PDF</span>
-                      </div>
-                    ) : (
-                      <NextImage 
-                        src={p.proof_url} 
-                        alt="Comprobante" 
-                        fill 
-                        className="object-cover" 
-                        unoptimized
-                      />
-                    )}
-                    <div className="absolute top-2 right-2 flex gap-2">
-                      <span className="bg-surface/80 backdrop-blur-md text-on-surface text-[10px] font-bold px-2 py-1 rounded-md uppercase">
-                        ID: {shortId}
-                      </span>
-                      <span className="bg-tertiary-container text-on-tertiary-container text-[10px] font-bold px-3 py-1.5 rounded-full shadow-sm">
-                        Sin Validar
-                      </span>
-                    </div>
-                    <a 
-                      href={p.proof_url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="absolute bottom-2 left-2 bg-surface/80 backdrop-blur-md text-primary text-[10px] font-bold px-3 py-1.5 rounded-md uppercase hover:bg-primary hover:text-white transition-all flex items-center gap-1"
-                    >
-                      <MSymbol icon="open_in_new" size={14} />
-                      Ver pantalla completa
-                    </a>
-                  </div>
-                  <div className="p-5">
-                    <div className="flex justify-between items-start mb-4">
-                      <Link href={`/trabajos/${p.job_id}`} className="hover:opacity-80 transition-opacity">
-                        <p className="font-headline font-bold text-lg text-on-surface capitalize truncate">{jobData?.title || jobData?.category}</p>
-                        <p className="text-sm text-on-surface-variant font-medium">Cliente: {clName}</p>
-                        <p className="text-xs text-outline mt-1">{new Date(p.created_at).toLocaleTimeString()} · {jobData?.barrio}</p>
-                      </Link>
-                      <p className="font-headline font-extrabold text-2xl text-primary">${(jobData?.final_amount || 0).toLocaleString("es-AR")}</p>
-                    </div>
-                    <div className="flex gap-3">
-                      <button 
-                        onClick={() => handleReject(p.id, p.job_id)}
-                        className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-outline-variant/20 text-on-surface-variant font-bold text-sm hover:bg-error/10 hover:text-error hover:border-error/30 transition-all"
-                      >
-                        <MSymbol icon="close" size={18} />
-                        Rechazar
-                      </button>
-                      <button 
-                        onClick={() => handleApprove(p.id, p.job_id)}
-                        className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-cta-gradient text-white font-bold text-sm shadow-md hover:opacity-90 transition-all"
-                      >
-                        <MSymbol icon="verified" size={18} filled />
-                        Aprobar Pago
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </section>
-
-      {/* Trabajos por Cerrar - NUEVA SECCIÓN */}
-      {jobsToClose.length > 0 && (
-        <section className="px-5 mb-8">
-          <h2 className="font-headline font-bold text-xl text-on-surface mb-4 flex items-center gap-2">
-            <MSymbol icon="task_alt" size={22} className="text-secondary" />
-            Trabajos por Cerrar
-            <span className="ml-1 bg-secondary text-on-secondary text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
-              {jobsToClose.length}
-            </span>
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {jobsToClose.map((j) => (
-              <div key={j.id} className="bg-surface-container-lowest rounded-xl p-5 border-2 border-secondary/20 shadow-sm flex flex-col gap-4">
-                <div className="flex justify-between items-start">
-                  <div className="flex-1 min-w-0">
-                    <p className="font-headline font-bold text-lg text-on-surface truncate">{j.title || j.category}</p>
-                    <p className="text-xs text-on-surface-variant font-medium mt-0.5">El prestador ya terminó la tarea.</p>
-                  </div>
-                  <Badge className="bg-secondary text-on-secondary text-[10px] uppercase font-black">Terminado</Badge>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="flex flex-col gap-0.5 p-2 rounded-lg bg-surface-container-low">
-                    <span className="text-[9px] uppercase font-bold text-outline">Solicitante</span>
-                    <span className="text-xs font-bold text-on-surface truncate">{j.client?.full_name}</span>
-                  </div>
-                  <div className="flex flex-col gap-0.5 p-2 rounded-lg bg-surface-container-low">
-                    <span className="text-[9px] uppercase font-bold text-outline">Prestador</span>
-                    <span className="text-xs font-bold text-primary truncate">{j.provider?.full_name}</span>
-                  </div>
-                </div>
-                <button
-                  onClick={() => handleCloseJob(j.id)}
-                  className="w-full py-3 bg-secondary text-on-secondary rounded-xl font-headline font-bold text-sm uppercase tracking-wider shadow-lg shadow-secondary/20 hover:opacity-90 transition-all flex items-center justify-center gap-2"
-                >
-                  <MSymbol icon="verified" size={18} />
-                  Finalizar y Cerrar
-                </button>
+        {/* Payments Section */}
+        <section>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="font-headline font-extrabold text-2xl text-on-surface flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-tertiary/10 text-tertiary">
+                <MSymbol icon="pending_actions" size={24} />
               </div>
-            ))}
+              Pagos por Validar
+              {pendingPaymentsList.length > 0 && (
+                <span className="ml-2 bg-tertiary text-on-tertiary text-sm font-black rounded-full px-2.5 py-0.5">
+                  {pendingPaymentsList.length}
+                </span>
+              )}
+            </h2>
           </div>
-        </section>
-      )}
+          
+          {pendingPaymentsList.length === 0 ? (
+             <div className="p-10 rounded-3xl bg-surface-container-lowest border border-dashed border-outline-variant/30 flex flex-col items-center justify-center text-on-surface-variant opacity-60">
+                <MSymbol icon="task" size={48} />
+                <p className="font-bold mt-4">Todo al día. No hay pagos pendientes.</p>
+             </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {pendingPaymentsList.map((p) => {
+                const jobData = Array.isArray(p.jobs) ? p.jobs[0] : p.jobs;
+                const profile = Array.isArray(jobData?.profiles) ? jobData.profiles[0] : jobData?.profiles;
+                const clName = profile?.full_name || "Cliente";
+                const shortId = jobData?.id?.split("-")[0] || "---";
 
-      {/* Trabajos Activos */}
-      <section className="px-5 flex-1">
-        <h2 className="font-headline font-bold text-xl text-on-surface mb-4 flex items-center gap-2">
-          <MSymbol icon="work" size={22} className="text-primary" />
-          Monitoreo de Trabajos Activos
-        </h2>
-        {monitoringJobs.length === 0 ? (
-          <p className="text-on-surface-variant text-sm p-4 bg-surface-container-lowest rounded-lg">No hay otros trabajos activos.</p>
-        ) : (
-          <div className="flex flex-col gap-3">
-            {monitoringJobs.map((j) => {
-              const clName = j.client?.full_name || "Cliente";
-              const prName = j.provider?.full_name;
-              const shortId = j.id?.split('-')[0] || "---";
-              
-              return (
-                <Link 
-                  key={j.id} 
-                  href={`/trabajos/${j.id}`}
-                  className="bg-surface-container-lowest rounded-xl p-4 flex items-center justify-between border border-outline-variant/10 shadow-sm hover:border-primary/20 transition-all group"
-                >
-                  <div className="flex flex-col flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-[10px] font-bold text-outline uppercase bg-surface-container-low px-1.5 py-0.5 rounded">#{shortId}</span>
-                      <p className="font-semibold text-on-surface text-base group-hover:text-primary transition-colors truncate">{j.title || j.category}</p>
+                return (
+                  <div key={p.id} className="bg-surface-container-lowest rounded-3xl overflow-hidden shadow-md border border-outline-variant/5 flex flex-col group transition-all hover:shadow-xl">
+                    <div className="relative h-48 bg-surface-container overflow-hidden">
+                      {p.proof_url?.toLowerCase().endsWith('.pdf') ? (
+                        <div className="w-full h-full flex flex-col items-center justify-center gap-3 bg-surface-container-high text-on-surface-variant">
+                          <MSymbol icon="picture_as_pdf" size={48} className="text-error" filled />
+                          <span className="text-xs font-black uppercase tracking-widest">Documento PDF</span>
+                        </div>
+                      ) : (
+                        <NextImage 
+                          src={p.proof_url} 
+                          alt="Comprobante" 
+                          fill 
+                          className="object-cover transition-transform group-hover:scale-110 duration-500" 
+                          unoptimized
+                        />
+                      )}
+                      <div className="absolute top-4 right-4 flex gap-2">
+                        <span className="bg-surface/90 backdrop-blur-md text-on-surface text-[10px] font-black px-3 py-1.5 rounded-lg shadow-sm border border-outline-variant/10 uppercase">
+                          ID: {shortId}
+                        </span>
+                      </div>
+                      <a 
+                        href={p.proof_url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity text-white font-bold gap-2 backdrop-blur-sm"
+                      >
+                        <MSymbol icon="open_in_new" size={24} />
+                        VER COMPLETO
+                      </a>
                     </div>
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1">
-                      <p className="text-xs text-on-surface-variant flex items-center gap-1">
-                        <MSymbol icon="person" size={14} /> {clName}
-                      </p>
-                      {prName && (
-                        <p className="text-xs text-primary font-bold flex items-center gap-1">
-                          <MSymbol icon="engineering" size={14} filled /> {prName}
-                        </p>
+                    <div className="p-6 flex-1 flex flex-col">
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="flex-1 min-w-0 pr-2">
+                          <Link href={`/trabajos/${p.job_id}`} className="hover:text-primary transition-colors">
+                            <p className="font-headline font-black text-xl text-on-surface capitalize truncate">{jobData?.title || jobData?.category}</p>
+                          </Link>
+                          <p className="text-sm text-on-surface-variant font-bold mt-1 flex items-center gap-1.5">
+                            <MSymbol icon="person" size={16} /> {clName}
+                          </p>
+                          <p className="text-[10px] text-outline font-black uppercase tracking-tighter mt-1">{new Date(p.created_at).toLocaleString()} · {jobData?.barrio}</p>
+                        </div>
+                        <p className="font-headline font-black text-2xl text-primary shrink-0">${(jobData?.final_amount || 0).toLocaleString("es-AR")}</p>
+                      </div>
+                      <div className="flex gap-3 mt-auto pt-4 border-t border-outline-variant/10">
+                        <button 
+                          onClick={() => handleReject(p.id, p.job_id)}
+                          className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl border-2 border-outline-variant/10 text-on-surface-variant font-black text-xs uppercase hover:bg-error hover:text-white hover:border-error transition-all"
+                        >
+                          <MSymbol icon="close" size={18} />
+                          Rechazar
+                        </button>
+                        <button 
+                          onClick={() => handleApprove(p.id, p.job_id)}
+                          className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl bg-cta-gradient text-white font-black text-xs uppercase shadow-lg shadow-primary/20 hover:opacity-90 transition-all"
+                        >
+                          <MSymbol icon="verified" size={18} filled />
+                          Validar
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+        {/* Closing Jobs Section */}
+        {jobsToClose.length > 0 && (
+          <section>
+            <h2 className="font-headline font-extrabold text-2xl text-on-surface mb-6 flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-secondary/10 text-secondary">
+                <MSymbol icon="task_alt" size={24} />
+              </div>
+              Trabajos por Cerrar
+              <span className="ml-2 bg-secondary text-on-secondary text-sm font-black rounded-full px-2.5 py-0.5">
+                {jobsToClose.length}
+              </span>
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {jobsToClose.map((j) => (
+                <div key={j.id} className="bg-surface-container-lowest rounded-3xl p-6 border-2 border-secondary/10 shadow-sm flex flex-col gap-5 hover:border-secondary/30 transition-all">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-headline font-black text-xl text-on-surface truncate">{j.title || j.category}</p>
+                      <Badge className="bg-secondary text-on-secondary text-[9px] uppercase font-black px-2 py-0.5 mt-2">Terminado</Badge>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="flex flex-col gap-1 p-3 rounded-2xl bg-surface-container-low border border-outline-variant/5">
+                      <span className="text-[8px] uppercase font-black text-outline tracking-wider">Solicitante</span>
+                      <span className="text-xs font-bold text-on-surface truncate">{j.client?.full_name}</span>
+                    </div>
+                    <div className="flex flex-col gap-1 p-3 rounded-2xl bg-surface-container-low border border-outline-variant/5">
+                      <span className="text-[8px] uppercase font-black text-outline tracking-wider">Colaborador</span>
+                      <span className="text-xs font-bold text-primary truncate">{j.provider?.full_name}</span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleCloseJob(j.id)}
+                    className="w-full py-4 bg-secondary text-on-secondary rounded-2xl font-headline font-black text-sm uppercase tracking-widest shadow-xl shadow-secondary/20 hover:bg-secondary/90 transition-all flex items-center justify-center gap-2"
+                  >
+                    <MSymbol icon="verified" size={20} />
+                    Finalizar y Cerrar
+                  </button>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Monitoring Section - LIST FORMAT SORTED NEWEST FIRST */}
+        <section>
+          <h2 className="font-headline font-extrabold text-2xl text-on-surface mb-6 flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-primary/10 text-primary">
+              <MSymbol icon="work" size={24} />
+            </div>
+            Monitoreo Activo
+          </h2>
+          {monitoringJobs.length === 0 ? (
+            <div className="p-10 rounded-3xl bg-surface-container-lowest border border-outline-variant/10 text-center text-on-surface-variant">
+              No hay trabajos activos en este momento.
+            </div>
+          ) : (
+            <div className="flex flex-col gap-4">
+              {monitoringJobs.map((j) => {
+                const clName = j.client?.full_name || "Cliente";
+                const prName = j.provider?.full_name;
+                const shortId = j.id?.split('-')[0] || "---";
+                
+                return (
+                  <Link 
+                    key={j.id} 
+                    href={`/trabajos/${j.id}`}
+                    className="bg-surface-container-lowest rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between border border-outline-variant/10 shadow-sm hover:border-primary transition-all group gap-4"
+                  >
+                    <div className="flex flex-col flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1.5">
+                        <span className="text-[9px] font-black text-outline uppercase bg-surface-container-low px-2 py-0.5 rounded-lg border border-outline-variant/5 shrink-0">#{shortId}</span>
+                        <p className="font-bold text-on-surface text-lg group-hover:text-primary transition-colors truncate">{j.title || j.category}</p>
+                      </div>
+                      <div className="flex flex-wrap gap-x-6 gap-y-1.5 mt-1">
+                        <div className="text-xs text-on-surface-variant font-bold flex items-center gap-1.5">
+                          <MSymbol icon="person" size={16} className="text-outline" /> {clName}
+                        </div>
+                        {prName && (
+                          <div className="text-xs text-primary font-black flex items-center gap-1.5">
+                            <MSymbol icon="engineering" size={16} filled /> {prName}
+                          </div>
+                        )}
+                        <div className="text-[10px] text-outline font-bold flex items-center gap-1.5">
+                          <MSymbol icon="schedule" size={14} /> {new Date(j.created_at).toLocaleDateString()}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0 sm:ml-6 border-t sm:border-t-0 pt-4 sm:pt-0 border-outline-variant/5">
+                      <div className="text-right flex flex-col items-end">
+                        <Badge className={cn(
+                          "rounded-full text-[9px] mb-1 px-3 py-1 font-black uppercase tracking-tighter",
+                          j.status === "in_progress" ? "bg-primary text-on-primary" : "bg-secondary-container text-on-secondary-container"
+                        )}>
+                          {STATUS_LABELS[j.status as JobStatus] || j.status}
+                        </Badge>
+                        {j.final_amount > 0 && <p className="font-headline font-black text-primary text-xl leading-none mt-1">${j.final_amount.toLocaleString("es-AR")}</p>}
+                      </div>
+                      
+                      {j.status === "in_progress" && (
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleCompleteByAdmin(j.id);
+                          }}
+                          className="text-[9px] font-black text-primary uppercase border-2 border-primary/20 px-3 py-2 rounded-xl hover:bg-primary hover:text-white transition-all shadow-sm"
+                        >
+                          CERRAR
+                        </button>
                       )}
                     </div>
-                  </div>
-
-                  <div className="text-right flex flex-col items-end shrink-0 ml-4">
-                    <Badge className={cn(
-                      "rounded-full text-[10px] mb-1.5 px-3 py-1 font-bold uppercase",
-                      j.status === "in_progress" ? "bg-primary text-on-primary" : "bg-secondary-container text-on-secondary-container"
-                    )}>
-                      {STATUS_LABELS[j.status as JobStatus] || j.status}
-                    </Badge>
-                    {j.status === "in_progress" && (
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleCompleteByAdmin(j.id);
-                        }}
-                        className="text-[10px] font-bold text-primary uppercase border border-primary/20 px-2 py-1 rounded hover:bg-primary/10 transition-colors mt-1"
-                      >
-                        Marcar Finalizado
-                      </button>
-                    )}
-                    {j.final_amount > 0 && <p className="font-headline font-bold text-primary text-base mt-1">${j.final_amount.toLocaleString("es-AR")}</p>}
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        )}
-      </section>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   );
 }

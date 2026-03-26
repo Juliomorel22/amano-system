@@ -85,20 +85,20 @@ export default function ConfirmarPagoPage({ params }: { params: Promise<{ id: st
       // 3. Actualizar oferta
       await supabase.from("offers").update({ status: "accepted" }).eq("id", offerId);
       
-      // 4. Actualizar job con el prestador seleccionado y el monto final
+      // 4. Actualizar job con el estado de revisión y el monto final (Asignamos provider_id para visibilidad)
       await supabase.from("jobs").update({ 
-        status: "accepted", 
+        status: "payment_under_review", 
         final_amount: offer?.amount,
-        provider_id: offer?.provider_id // Asignación inicial
+        provider_id: offer?.provider_id
       }).eq("id", id);
 
-      // 5. NOTIFICAR AL PROVEEDOR que ha sido seleccionado
+      // 5. NOTIFICAR AL PROVEEDOR que su oferta fue pre-seleccionada
       if (offer?.provider_id) {
         await supabase.from("notifications").insert({
           user_id: offer.provider_id,
           type: "offer_selected",
           title: "¡Oferta seleccionada!",
-          content: `El cliente seleccionó tu oferta para: ${job?.title || job?.description || "un trabajo"}. El pago está pendiente de validación.`,
+          content: `El cliente seleccionó tu oferta para: ${job?.title || job?.description || "un trabajo"}. El pago está siendo revisado por Amano.`,
           link: `/trabajos/${id}`,
         });
       }
