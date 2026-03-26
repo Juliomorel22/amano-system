@@ -35,19 +35,24 @@ export async function GET(request: Request) {
 
     // Check if profile is complete
     const { data: { user } } = await supabase.auth.getUser()
+    
     if (user) {
-      const { data: profile } = await supabase
+      const { data: profile, error } = await supabase
         .from('profiles')
         .select('full_name, phone, barrio')
         .eq('id', user.id)
         .single()
 
-      if (profile?.full_name && profile?.phone && profile?.barrio) {
-        return NextResponse.redirect(`${requestUrl.origin}/dashboard`)
+      // Si no hay perfil, o si faltan datos obligatorios, forzar onboarding
+      if (error || !profile || !profile.full_name || !profile.phone || !profile.barrio) {
+        return NextResponse.redirect(`${requestUrl.origin}/perfil`)
       }
+
+      // Si el perfil está completo, ir al dashboard
+      return NextResponse.redirect(`${requestUrl.origin}/dashboard`)
     }
   }
 
-  // URL to redirect to after sign in process completes
+  // Si algo falla o no hay código, ir al perfil por seguridad (allí se valida sesión)
   return NextResponse.redirect(`${requestUrl.origin}/perfil`)
 }
