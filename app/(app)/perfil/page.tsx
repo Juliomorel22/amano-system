@@ -162,6 +162,9 @@ export default function PerfilPage() {
     if (error) {
       toast.error(error.message);
     } else {
+      // Disparar evento para que otros componentes (Nav, Header) sepan que el perfil cambió
+      window.dispatchEvent(new Event("profile-updated"));
+      
       toast.success(isOnboarding ? "¡Bienvenido a A Mano!" : "¡Perfil guardado con éxito!");
       router.push("/dashboard");
     }

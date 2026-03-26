@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { usePathname } from "next/navigation";
 
@@ -10,33 +10,43 @@ export function useProfile() {
   const [profile, setProfile] = useState<any>(null);
   const pathname = usePathname();
 
-  useEffect(() => {
-    async function checkProfile() {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        setLoading(false);
-        return;
-      }
-
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("full_name, phone, barrio")
-        .eq("id", user.id)
-        .single();
-
-      if (profile) {
-        setProfile(profile);
-        const complete = !!(profile.full_name && profile.phone && profile.barrio);
-        setIsComplete(complete);
-      } else {
-        setIsComplete(false);
-      }
+  const checkProfile = useCallback(async () => {
+    setLoading(true);
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
       setLoading(false);
+      return;
     }
-    checkProfile();
-  }, [pathname]); // Re-verificar cada vez que cambia la ruta para asegurar que el bloqueo se actualice
 
-  return { loading, isComplete, profile };
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("full_name, phone, barrio")
+      .eq("id", user.id)
+      .single();
+
+    if (profile) {
+      setProfile(profile);
+      const complete = !!(profile.full_name?.trim() && profile.phone?.trim() && profile.barrio?.trim());
+      setIsComplete(complete);
+    } else {
+      setIsComplete(false);
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    checkProfile();
+
+    // Escuchar evento personalizado de actualización
+    const handleUpdate = () => {
+      checkProfile();
+    };
+
+    window.addEventListener("profile-updated", handleUpdate);
+    return () => window.removeEventListener("profile-updated", handleUpdate);
+  }, [checkProfile, pathname]);
+
+  return { loading, isComplete, profile, refresh: checkProfile };
 }
