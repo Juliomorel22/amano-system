@@ -18,7 +18,7 @@ import {
   DialogTrigger,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
@@ -331,7 +331,7 @@ export default function AdminPage() {
   });
 
   return (
-    <div className="bg-surface flex flex-col w-full max-w-7xl mx-auto md:my-8 md:rounded-3xl shadow-2xl overflow-hidden relative">
+    <div className="bg-surface flex flex-col w-full lg:max-w-full max-w-7xl mx-auto md:my-8 lg:my-0 md:rounded-3xl lg:rounded-none shadow-2xl lg:shadow-none overflow-hidden relative">
       <div className="px-6 pt-10 pb-8 bg-surface-container-low border-b border-outline-variant/10 md:px-10">
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
           <div>
@@ -384,17 +384,19 @@ export default function AdminPage() {
           </div>
 
           <Dialog>
-            <DialogTrigger asChild>
-              <button className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/5 flex items-center gap-5 transition-all hover:scale-[1.02] hover:bg-surface-container-low text-left group h-full">
-                <div className="p-4 rounded-2xl bg-[#0066FF]/10 text-[#0066FF] group-hover:bg-[#0066FF] group-hover:text-white transition-colors shrink-0">
-                  <MSymbol icon="group" size={32} filled />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="font-headline font-black text-2xl md:text-3xl text-[#0066FF] truncate">{profiles.length}</p>
-                  <p className="text-xs text-on-surface-variant font-bold uppercase tracking-tight mt-0.5 truncate">Usuarios</p>
-                </div>
-              </button>
-            </DialogTrigger>
+            <DialogTrigger
+              render={
+                <button className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-outline-variant/5 flex items-center gap-5 transition-all hover:scale-[1.02] hover:bg-surface-container-low text-left group h-full">
+                  <div className="p-4 rounded-2xl bg-[#0066FF]/10 text-[#0066FF] group-hover:bg-[#0066FF] group-hover:text-white transition-colors shrink-0">
+                    <MSymbol icon="group" size={32} filled />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-headline font-black text-2xl md:text-3xl text-[#0066FF] truncate">{profiles.length}</p>
+                    <p className="text-xs text-on-surface-variant font-bold uppercase tracking-tight mt-0.5 truncate">Usuarios</p>
+                  </div>
+                </button>
+              }
+            />
             <DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-4xl h-[90vh] flex flex-col p-0 overflow-hidden md:rounded-3xl border-none shadow-2xl">
               <DialogHeader className="p-8 border-b border-outline-variant/10 shrink-0 bg-surface-container-low">
                 <DialogTitle className="text-3xl font-headline font-black text-on-surface">Gestión de Usuarios</DialogTitle>

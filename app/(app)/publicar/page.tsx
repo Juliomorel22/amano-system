@@ -251,7 +251,7 @@ export default function PublicarPage() {
   };
 
   return (
-    <div className="bg-surface flex flex-col max-w-md md:max-w-3xl lg:max-w-5xl mx-auto shadow-2xl relative pb-0">
+    <div className="bg-surface flex flex-col max-w-md md:max-w-3xl lg:max-w-full mx-auto lg:shadow-none shadow-2xl relative pb-0">
       <div className="px-5 pt-5 pb-4">
         <div className="flex items-center justify-between mb-5">
           <Link href="/dashboard" className="text-on-surface-variant">
@@ -567,7 +567,7 @@ export default function PublicarPage() {
       </section>
 
       {/* CTA flotante */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 px-5 pb-6 pt-4 glass-header border-t border-outline-variant/10 max-w-md md:max-w-3xl lg:max-w-5xl mx-auto shadow-ambient bg-surface md:rounded-b-[2rem] pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))]">
+      <div className="fixed bottom-0 left-0 right-0 z-40 px-5 pb-6 pt-4 glass-header border-t border-outline-variant/10 max-w-md md:max-w-3xl lg:max-w-full mx-auto shadow-ambient bg-surface md:rounded-b-[2rem] pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))]">
         {!canSubmit && (
           <p className="text-[10px] text-on-surface-variant text-center mb-2 uppercase font-bold tracking-tight">
             {!selectedCategory ? "Seleccioná una categoría" : !title.trim() || title.trim().length <= 5 ? "Escribí un título (mín. 5 carac.)" : !description.trim() || description.trim().length <= 10 ? "Describí el trabajo (mín. 10 carac.)" : "Escribí o seleccioná tu barrio"}

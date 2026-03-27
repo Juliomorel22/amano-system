@@ -8,6 +8,7 @@ import { useNotifications } from "@/hooks/use-notifications";
 import { createClient } from "@/lib/supabase/client";
 import { useProfile } from "@/hooks/use-profile";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface AppHeaderProps {
   showBack?: boolean;
@@ -42,13 +43,9 @@ export function AppHeader({ showBack = false, title, rightContent }: AppHeaderPr
       }
     }
     getProfile();
-
-    // Suscribirse a cambios en el perfil si fuera necesario, 
-    // pero por ahora con el fetch inicial basta para el Header.
   }, []);
 
   const handleNavClick = (e: React.MouseEvent, href: string) => {
-    // Si el perfil no está completo y no es la página de perfil, bloquear
     if (!profileLoading && !isComplete && href !== "/perfil") {
       e.preventDefault();
       toast.error("Para explorar todas las funciones debés completar tus datos primero", {
@@ -61,27 +58,34 @@ export function AppHeader({ showBack = false, title, rightContent }: AppHeaderPr
 
   return (
     <header className="glass-header sticky top-0 z-50 border-b border-outline-variant/10 backdrop-blur-xl">
-      <div className="flex items-center justify-between px-5 h-14 max-w-md md:max-w-3xl lg:max-w-5xl mx-auto">
-        <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between px-4 h-16 max-w-7xl mx-auto">
+        <div className="flex items-center gap-1">
           {showBack ? (
-            <button onClick={() => history.back()} className="text-on-surface hover:bg-surface-container-high p-1.5 rounded-full transition-colors">
+            <button 
+              onClick={() => history.back()} 
+              className="text-on-surface hover:bg-surface-container-high active:scale-90 p-3 rounded-full transition-all"
+              aria-label="Volver"
+            >
               <MSymbol icon="arrow_back" size={24} />
             </button>
           ) : (
-            <button className="text-on-surface-variant hover:bg-surface-container-high p-1.5 rounded-full transition-colors">
+            <button 
+              className="text-on-surface-variant hover:bg-surface-container-high active:scale-90 p-3 rounded-full transition-all"
+              aria-label="Menú"
+            >
               <MSymbol icon="menu" size={24} />
             </button>
           )}
 
           {title ? (
-            <span className="font-headline font-bold text-base text-on-surface truncate max-w-[150px]">{title}</span>
+            <span className="font-headline font-bold text-base text-on-surface truncate max-w-[180px] ml-1">{title}</span>
           ) : (
             <Link 
               href="/dashboard" 
               onClick={(e) => handleNavClick(e, "/dashboard")}
-              className="active:scale-95 transition-transform"
+              className="active:scale-95 transition-transform ml-2"
             >
-              <span className="font-headline font-extrabold text-xl text-primary tracking-tight">
+              <span className="font-headline font-black text-2xl text-primary tracking-tighter">
                 amano
               </span>
             </Link>
@@ -89,21 +93,26 @@ export function AppHeader({ showBack = false, title, rightContent }: AppHeaderPr
         </div>
 
         {rightContent ?? (
-          <div className="flex items-center gap-3.5">
+          <div className="flex items-center gap-1">
             <Link 
               href="/notificaciones" 
               onClick={(e) => handleNavClick(e, "/notificaciones")}
-              className="relative text-on-surface-variant hover:bg-surface-container-high p-1.5 rounded-full transition-all"
+              className="relative text-on-surface-variant hover:bg-surface-container-high active:scale-90 p-3 rounded-full transition-all"
+              aria-label="Notificaciones"
             >
               <MSymbol icon="notifications" size={26} />
               {unreadCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-error border-2 border-surface shadow-sm animate-pulse" />
+                <span className="absolute top-3 right-3 w-2.5 h-2.5 rounded-full bg-error border-2 border-surface shadow-sm animate-pulse" />
               )}
             </Link>
-            <Link href="/perfil" className="active:scale-90 transition-transform">
-              <Avatar className="size-8 border-2 border-primary/20 shadow-sm ring-2 ring-transparent hover:ring-primary/40 transition-all">
+            <Link 
+              href="/perfil" 
+              className="active:scale-90 transition-transform p-1.5"
+              aria-label="Perfil"
+            >
+              <Avatar className="size-9 border-2 border-primary/10 shadow-sm hover:border-primary/30 transition-all">
                 <AvatarImage src={avatarUrl || ""} className="object-cover" />
-                <AvatarFallback className="bg-primary/10 text-primary text-[10px] font-bold">
+                <AvatarFallback className="bg-primary/5 text-primary text-[10px] font-black">
                   {initials}
                 </AvatarFallback>
               </Avatar>

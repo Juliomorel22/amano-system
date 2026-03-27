@@ -156,7 +156,7 @@ export default function DatosDesbloqueadosPage({ params }: { params: Promise<{ i
         </div>
       </header>
 
-      <main className="max-w-md mx-auto px-4 mt-6">
+      <main className="lg:max-w-full max-w-md mx-auto px-4 mt-6">
         {/* Status Banner */}
         <div className="mb-8 px-2">
           <div className="flex items-center gap-3 mb-2">
@@ -267,7 +267,7 @@ export default function DatosDesbloqueadosPage({ params }: { params: Promise<{ i
       {/* Fixed Bottom Action Area */}
       {(job.status === "in_progress" || job.status === "finished") && (
         <div className="fixed bottom-0 left-0 w-full z-40 px-4 pb-8 pt-4 glass-header">
-          <div className="max-w-md mx-auto">
+          <div className="lg:max-w-full max-w-md mx-auto">
             {!job.provider_arrived_at ? (
               <div className="bg-surface-container-high/50 p-4 rounded-xl border border-outline-variant/10 flex items-center gap-3">
                 <MSymbol icon="hourglass_empty" size={24} className="text-outline" />

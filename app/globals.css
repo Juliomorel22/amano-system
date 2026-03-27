@@ -124,11 +124,19 @@
     }
     html {
         font-family: "Inter", sans-serif;
+        scroll-behavior: smooth;
     }
     h1, h2, h3, h4, h5, h6 {
         font-family: "Manrope", sans-serif;
         letter-spacing: -0.02em;
         font-weight: 800;
+    }
+    ::selection {
+        background-color: rgba(0, 63, 135, 0.1);
+        color: #003f87;
+    }
+    :focus-visible {
+        @apply outline-2 outline-primary/30 outline-offset-2;
     }
 }
 

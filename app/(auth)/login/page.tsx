@@ -90,7 +90,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-surface flex flex-col max-w-md md:max-w-3xl lg:max-w-5xl mx-auto shadow-2xl">
+    <div className="min-h-screen bg-surface flex flex-col max-w-md md:max-w-3xl lg:max-w-full mx-auto lg:shadow-none shadow-2xl">
       {/* Hero */}
       <div className="flex-1 bg-cta-gradient flex flex-col items-center justify-center px-8 pt-16 pb-12 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">

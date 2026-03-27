@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, use, useCallback } from "react";
+import { useEffect, useState, use, useCallback, Suspense } from "react";
 import { MSymbol } from "@/components/amano/m-symbol";
 import { OfferCard } from "@/components/amano/offer-card";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import dynamic from 'next/dynamic';
 import { formatDistanceToNow, isToday, isYesterday } from "date-fns";
 import { es } from "date-fns/locale";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const MapaAproximado = dynamic(
   () => import('@/components/amano/mapa-aproximado'),
@@ -37,7 +38,48 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+function TrabajoDetalleSkeleton() {
+  return (
+    <div className="min-h-screen bg-surface flex flex-col max-w-7xl mx-auto pb-20">
+      <section className="px-5 pt-5 pb-4 bg-surface-container-low">
+        <div className="flex items-center justify-between mb-4">
+          <Skeleton className="h-6 w-32 rounded-full" />
+          <Skeleton className="size-8 rounded-full" />
+        </div>
+        <div className="flex items-center gap-3 mb-6">
+          <Skeleton className="size-10 rounded-full" />
+          <div className="flex flex-col gap-1">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-3 w-32" />
+          </div>
+        </div>
+        <Skeleton className="h-10 w-3/4 mb-4" />
+        <Skeleton className="h-4 w-full mb-2" />
+        <Skeleton className="h-4 w-2/3 mb-6" />
+        <div className="flex gap-3">
+          <Skeleton className="h-8 w-24 rounded-full" />
+          <Skeleton className="h-8 w-24 rounded-full" />
+        </div>
+      </section>
+      <section className="px-5 py-4">
+        <Skeleton className="h-64 w-full rounded-2xl" />
+      </section>
+      <section className="px-5 py-4">
+        <Skeleton className="h-32 w-full rounded-2xl" />
+      </section>
+    </div>
+  );
+}
+
 export default function TrabajoDetallePage({ params }: { params: Promise<{ id: string }> }) {
+  return (
+    <Suspense fallback={<TrabajoDetalleSkeleton />}>
+      <TrabajoDetalleContent params={params} />
+    </Suspense>
+  );
+}
+
+function TrabajoDetalleContent({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
 
@@ -327,8 +369,12 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
     setSubmittingOffer(false);
   };
 
-  if (loading) return <div className="min-h-screen bg-surface flex items-center justify-center">Cargando...</div>;
-  if (!job) return <div className="min-h-screen bg-surface p-5">Trabajo no encontrado.</div>;
+  if (loading) return <TrabajoDetalleSkeleton />;
+  if (!job) return <div className="min-h-screen bg-surface p-5 text-center flex flex-col items-center justify-center gap-4">
+    <MSymbol icon="error" size={48} className="text-error" />
+    <p className="font-headline font-bold text-on-surface">Trabajo no encontrado.</p>
+    <Link href="/dashboard" className="text-primary font-bold uppercase tracking-widest text-xs border-b border-primary/20 pb-0.5">Volver al inicio</Link>
+  </div>;
 
   const isOwner = job.client_id === userId;
   const isAssignedProvider = assignedProvider?.id === userId;
@@ -340,27 +386,31 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
   const isAssigned = !!assignedProvider;
 
   return (
-    <div className="min-h-screen bg-surface flex flex-col max-w-md md:max-w-3xl lg:max-w-5xl mx-auto shadow-2xl relative pb-20">
-      <section className="px-5 pt-5 pb-4 bg-surface-container-low">
-        <div className="flex items-center justify-between mb-4">
+    <div className="min-h-screen bg-surface flex flex-col max-w-7xl mx-auto lg:shadow-none shadow-2xl relative pb-20">
+      <section className="px-5 pt-5 pb-6 bg-surface-container-low rounded-b-[2rem]">
+        <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
-            <Badge className="bg-secondary-container text-on-secondary-container rounded-full text-[10px] uppercase tracking-wider font-bold px-3 py-1">
+            <Badge className="bg-primary/10 text-primary border-primary/20 rounded-full text-[10px] uppercase tracking-wider font-black px-3 py-1">
               {STATUS_LABELS[job.status as JobStatus] || job.status}
             </Badge>
             <p className="text-[10px] font-bold text-outline-variant uppercase bg-surface-container-high px-1.5 py-0.5 rounded tracking-tighter">
               ID: {id.split("-")[0]}
             </p>
           </div>
-          <button onClick={() => history.back()} className="text-on-surface-variant">
-            <MSymbol icon="close" size={20} />
+          <button 
+            onClick={() => history.back()} 
+            className="text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full active:scale-90 transition-all"
+            aria-label="Cerrar"
+          >
+            <MSymbol icon="close" size={24} />
           </button>
         </div>
 
         {/* User Info Header */}
         <div className="flex items-center gap-3 mb-6">
-          <Avatar size="default" className="border border-outline-variant/10 shadow-sm shrink-0">
+          <Avatar className="size-11 border-2 border-primary/10 shadow-sm shrink-0">
             <AvatarImage src={clientData?.avatar_url || ""} />
-            <AvatarFallback className="bg-primary/5 text-primary text-xs font-bold">
+            <AvatarFallback className="bg-primary/5 text-primary text-xs font-black">
               {clientData?.full_name?.substring(0, 2).toUpperCase() || "AM"}
             </AvatarFallback>
           </Avatar>
@@ -368,64 +418,67 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
             <p className="text-sm font-headline font-bold text-on-surface leading-tight truncate">
               {clientData?.full_name || "Usuario"}
             </p>
-            <p className="text-[11px] text-on-surface-variant font-medium">
+            <p className="text-[11px] text-on-surface-variant font-black uppercase tracking-widest opacity-60">
               necesita una mano con:
             </p>
           </div>
         </div>
 
         <div className="flex flex-col gap-1 mb-2">
-          <h1 className="font-headline font-extrabold text-3xl text-on-surface tracking-tight leading-tight">
+          <h1 className="font-headline font-black text-3xl text-on-surface tracking-tight leading-[1.1]">
             {job.title || job.description}
           </h1>
           {job.title && (
-            <p className="text-on-surface-variant text-base mt-1">
+            <p className="text-on-surface-variant text-base mt-2 leading-relaxed">
               {job.description}
             </p>
           )}
           {job.availability && (
-            <div className="mt-4 flex items-start gap-2.5">
-              <MSymbol icon="event_available" size={18} className="text-secondary mt-0.5" filled />
-              <p className="text-sm text-on-surface-variant font-medium">
-                <span className="text-secondary font-bold">Fecha y horario deseado para hacer la tarea:</span>{" "}
-                <span className="text-on-surface font-extrabold text-base">{job.availability}</span>
-              </p>
+            <div className="mt-6 p-4 bg-surface-container-lowest rounded-2xl border border-outline-variant/10 shadow-sm flex items-start gap-3">
+              <MSymbol icon="calendar_today" size={20} className="text-primary mt-0.5" filled />
+              <div className="flex flex-col gap-0.5">
+                <p className="text-[10px] font-black text-primary uppercase tracking-widest">Fecha y horario deseado</p>
+                <p className="text-base font-headline font-extrabold text-on-surface">
+                  {job.availability}
+                </p>
+              </div>
             </div>
           )}
         </div>
-        <div className="flex flex-wrap items-center gap-3 mt-4">
+        
+        <div className="flex flex-wrap items-center gap-2 mt-6">
           {job.created_at && (
-            <div className="flex items-center gap-2 bg-surface-container-highest px-3 py-1.5 rounded-full border border-outline-variant/10">
-              <MSymbol icon="schedule" size={16} className="text-on-surface-variant" filled />
-              <span className="text-[11px] font-bold text-on-surface-variant uppercase tracking-tight leading-none italic">
+            <div className="flex items-center gap-2 bg-surface-container-highest/50 px-3 py-1.5 rounded-full border border-outline-variant/10">
+              <MSymbol icon="schedule" size={14} className="text-on-surface-variant/70" filled />
+              <span className="text-[10px] font-black text-on-surface-variant uppercase tracking-tight leading-none italic">
                 {isToday(new Date(job.created_at)) 
-                  ? "Publicado hoy" 
+                  ? "hoy" 
                   : isYesterday(new Date(job.created_at)) 
-                    ? "Publicado ayer" 
-                    : `Publicado ${formatDistanceToNow(new Date(job.created_at), { addSuffix: true, locale: es })}`}
+                    ? "ayer" 
+                    : formatDistanceToNow(new Date(job.created_at), { addSuffix: false, locale: es })}
               </span>
             </div>
           )}
-          <div className="flex items-center gap-2 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
-            <MSymbol icon="category" size={16} className="text-primary" filled />
-            <span className="text-xs font-black text-primary uppercase tracking-widest leading-none">
+          <div className="flex items-center gap-2 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/10">
+            <MSymbol icon="category" size={14} className="text-primary" filled />
+            <span className="text-[10px] font-black text-primary uppercase tracking-widest leading-none">
               {job.category}
             </span>
           </div>
-          <div className="flex items-center gap-2 bg-surface-container-highest px-3 py-1.5 rounded-full border border-outline-variant/20">
-            <MSymbol icon="location_on" size={16} className="text-on-surface" filled />
-            <span className="text-xs font-bold text-on-surface uppercase tracking-tight leading-none">
+          <div className="flex items-center gap-2 bg-surface-container-highest/50 px-3 py-1.5 rounded-full border border-outline-variant/10">
+            <MSymbol icon="location_on" size={14} className="text-on-surface/70" filled />
+            <span className="text-[10px] font-black text-on-surface uppercase tracking-tight leading-none">
               {job.barrio}
             </span>
           </div>
         </div>
       </section>
 
-      {/* Mensajes de estado Críticos para la Publicación (Visibles para las partes involucradas) */}
+      {/* Mensajes de estado Críticos para la Publicación */}
       <section className="px-5 mt-4">
         {(job.status === "paid" || job.status === "in_progress") && isAuthorized && (
-           <div className="mb-4 p-4 bg-success-container/30 border border-success/20 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-500">
-             <MSymbol icon="check_circle" size={20} className="text-success mt-0.5" filled />
+           <div className="mb-4 p-4 bg-success-container/30 border border-success/20 rounded-2xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-500">
+             <MSymbol icon="verified" size={20} className="text-success mt-0.5" filled />
              <div>
                <p className="text-sm font-black text-on-success-container uppercase tracking-tight mb-0.5">
                  ¡Pago aprobado por administración!
@@ -433,10 +486,10 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
                <p className="text-sm font-semibold text-on-success-container/90 text-pretty leading-snug">
                  {isAssignedProvider ? (
                    <>
-                     La dirección del trabajo es en <span className="font-black text-on-success-container underline decoration-success/30 underline-offset-2">{job.address}</span> y el horario es <span className="font-black text-on-success-container underline decoration-success/30 underline-offset-2">{job.availability || "a convenir"}</span>. Estaremos en contacto con vos y el solicitante para coordinar la tarea.
+                     La dirección del trabajo es en <span className="font-black text-on-success-container underline decoration-success/30 underline-offset-2">{job.address}</span> y el horario es <span className="font-black text-on-success-container underline decoration-success/30 underline-offset-2">{job.availability || "a convenir"}</span>.
                    </>
                  ) : (
-                   "El pago del solicitante ha sido aprobado por la administración de Amano. El domicilio y los celulares ahora están visibles para ambas partes. El equipo de Amano empezará a coordinar la tarea entre el solicitante y el colaborador."
+                   "El pago ha sido aprobado. El domicilio y los celulares ahora están visibles para ambas partes."
                  )}
                </p>
              </div>
@@ -444,14 +497,14 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
         )}
 
         {job.status === "payment_under_review" && isAuthorized && (
-           <div className="mb-4 p-4 bg-tertiary-fixed border border-tertiary/20 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-500">
-             <MSymbol icon="schedule" size={20} className="text-tertiary mt-0.5" filled />
+           <div className="mb-4 p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-500">
+             <MSymbol icon="history" size={20} className="text-amber-600 mt-0.5" filled />
              <div>
-               <p className="text-sm font-black text-on-tertiary-fixed uppercase tracking-tight mb-0.5">
+               <p className="text-sm font-black text-amber-900 uppercase tracking-tight mb-0.5">
                  Pago bajo revisión
                </p>
-               <p className="text-sm font-semibold text-on-tertiary-fixed/90 text-pretty leading-snug">
-                 El pago del solicitante está bajo revisión por el equipo de Amano. Una vez aceptado el pago se brindarán los datos del domicilio y celulares de ambos usuarios.
+               <p className="text-sm font-medium text-amber-800 text-pretty leading-snug">
+                 El pago está siendo revisado por el equipo de Amano. Una vez aceptado se brindarán los datos exactos.
                </p>
              </div>
            </div>
@@ -459,24 +512,24 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
 
         {job.status === "payment_rejected" && isAuthorized && (
           <div className={cn(
-            "mb-4 p-4 border rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-500",
+            "mb-4 p-4 border rounded-2xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-500",
             isOwner ? "bg-error-container/30 border-error/20" : "bg-amber-50 border-amber-200"
           )}>
             <MSymbol icon={isOwner ? "error" : "schedule"} size={20} className={isOwner ? "text-error mt-0.5" : "text-amber-600 mt-0.5"} filled />
             <div>
               <p className={cn(
-                "text-sm font-bold uppercase tracking-tight mb-0.5",
-                isOwner ? "text-on-error-container" : "text-amber-800"
+                "text-sm font-black uppercase tracking-tight mb-0.5",
+                isOwner ? "text-on-error-container" : "text-amber-900"
               )}>
-                {isOwner ? "Atención: Pago Rechazado" : "En espera: Pago del cliente"}
+                {isOwner ? "Pago Rechazado" : "Pago en espera"}
               </p>
               <p className={cn(
                 "text-sm font-medium text-pretty leading-snug",
-                isOwner ? "text-on-error-container" : "text-amber-700"
+                isOwner ? "text-on-error-container" : "text-amber-800"
               )}>
                 {isOwner
-                  ? `Pago rechazado. Tu comprobante para "${job.title || job.description || job.category}" fue rechazado por la administración de Amano. Estaremos en contacto con vos para resolver el asunto.`
-                  : "El pago por parte del solicitante fue rechazado por la administración de Amano. Estaremos en contacto con la persona para resolver el pago del trabajo."
+                  ? "Tu comprobante fue rechazado. Estaremos en contacto con vos para resolverlo."
+                  : "El pago del solicitante fue rechazado. Aguardamos una nueva transferencia."
                 }
               </p>
             </div>
@@ -486,80 +539,78 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
 
       {/* Administrator Audit Section */}
       {isAdmin && (
-        <section className="px-5 py-6 bg-surface-container-high/50 border-y border-outline-variant/10 mb-6">
+        <section className="px-5 py-6 bg-surface-container-high/30 border-y border-outline-variant/10 mb-6">
           <div className="flex items-center gap-2 mb-4">
-            <div className="p-2 rounded-lg bg-primary/10 text-primary">
+            <div className="p-2 rounded-xl bg-primary/10 text-primary shadow-sm">
               <MSymbol icon="admin_panel_settings" size={20} filled />
             </div>
-            <h2 className="font-headline font-bold text-lg text-on-surface">Auditoría de Administrador</h2>
+            <h2 className="font-headline font-bold text-lg text-on-surface">Auditoría</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Client Info */}
-            <div className="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/10">
-              <div className="flex items-center gap-2 mb-3 text-on-surface-variant uppercase text-[10px] font-bold tracking-widest">
+            <div className="bg-surface-container-lowest p-4 rounded-2xl border border-outline-variant/10 shadow-sm">
+              <div className="flex items-center gap-2 mb-3 text-on-surface-variant uppercase text-[10px] font-black tracking-widest opacity-60">
                 <MSymbol icon="person" size={14} />
-                Datos del Solicitante
+                Solicitante
               </div>
               {clientData ? (
                 <div className="space-y-2">
                   <p className="font-headline font-bold text-on-surface">{clientData.full_name}</p>
-                  <div className="flex flex-col gap-1">
-                    <a href={`tel:${clientData.phone}`} className="text-sm text-primary font-medium flex items-center gap-2">
+                  <div className="flex flex-col gap-1.5">
+                    <a href={`tel:${clientData.phone}`} className="text-sm text-primary font-black flex items-center gap-2 bg-primary/5 px-3 py-2 rounded-lg w-fit transition-colors hover:bg-primary/10 active:scale-95">
                       <MSymbol icon="call" size={16} /> {clientData.phone || "Sin teléfono"}
                     </a>
-                    <p className="text-xs text-on-surface-variant flex items-center gap-2">
+                    <p className="text-xs text-on-surface-variant font-medium flex items-center gap-2 px-1">
                       <MSymbol icon="location_on" size={16} /> {clientData.barrio || "Sin barrio"}
                     </p>
-                    <p className="text-[10px] text-outline font-mono mt-1">UUID: {clientData.id}</p>
                   </div>
                 </div>
               ) : (
-                <p className="text-xs text-outline italic">Cargando datos...</p>
+                <Skeleton className="h-20 w-full rounded-xl" />
               )}
             </div>
 
             {/* Provider Info */}
-            <div className="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/10">
-              <div className="flex items-center gap-2 mb-3 text-on-surface-variant uppercase text-[10px] font-bold tracking-widest">
+            <div className="bg-surface-container-lowest p-4 rounded-2xl border border-outline-variant/10 shadow-sm">
+              <div className="flex items-center gap-2 mb-3 text-on-surface-variant uppercase text-[10px] font-black tracking-widest opacity-60">
                 <MSymbol icon="engineering" size={14} />
-                Colaborador Asignado
+                Colaborador
               </div>
               {assignedProvider ? (
                 <div className="space-y-2">
                   <p className="font-headline font-bold text-on-surface">{assignedProvider.full_name}</p>
-                  <div className="flex flex-col gap-1">
-                    <a href={`tel:${assignedProvider.phone}`} className="text-sm text-primary font-medium flex items-center gap-2">
+                  <div className="flex flex-col gap-1.5">
+                    <a href={`tel:${assignedProvider.phone}`} className="text-sm text-primary font-black flex items-center gap-2 bg-primary/5 px-3 py-2 rounded-lg w-fit transition-colors hover:bg-primary/10 active:scale-95">
                       <MSymbol icon="call" size={16} /> {assignedProvider.phone || "Sin teléfono"}
                     </a>
-                    <p className="text-xs text-on-surface-variant flex items-center gap-2">
+                    <p className="text-xs text-on-surface-variant font-medium flex items-center gap-2 px-1">
                       <MSymbol icon="location_on" size={16} /> {assignedProvider.barrio || "Sin barrio"}
                     </p>
-                    <p className="text-[10px] text-outline font-mono mt-1">UUID: {assignedProvider.id}</p>
                   </div>
                 </div>
               ) : (
-                <p className="text-xs text-outline italic">
-                  {offers.some(o => o.status === 'accepted') ? "Cargando datos..." : "Ningún colaborador asignado aún."}
-                </p>
+                <div className="p-4 border border-dashed border-outline-variant/20 rounded-xl flex items-center justify-center">
+                  <p className="text-[10px] text-outline font-bold uppercase tracking-widest italic">Sin asignar</p>
+                </div>
               )}
             </div>
 
             {/* Payment Proof Audit */}
             {job.payment_proof_url && (
-              <div className="col-span-1 md:col-span-2 bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/10">
-                <div className="flex items-center gap-2 mb-3 text-on-surface-variant uppercase text-[10px] font-bold tracking-widest">
+              <div className="col-span-1 md:col-span-2 bg-surface-container-lowest p-4 rounded-2xl border border-outline-variant/10 shadow-sm">
+                <div className="flex items-center gap-2 mb-3 text-on-surface-variant uppercase text-[10px] font-black tracking-widest opacity-60">
                   <MSymbol icon="receipt_long" size={14} />
-                  Registro de Comprobante de Pago
+                  Comprobante de Pago
                 </div>
                 <div
-                  className="relative h-32 w-full rounded-lg overflow-hidden border border-outline-variant/20 bg-surface-container cursor-pointer hover:opacity-90 transition-opacity"
+                  className="relative h-40 w-full rounded-xl overflow-hidden border border-outline-variant/20 bg-surface-container cursor-pointer hover:opacity-90 active:scale-[0.99] transition-all"
                   onClick={() => setSelectedImage(job.payment_proof_url)}
                 >
                   {job.payment_proof_url.toLowerCase().endsWith('.pdf') ? (
                     <div className="w-full h-full flex flex-col items-center justify-center gap-2">
                       <MSymbol icon="picture_as_pdf" size={32} className="text-error" filled />
-                      <span className="text-[10px] font-bold">Ver PDF</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest">Ver PDF</span>
                     </div>
                   ) : (
                     <NextImage
@@ -574,19 +625,16 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
                     <MSymbol icon="zoom_in" size={24} className="text-white drop-shadow-md" />
                   </div>
                 </div>
-                <p className="text-[10px] text-on-surface-variant mt-2 text-center italic">
-                  Este comprobante se guarda permanentemente para auditoría interna.
-                </p>
               </div>
             )}
           </div>
 
           <button
             onClick={handleDeleteJob}
-            className="w-full mt-6 py-3 bg-error/10 text-error border border-error/20 rounded-xl font-headline font-bold text-sm uppercase tracking-wider hover:bg-error hover:text-on-error transition-all flex items-center justify-center gap-2"
+            className="w-full mt-6 py-4 bg-error/5 text-error border border-error/10 rounded-2xl font-headline font-black text-xs uppercase tracking-widest hover:bg-error hover:text-on-error active:scale-95 transition-all flex items-center justify-center gap-2"
           >
             <MSymbol icon="delete" size={20} />
-            Borrar Publicación
+            Borrar Publicación Permanente
           </button>
         </section>
       )}
@@ -594,9 +642,9 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
       {/* Galería asimétrica bento */}
       <section className="px-5 py-4">
         {job.photos_urls && job.photos_urls.length > 0 ? (
-          <div className="grid grid-cols-4 grid-rows-2 gap-2 h-64 md:h-80">
+          <div className="grid grid-cols-4 grid-rows-2 gap-2.5 h-64 md:h-80">
             <div
-              className="col-span-3 row-span-2 rounded-2xl bg-surface-container overflow-hidden relative border border-outline-variant/10 cursor-pointer hover:opacity-95 transition-opacity"
+              className="col-span-3 row-span-2 rounded-[1.5rem] bg-surface-container overflow-hidden relative border border-outline-variant/10 cursor-pointer hover:opacity-95 active:scale-[0.99] transition-all shadow-sm"
               onClick={() => setSelectedImage(job.photos_urls[0])}
             >
               <NextImage
@@ -609,7 +657,7 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
             </div>
             {job.photos_urls[1] && (
               <div
-                className="col-span-1 row-span-1 rounded-2xl bg-surface-container overflow-hidden relative border border-outline-variant/10 cursor-pointer hover:opacity-95 transition-opacity"
+                className="col-span-1 row-span-1 rounded-2xl bg-surface-container overflow-hidden relative border border-outline-variant/10 cursor-pointer hover:opacity-95 active:scale-[0.98] transition-all shadow-sm"
                 onClick={() => setSelectedImage(job.photos_urls[1])}
               >
                 <NextImage
@@ -623,7 +671,7 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
             )}
             {job.photos_urls[2] ? (
               <div
-                className="col-span-1 row-span-1 rounded-2xl bg-surface-container overflow-hidden relative border border-outline-variant/10 cursor-pointer hover:opacity-95 transition-opacity"
+                className="col-span-1 row-span-1 rounded-2xl bg-surface-container overflow-hidden relative border border-outline-variant/10 cursor-pointer hover:opacity-95 active:scale-[0.98] transition-all shadow-sm"
                 onClick={() => setSelectedImage(job.photos_urls[2])}
               >
                 <NextImage
@@ -635,52 +683,41 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
                 />
                 {job.photos_urls.length > 3 && (
                   <div
-                    className="absolute inset-0 bg-black/40 flex items-center justify-center text-white font-bold text-lg cursor-pointer"
-                    onClick={() => setSelectedImage(job.photos_urls[3])}
+                    className="absolute inset-0 bg-black/40 flex items-center justify-center text-white font-black text-lg"
                   >
                     +{job.photos_urls.length - 3}
                   </div>
                 )}
               </div>
             ) : (
-              <div className="col-span-1 row-span-1 rounded-2xl bg-surface-container-highest flex items-center justify-center border border-outline-variant/5">
-                <MSymbol icon="more_horiz" size={24} className="text-outline-variant" />
-              </div>
-            )}
-            {!job.photos_urls[1] && (
-              <div className="col-span-1 row-span-1 rounded-2xl bg-surface-container-highest flex items-center justify-center border border-outline-variant/5">
-                <MSymbol icon="image" size={24} className="text-outline-variant" />
+              <div className="col-span-1 row-span-1 rounded-2xl bg-surface-container-highest/30 flex items-center justify-center border border-outline-variant/10">
+                <MSymbol icon="more_horiz" size={24} className="text-outline-variant/40" />
               </div>
             )}
           </div>
         ) : (
           <div className="w-full h-32 rounded-2xl bg-surface-container-low border border-dashed border-outline-variant/30 flex flex-col items-center justify-center gap-2 text-on-surface-variant/40">
             <MSymbol icon="image_not_supported" size={32} />
-            <p className="text-[10px] font-bold uppercase tracking-widest">Sin fotos adjuntas</p>
+            <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Sin fotos adjuntas</p>
           </div>
         )}
       </section>
 
       {/* Mapa de ubicación */}
       {job.lat && job.lng && (
-        <section className="px-5 pb-4">
-          <p className="text-[10px] uppercase font-bold tracking-wider text-on-secondary-container mb-2">
-            Ubicación del trabajo
+        <section className="px-5 pb-8">
+          <p className="text-[10px] uppercase font-black tracking-widest text-primary/60 mb-3 px-1">
+            Ubicación aproximada
           </p>
           <MapaAproximado
             lat={Number(job.lat)}
             lng={Number(job.lng)}
             exact={job.status === 'paid' || job.status === 'in_progress' || job.status === 'completed' || job.status === 'finished'}
           />
-          {(job.status === 'open' || job.status === 'accepted' || job.status === 'payment_under_review') && (
-            <p className="text-[10px] text-outline mt-1.5 text-center">
-              Ubicación aproximada · La dirección exacta se revela cuando el solicitante acepte y abone una oferta por el trabajo
-            </p>
-          )}
           {(job.status === 'paid' || job.status === 'in_progress' || job.status === 'completed' || job.status === 'finished') && (
-            <div className="flex items-center gap-2 mt-2 px-1">
-              <MSymbol icon="location_on" size={16} className="text-primary" filled />
-              <p className="text-sm font-medium text-on-surface">{job.address}</p>
+            <div className="flex items-center gap-3 mt-4 px-4 py-3 bg-primary/5 rounded-2xl border border-primary/10">
+              <MSymbol icon="location_on" size={20} className="text-primary" filled />
+              <p className="text-sm font-bold text-on-surface leading-tight">{job.address}</p>
             </div>
           )}
         </section>
@@ -688,137 +725,92 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
 
       {/* Aviso para Solicitantes (No proveedores) que ven el trabajo */}
       {!isProvider && !isOwner && !isAdmin && (
-        <section className="px-5 mb-6">
-          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start gap-3 shadow-sm">
-            <MSymbol icon="error" size={20} className="text-amber-600 mt-0.5" filled />
+        <section className="px-5 mb-8">
+          <div className="bg-amber-50 border border-amber-200 rounded-3xl p-6 flex items-start gap-4 shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-500">
+            <div className="size-12 rounded-2xl bg-amber-100 flex items-center justify-center shrink-0">
+              <MSymbol icon="engineering" size={24} className="text-amber-600" filled />
+            </div>
             <div>
-              <p className="text-sm font-bold text-amber-900 leading-tight mb-1 font-headline">
+              <p className="text-base font-headline font-black text-amber-900 leading-tight mb-1">
                 ¿Querés realizar este trabajo?
               </p>
-              <p className="text-xs text-amber-800 leading-relaxed font-medium">
-                Para enviar una oferta y postularte, primero debés configurar y activar tu perfil de proveedor desde tu configuración.
+              <p className="text-sm text-amber-800 leading-relaxed font-medium">
+                Para enviar una oferta y postularte, primero debés configurar y activar tu perfil de prestador de servicios en tu configuración.
               </p>
-              <Link href="/perfil" className="inline-block mt-2.5 text-[10px] font-black text-amber-700 uppercase tracking-widest border-b-2 border-amber-700/20 pb-0.5">
-                Configurar mi perfil de prestador
+              <Link href="/perfil" className="inline-flex items-center gap-2 mt-4 text-[11px] font-black text-amber-700 uppercase tracking-widest bg-amber-200/50 px-4 py-2 rounded-xl transition-all active:scale-95">
+                Configurar mi perfil ahora
+                <MSymbol icon="arrow_forward" size={14} />
               </Link>
             </div>
           </div>
         </section>
       )}
 
-      {/* Datos del Solicitante (Visible para el Prestador Asignado y Admin una vez aprobado el pago) */}
-      {((job.status === "in_progress" || job.status === "completed" || job.status === "finished") && (isAssignedProvider || isAdmin)) && (
-        <section className="px-5 mb-8">
-          <div className="bg-secondary/5 border border-secondary/20 rounded-2xl p-5 shadow-sm">
-            <div className="flex items-center gap-2 mb-4 text-secondary uppercase text-[10px] font-black tracking-widest">
-              <MSymbol icon="person" size={14} filled />
-              Datos del solicitante. Ya podés ponerte en contacto para apoyarlo
-            </div>
-            <div className="flex items-center gap-4">
-              <Avatar size="lg" className="border-2 border-secondary/20 shadow-sm">
-                <AvatarImage src={clientData?.avatar_url || ""} />
-                <AvatarFallback className="bg-secondary/10 text-secondary font-bold">
-                  {clientData?.full_name?.substring(0, 2).toUpperCase() || "CL"}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <p className="font-headline font-bold text-lg text-on-surface leading-tight truncate">
-                  {clientData?.full_name}
-                </p>
-                <div className="flex flex-col gap-1 mt-1">
-                  <p className="text-xs text-on-surface-variant flex items-center gap-1">
-                    <MSymbol icon="location_on" size={14} /> {job.address || job.barrio}
-                  </p>
-                  <p className="text-[10px] text-outline uppercase font-bold tracking-tighter">
-                    Formosa, Argentina
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <a
-                  href={`tel:${clientData?.phone}`}
-                  className="size-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shadow-lg shadow-secondary/25"
-                >
-                  <MSymbol icon="call" size={20} />
-                </a>
-                <button
-                  onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${job.address || job.barrio}, Formosa, Argentina`)}`, "_blank")}
-                  className="size-10 rounded-full bg-surface-container-highest text-on-surface flex items-center justify-center border border-outline-variant/20 shadow-sm"
-                >
-                  <MSymbol icon="map" size={20} />
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Colaborador Asignado (Visible para Cliente, Admin y el propio Prestador) */}
+      {/* Datos del Solicitante / Colaborador */}
       {(assignedProvider && (isAdmin || isOwner || userId === assignedProvider.id)) && (
         <section className="px-5 mb-8">
-          <div className="bg-primary/5 border border-primary/20 rounded-2xl p-5 shadow-sm">
-            <div className="flex items-center gap-2 mb-4 text-primary uppercase text-[10px] font-black tracking-widest">
+          <div className="bg-surface-container-lowest border border-outline-variant/10 rounded-3xl p-5 shadow-ambient">
+            <div className="flex items-center gap-2 mb-4 text-primary uppercase text-[10px] font-black tracking-widest opacity-80">
               <MSymbol icon="engineering" size={14} filled />
               Colaborador Asignado
             </div>
             <div className="flex items-center gap-4">
-              <Avatar size="lg" className="border-2 border-primary/20 shadow-sm">
+              <Avatar className="size-14 border-2 border-primary/10 shadow-sm">
                 <AvatarImage src={assignedProvider.avatar_url || ""} />
-                <AvatarFallback className="bg-primary/10 text-primary font-bold">
+                <AvatarFallback className="bg-primary/5 text-primary font-black">
                   {assignedProvider.full_name?.substring(0, 2).toUpperCase() || "AM"}
                 </AvatarFallback>
               </Avatar>
-              <div className="flex-1">
-                <p className="font-headline font-bold text-lg text-on-surface leading-tight">
+              <div className="flex-1 min-w-0">
+                <p className="font-headline font-black text-lg text-on-surface leading-tight truncate">
                   {assignedProvider.full_name}
                 </p>
                 <div className="flex items-center gap-2 mt-1">
-                  <div className="flex items-center gap-0.5 text-secondary font-bold text-xs">
+                  <div className="flex items-center gap-0.5 text-amber-600 font-black text-xs">
                     <MSymbol icon="star" size={14} filled />
                     {assignedProvider.rating || 5}
                   </div>
-                  <span className="text-[10px] text-outline">•</span>
-                  <span className="text-[10px] text-on-surface-variant font-bold uppercase tracking-wider">
+                  <span className="text-outline-variant">•</span>
+                  <span className="text-[10px] text-on-surface-variant font-black uppercase tracking-widest opacity-60">
                     {assignedProvider.jobs_count || 0} TRABAJOS
                   </span>
                 </div>
               </div>
               {(isOwner || isAdmin) && (job.status === "in_progress" || job.status === "finished" || job.status === "completed") && (
-                <div className="flex flex-col gap-2">
-                  <a
-                    href={`tel:${assignedProvider.phone}`}
-                    className="size-10 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg shadow-primary/25"
-                  >
-                    <MSymbol icon="call" size={20} />
-                  </a>
-                </div>
+                <a
+                  href={`tel:${assignedProvider.phone}`}
+                  className="size-12 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg shadow-primary/30 active:scale-90 transition-all"
+                  aria-label="Llamar"
+                >
+                  <MSymbol icon="call" size={24} />
+                </a>
               )}
             </div>
 
             {(job.status === "in_progress" || job.status === "finished") && (
-              <div className="mt-4 pt-3 border-t border-primary/10">
+              <div className="mt-6 pt-5 border-t border-outline-variant/10">
                 {isOwner ? (
                   !job.provider_arrived_at ? (
                     <button
                       onClick={handleConfirmArrival}
-                      className="w-full py-3 bg-primary text-on-primary rounded-xl font-headline font-bold text-sm uppercase tracking-wider shadow-lg shadow-primary/25"
+                      className="w-full py-4 bg-cta-gradient text-on-primary rounded-2xl font-headline font-black text-sm uppercase tracking-widest shadow-lg shadow-primary/20 active:scale-95 transition-all"
                     >
-                      Confirmar llegada del colaborador
+                      Confirmar llegada al domicilio
                     </button>
                   ) : (
-                    <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase">
+                    <div className="flex items-center gap-2.5 text-success font-black text-[11px] uppercase tracking-wider bg-success/5 px-4 py-3 rounded-xl border border-success/10">
                       <MSymbol icon="check_circle" size={18} filled />
-                      {job.status === "finished" ? "El colaborador terminó la tarea · Aguardando cierre de Admin" : "Llegada confirmada · Trabajando en el domicilio"}
+                      {job.status === "finished" ? "Tarea terminada · Aguardando cierre" : "Llegada confirmada · En proceso"}
                     </div>
                   )
                 ) : (
                   <div className="flex flex-col gap-3">
-                    <p className="text-[11px] text-primary/70 font-medium">
+                    <p className="text-[11px] text-primary/70 font-black uppercase tracking-widest text-center">
                       {!job.provider_arrived_at
-                        ? "Aguardando confirmación de llegada del cliente."
+                        ? "Esperando confirmación de llegada."
                         : job.status === "finished"
-                          ? "Informamos a administración que terminaste el trabajo."
-                          : "El cliente confirmó tu llegada. ¡Podés comenzar a trabajar!"}
+                          ? "Trabajo informado como terminado."
+                          : "¡Ya podés comenzar a trabajar!"}
                     </p>
                     {(job.provider_arrived_at && (isAssignedProvider || isAdmin)) && (
                       <div className="flex flex-col gap-2">
@@ -826,19 +818,14 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
                           onClick={handleComplete}
                           disabled={submittingOffer || job.status === "finished"}
                           className={cn(
-                            "w-full py-3 rounded-xl font-headline font-bold text-sm uppercase tracking-wider shadow-lg transition-all",
+                            "w-full py-4 rounded-2xl font-headline font-black text-sm uppercase tracking-widest shadow-lg transition-all active:scale-95",
                             job.status === "finished"
-                              ? "bg-success/20 text-success shadow-none border border-success/30"
-                              : "bg-cta-gradient text-white shadow-primary/25 hover:opacity-90"
+                              ? "bg-success/10 text-success shadow-none border border-success/20"
+                              : "bg-cta-gradient text-white shadow-primary/25 hover:opacity-95"
                           )}
                         >
-                          {submittingOffer ? "Procesando..." : job.status === "finished" ? "Trabajo Finalizado" : "Finalizar Trabajo"}
+                          {submittingOffer ? "..." : job.status === "finished" ? "Finalizado" : "Finalizar Tarea"}
                         </button>
-                        {job.status === "finished" && (
-                          <p className="text-[10px] text-success font-bold text-center animate-pulse">
-                            Pendiente de validación por la administración de Amano
-                          </p>
-                        )}
                       </div>
                     )}
                   </div>
@@ -854,25 +841,20 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
         <section className="px-5">
           {isOwner ? (
             <>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="font-headline font-bold text-lg text-on-surface">
+              <div className="flex items-center justify-between mb-5 px-1">
+                <h2 className="font-headline font-black text-xl text-on-surface tracking-tight">
                   Ofertas recibidas
-                  <span className="ml-2 text-primary text-base">({offers.length})</span>
+                  <span className="ml-2 text-primary opacity-40 font-black">({offers.length})</span>
                 </h2>
               </div>
 
-              {/* Mensajes de estado de pago para el solicitante */}
-              {(job.status === "paid" || job.status === "in_progress") && (
-                <div className="mb-6 p-4 bg-success-container/30 border border-success/20 rounded-xl flex items-start gap-3">
-                  <MSymbol icon="check_circle" size={20} className="text-success mt-0.5" filled />
-                  <p className="text-sm text-on-success-container font-medium text-pretty">Pago aceptado. El trabajo ya está en proceso y nos contactaremos con vos para coordinar el trabajo. También tenes el celular del colaborador asignado debajo.</p>
-                </div>
-              )}
-
               {offers.length === 0 ? (
-                <p className="text-on-surface-variant text-sm">Aún no hay ofertas.</p>
+                <div className="bg-surface-container-lowest border border-dashed border-outline-variant/30 rounded-2xl p-8 text-center">
+                  <MSymbol icon="inbox" size={32} className="text-outline-variant mb-2 opacity-40" />
+                  <p className="text-on-surface-variant text-sm font-medium">Aguardando ofertas de profesionales...</p>
+                </div>
               ) : (
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-3">
                   {offers.map((offer) => (
                     <OfferCard
                       key={offer.id}
@@ -885,105 +867,81 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
             </>
           ) : isProvider ? (
             <div className={cn(
-              "p-6 rounded-2xl shadow-sm border border-outline-variant/10",
+              "p-6 rounded-3xl shadow-ambient border border-outline-variant/10",
               job.status === "payment_rejected" ? "bg-error-container/10 border-error/20" : "bg-surface-container-lowest"
             )}>
               {hasMadeOffer && !isEditingOffer ? (
                 (() => {
                   const myOffer = offers.find(o => o.providerId === userId);
                   if (myOffer?.status === "accepted") {
-                    if (job.status === "paid" || job.status === "in_progress" || job.status === "completed") {
-                      return (
-                        <div className="flex flex-col items-center justify-center gap-4 text-center">
-                          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-                            <MSymbol icon="check_circle" size={32} className="text-primary" filled />
+                    return (
+                        <div className="flex flex-col items-center justify-center gap-4 text-center py-4">
+                          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center animate-pulse">
+                            <MSymbol icon="star" size={40} className="text-primary" filled />
                           </div>
                           <div>
-                            <h3 className="font-headline font-bold text-xl text-on-surface">¡Oferta Aceptada!</h3>
-                            <p className="text-sm text-on-surface-variant mt-1">El pago del solicitante ha sido aceptado y en breve nos estaremos comunicando con vos para brindarte los datos para que realices el trabajo en el domicilio</p>
+                            <h3 className="font-headline font-black text-2xl text-on-surface">¡Te eligieron!</h3>
+                            <p className="text-sm text-on-surface-variant mt-2 font-medium leading-relaxed">
+                              El cliente seleccionó tu oferta. Estamos verificando el pago para asignarte oficialmente.
+                            </p>
                           </div>
                         </div>
-                      );
-                    } else if (job.status === "payment_rejected") {
-                      return (
-                        <div className="flex flex-col items-center justify-center gap-4 text-center">
-                          <div className="w-16 h-16 bg-error/10 rounded-full flex items-center justify-center">
-                            <MSymbol icon="error" size={32} className="text-error" filled />
-                          </div>
-                          <div>
-                            <h3 className="font-headline font-bold text-xl text-on-surface text-error uppercase">Pago Rechazado</h3>
-                            <p className="text-sm text-on-surface-variant mt-1 italic">Estamos a la espera de que el solicitante suba un comprobante válido para que puedas iniciar el trabajo.</p>
-                          </div>
-                        </div>
-                      );
-                    } else if (job.status === "payment_under_review") {
-                       return (
-                        <div className="flex flex-col items-center justify-center gap-4 text-center">
-                          <div className="w-16 h-16 bg-tertiary/10 rounded-full flex items-center justify-center">
-                            <MSymbol icon="schedule" size={32} className="text-tertiary" filled />
-                          </div>
-                          <div>
-                            <h3 className="font-headline font-bold text-xl text-on-surface">Oferta Pre-seleccionada</h3>
-                            <p className="text-sm text-on-surface-variant mt-1 italic">El cliente seleccionó tu oferta. El pago está siendo revisado por Amano. Una vez aprobado, serás asignado oficialmente.</p>
-                          </div>
-                        </div>
-                       );
-                    }
+                    );
                   }
 
                   return (
-                    <div className="text-center flex flex-col items-center gap-3">
-                      <div className="bg-primary/10 w-fit px-4 py-2 rounded-2xl border border-primary/20">
-                        <p className="text-[10px] font-bold text-primary uppercase tracking-widest mb-0.5">Tu Oferta Enviada</p>
-                        <p className="text-2xl font-black text-primary font-headline">
+                    <div className="text-center flex flex-col items-center gap-4">
+                      <div className="bg-primary/5 w-full p-6 rounded-2xl border border-primary/10">
+                        <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1 opacity-60">Tu Propuesta</p>
+                        <p className="text-4xl font-black text-primary font-headline tracking-tighter">
                           ${myOffer?.amount?.toLocaleString("es-AR")}
                         </p>
                       </div>
-                      <div>
-                        <p className="text-sm font-bold text-on-surface leading-tight">Ya enviaste una oferta para este trabajo.</p>
-                        <p className="text-xs text-on-surface-variant mt-1.5 leading-relaxed">Te notificaremos si el cliente acepta tu propuesta.</p>
+                      <div className="px-4">
+                        <p className="text-sm font-bold text-on-surface">Oferta enviada con éxito.</p>
+                        <p className="text-xs text-on-surface-variant mt-2 leading-relaxed font-medium">Recibirás una notificación si el cliente acepta tu propuesta o si se selecciona a otro profesional.</p>
                       </div>
                       <button 
                         onClick={() => {
                           setOfferAmount(myOffer?.amount?.toString() || "");
                           setIsEditingOffer(true);
                         }}
-                        className="text-xs font-bold text-primary uppercase tracking-widest mt-2 border-b border-primary/20 pb-0.5"
+                        className="text-[10px] font-black text-primary uppercase tracking-widest mt-4 border-b-2 border-primary/10 pb-1 hover:border-primary transition-all active:scale-95"
                       >
-                        Modificar mi oferta
+                        Modificar monto de oferta
                       </button>
                     </div>
                   );
                 })()
               ) : (
                 <>
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="font-headline font-bold text-xl text-on-surface">
-                      {hasMadeOffer ? "Modificar mi oferta" : "Hacer una oferta"}
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="font-headline font-black text-2xl text-on-surface tracking-tight">
+                      {hasMadeOffer ? "Editar oferta" : "Hacer una oferta"}
                     </h2>
                     {isEditingOffer && (
-                      <button onClick={() => setIsEditingOffer(false)} className="text-on-surface-variant">
+                      <button onClick={() => setIsEditingOffer(false)} className="text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full transition-all">
                         <MSymbol icon="close" size={20} />
                       </button>
                     )}
                   </div>
                   <div className="flex flex-col gap-4">
                     <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface font-headline font-bold">$</span>
+                      <span className="absolute left-5 top-1/2 -translate-y-1/2 text-on-surface font-headline font-black text-xl opacity-40">$</span>
                       <input
                         type="number"
                         value={offerAmount}
                         onChange={(e) => setOfferAmount(e.target.value)}
-                        placeholder="Monto estimado"
-                        className="w-full bg-surface-container rounded-xl pl-8 pr-4 py-3 text-sm font-headline font-bold text-on-surface outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                        placeholder="Ingresá el monto"
+                        className="w-full bg-surface-container rounded-2xl pl-10 pr-6 py-5 text-xl font-headline font-black text-on-surface outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-outline-variant/50 shadow-inner"
                       />
                     </div>
                     <button
                       disabled={submittingOffer}
                       onClick={handleSubmitOffer}
-                      className="w-full py-3 bg-cta-gradient text-white font-headline font-bold text-sm rounded-xl uppercase tracking-wider hover:opacity-90 disabled:opacity-50"
+                      className="w-full py-5 bg-cta-gradient text-white font-headline font-black text-base rounded-2xl uppercase tracking-widest shadow-lg shadow-primary/25 hover:opacity-95 active:scale-95 transition-all disabled:opacity-50"
                     >
-                      {submittingOffer ? "Enviando..." : hasMadeOffer ? "Guardar Cambios" : "Enviar Oferta"}
+                      {submittingOffer ? "..." : hasMadeOffer ? "Guardar Cambios" : "Enviar Oferta al Cliente"}
                     </button>
                   </div>
                 </>
@@ -995,22 +953,22 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
 
       {/* Diálogo de Confirmación de Aceptación */}
       <Dialog open={isAcceptDialogOpen} onOpenChange={setIsAcceptDialogOpen}>
-        <DialogContent className="max-w-[90vw] md:max-w-md rounded-2xl p-6 gap-6">
+        <DialogContent className="max-w-[90vw] md:max-w-md rounded-3xl p-8 gap-8 border-none shadow-2xl">
           <DialogHeader>
-            <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-              <MSymbol icon="handshake" size={32} className="text-primary" filled />
+            <div className="mx-auto w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+              <MSymbol icon="payments" size={40} className="text-primary" filled />
             </div>
-            <DialogTitle className="text-center font-headline font-bold text-2xl">Aceptar oferta</DialogTitle>
-            <DialogDescription className="text-center text-on-surface-variant text-base leading-relaxed mt-2">
-              Ahora debes transferir el dinero ofertado por el colaborador a la cuenta de Amano, cuando validemos que el pago es correcto se desbloquearán los datos del colaborador y podrá realizar el trabajo en tu domicilio.
+            <DialogTitle className="text-center font-headline font-black text-3xl tracking-tight">Confirmar elección</DialogTitle>
+            <DialogDescription className="text-center text-on-surface-variant text-base leading-relaxed mt-4 font-medium px-2">
+              Al aceptar, deberás transferir el monto a la cuenta de Amano. Tu dinero estará seguro hasta que el trabajo se complete.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="sm:justify-center">
             <button
               onClick={handleConfirmAccept}
-              className="w-full py-4 bg-cta-gradient text-on-primary font-headline font-bold text-base rounded-xl shadow-lg shadow-primary/25 uppercase tracking-wider transition-all hover:opacity-90"
+              className="w-full py-5 bg-cta-gradient text-on-primary font-headline font-black text-base rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest transition-all hover:opacity-95 active:scale-95"
             >
-              Continuar al pago
+              Ir a pagar ahora
             </button>
           </DialogFooter>
         </DialogContent>
@@ -1021,7 +979,7 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
         <DialogContent showCloseButton={false} className="max-w-[95vw] max-h-[90vh] p-0 overflow-hidden bg-transparent border-none shadow-none flex items-center justify-center ring-0">
           <button
             onClick={() => setSelectedImage(null)}
-            className="absolute top-4 right-4 z-[60] p-2 rounded-full bg-black/50 text-white backdrop-blur-md hover:bg-black/70 transition-colors"
+            className="absolute top-4 right-4 z-[60] p-3 rounded-full bg-black/60 text-white backdrop-blur-md hover:bg-black/80 transition-colors"
           >
             <MSymbol icon="close" size={24} />
           </button>
@@ -1031,7 +989,7 @@ export default function TrabajoDetallePage({ params }: { params: Promise<{ id: s
               <img
                 src={selectedImage}
                 alt="Imagen ampliada"
-                className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl"
+                className="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl"
               />
             </div>
           )}

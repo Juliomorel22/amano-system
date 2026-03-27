@@ -207,7 +207,7 @@ export default function PerfilPage() {
           <div className="absolute bottom-10 right-10 size-64 bg-white rounded-full blur-3xl" />
         </div>
 
-        <div className="max-w-4xl mx-auto flex justify-between items-end relative z-10">
+        <div className="lg:max-w-full max-w-4xl mx-auto flex justify-between items-end relative z-10">
           <div className="space-y-1">
             <h1 className="font-headline font-extrabold text-3xl md:text-4xl text-on-primary tracking-tight">
               {isOnboarding ? "¡Hola! Empecemos" : "Mi Perfil"}
@@ -223,7 +223,7 @@ export default function PerfilPage() {
       </div>
 
       {/* Main Content Container */}
-      <div className="max-w-4xl mx-auto px-5 md:px-10 -mt-20 relative z-20">
+      <div className="lg:max-w-full max-w-4xl mx-auto px-5 md:px-10 -mt-20 relative z-20">
         
         {/* Floating Avatar Card */}
         <div className="bg-surface-container-lowest p-6 md:p-8 rounded-[2.5rem] shadow-2xl border border-outline-variant/10 flex flex-col md:flex-row items-center md:items-end gap-6 mb-10">

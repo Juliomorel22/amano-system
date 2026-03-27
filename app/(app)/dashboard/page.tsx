@@ -30,13 +30,53 @@ interface Job {
   client?: { full_name: string; phone?: string };
   provider?: { full_name: string; phone?: string };
   my_offer?: any; // Keeping any for complex nested join for now or use unknown
+  offers?: { amount: number }[];
+  highestOffer?: number;
+  availability?: string;
 }
+
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function DashboardPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-surface flex items-center justify-center">Cargando...</div>}>
+    <Suspense fallback={<DashboardSkeleton />}>
       <DashboardContent />
     </Suspense>
+  );
+}
+
+function DashboardSkeleton() {
+  return (
+    <div className="bg-surface min-h-screen">
+      <section className="px-5 pt-6 pb-5">
+        <Skeleton className="h-10 w-3/4 mb-2" />
+        <Skeleton className="h-4 w-1/2 mb-5" />
+        <Skeleton className="h-12 w-full rounded-xl" />
+      </section>
+      
+      <section className="px-5 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <Skeleton className="h-6 w-24" />
+        </div>
+        <div className="grid grid-cols-4 md:grid-cols-6 gap-2.5">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="flex flex-col items-center gap-1.5 p-3">
+              <Skeleton className="size-10 rounded-lg" />
+              <Skeleton className="h-2 w-10" />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="px-5">
+        <Skeleton className="h-6 w-32 mb-4" />
+        <div className="flex flex-col gap-3">
+          {[...Array(3)].map((_, i) => (
+            <Skeleton key={i} className="h-32 w-full rounded-xl" />
+          ))}
+        </div>
+      </section>
+    </div>
   );
 }
 
@@ -90,13 +130,13 @@ function DashboardContent() {
           .select(`
             *,
             client:profiles!jobs_client_id_fkey(full_name),
-            offersCount:offers(count),
+            offers(amount),
             my_offer:offers!offers_job_id_fkey(status, provider_id)
           `)
           .or(`provider_id.eq.${user.id}${jobIdsFromOffers.length > 0 ? `,id.in.(${jobIdsFromOffers.join(",")})` : ""}`);
       } else {
         // Si es solicitante, mostrar sus propios pedidos
-        query = supabase.from("jobs").select(`*, client:profiles!jobs_client_id_fkey(full_name), offersCount:offers(count)`).eq("client_id", user.id);
+        query = supabase.from("jobs").select(`*, client:profiles!jobs_client_id_fkey(full_name), offers(amount)`).eq("client_id", user.id);
       }
     } else {
       // VIEW: home
@@ -104,10 +144,11 @@ function DashboardContent() {
         query = supabase.from("jobs").select(`
           *,
           client:profiles!jobs_client_id_fkey(full_name, phone),
-          provider:profiles!jobs_provider_id_fkey(full_name, phone)
+          provider:profiles!jobs_provider_id_fkey(full_name, phone),
+          offers(amount)
         `);
       } else {
-        query = supabase.from("jobs").select(`*, client:profiles!jobs_client_id_fkey(full_name), offersCount:offers(count)`).eq("status", "open");
+        query = supabase.from("jobs").select(`*, client:profiles!jobs_client_id_fkey(full_name), offers(amount)`).eq("status", "open");
       }
     }
 
@@ -121,8 +162,11 @@ function DashboardContent() {
           ? j.my_offer.find((o: any) => o.provider_id === currentUserId)
           : null;
         
-        const offersCountData = Array.isArray(j.offersCount) ? j.offersCount[0] : j.offersCount;
-        const offersCount = typeof offersCountData === 'object' ? (offersCountData as any)?.count || 0 : (offersCountData || 0);
+        const offersList = j.offers || [];
+        const offersCount = offersList.length;
+        const highestOffer = offersCount > 0 
+          ? Math.max(...offersList.map((o: any) => o.amount))
+          : undefined;
         
         const isMeAssigned = j.provider_id === currentUserId || myOffer?.status === 'accepted';
         
@@ -146,6 +190,7 @@ function DashboardContent() {
           ...j,
           status: displayStatus,
           offersCount,
+          highestOffer,
           isAssigned: isMeAssigned,
           clientName: j.client?.full_name,
           clientPhone: j.client?.phone,
@@ -299,7 +344,7 @@ function DashboardContent() {
             </p>
           </div>
         ) : (
-          <div className="flex flex-col gap-3 max-w-4xl mx-auto">
+          <div className="flex flex-col gap-3 lg:max-w-full max-w-4xl mx-auto">
             {filteredJobs.map((job) => (
               isAdmin && view === "orders" ? (
                 <Link
@@ -354,7 +399,7 @@ function DashboardContent() {
                   <MSymbol icon="chevron_right" size={20} className="text-outline-variant" />
                 </Link>
               ) : (
-                <JobCard key={job.id} {...job} />
+                <JobCard key={job.id} {...job} showDescription={view === "home"} />
               )
             ))}
           </div>
