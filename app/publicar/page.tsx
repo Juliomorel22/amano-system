@@ -395,7 +395,7 @@ export default function PublicarPage() {
   };
 
   return (
-    <div className="bg-surface flex flex-col max-w-md md:max-w-3xl lg:max-w-full mx-auto relative min-h-screen pb-40">
+    <div className="bg-surface flex flex-col max-w-md md:max-w-3xl lg:max-w-full mx-auto relative">
       {/* Header & Progress Indicator */}
       <div className="px-5 pt-5 pb-2 sticky top-0 bg-surface z-50">
         <div className="flex items-center justify-between mb-4">
@@ -422,10 +422,10 @@ export default function PublicarPage() {
       </div>
 
       {/* Step Contents */}
-      <div className="flex-1 animate-in fade-in slide-in-from-right-4 duration-300">
+      <div className="animate-in fade-in slide-in-from-right-4 duration-300">
         
         {step === 1 && (
-          <div className="space-y-6 px-5 py-4">
+          <div className="space-y-6 px-5 py-4 pb-32">
             <section>
               <h1 className="font-headline font-extrabold text-2xl text-on-surface tracking-tight leading-tight mb-2">
                 ¿Qué necesitás solucionar?
@@ -515,7 +515,7 @@ export default function PublicarPage() {
         )}
 
         {step === 2 && (
-          <div className="space-y-6 px-5 py-4">
+          <div className="space-y-6 px-5 py-4 pb-32">
             <section>
               <h1 className="font-headline font-extrabold text-2xl text-on-surface tracking-tight leading-tight mb-2">
                 Sumá fotos o videos
@@ -566,7 +566,7 @@ export default function PublicarPage() {
         )}
 
         {step === 3 && (
-          <div className="space-y-6 px-5 py-4">
+          <div className="space-y-6 px-5 py-4 pb-32">
             <section>
               <h1 className="font-headline font-extrabold text-2xl text-on-surface tracking-tight leading-tight mb-2">
                 Ubicación y Disponibilidad
