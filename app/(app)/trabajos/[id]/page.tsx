@@ -805,9 +805,9 @@ function TrabajoDetalleContent({ params }: { params: Promise<{ id: string }> }) 
           <MapaAproximado
             lat={Number(job.lat)}
             lng={Number(job.lng)}
-            exact={isOwner || ['accepted', 'payment_under_review', 'paid', 'in_progress', 'completed', 'finished'].includes(job.status)}
+            exact={isOwner || isAdmin || ['paid', 'in_progress', 'completed', 'finished'].includes(job.status)}
           />
-          {(isOwner || ['accepted', 'payment_under_review', 'paid', 'in_progress', 'completed', 'finished'].includes(job.status)) && (
+          {(isOwner || isAdmin || ['paid', 'in_progress', 'completed', 'finished'].includes(job.status)) && (
             <div className="flex items-center gap-3 mt-4 px-4 py-3 bg-primary/5 rounded-2xl border border-primary/10">
               <MSymbol icon="location_on" size={20} className="text-primary" filled />
               <p className="text-sm font-bold text-on-surface leading-tight">{job.address}</p>
@@ -839,46 +839,100 @@ function TrabajoDetalleContent({ params }: { params: Promise<{ id: string }> }) 
         </section>
       )}
 
-      {/* Datos del Solicitante / Colaborador */}
-      {(assignedProvider && (isAdmin || isOwner || userId === assignedProvider.id)) && (
+      {/* Datos de Contacto */}
+      {(assignedProvider && isAuthorized) && (
         <section className="px-5 mb-8">
           <div className="bg-surface-container-lowest border border-outline-variant/10 rounded-3xl p-5 shadow-ambient">
-            <div className="flex items-center gap-2 mb-4 text-primary uppercase text-[10px] font-black tracking-widest opacity-80">
-              <MSymbol icon="engineering" size={14} filled />
-              Colaborador Asignado
-            </div>
-            <div className="flex items-center gap-4">
-              <Avatar className="size-14 border-2 border-primary/10 shadow-sm">
-                <AvatarImage src={assignedProvider.avatar_url || ""} />
-                <AvatarFallback className="bg-primary/5 text-primary font-black">
-                  {assignedProvider.full_name?.substring(0, 2).toUpperCase() || "AM"}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <p className="font-headline font-black text-lg text-on-surface leading-tight truncate">
-                  {assignedProvider.full_name}
-                </p>
-                <div className="flex items-center gap-2 mt-1">
-                  <div className="flex items-center gap-0.5 text-amber-600 font-black text-xs">
-                    <MSymbol icon="star" size={14} filled />
-                    {assignedProvider.rating || 5}
+            {isOwner || isAdmin ? (
+              // Vista para el dueño o admin: Mostrar datos del colaborador
+              <>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2 text-primary uppercase text-[10px] font-black tracking-widest opacity-80">
+                    <MSymbol icon="engineering" size={14} filled />
+                    Colaborador Asignado
                   </div>
-                  <span className="text-outline-variant">•</span>
-                  <span className="text-[10px] text-on-surface-variant font-black uppercase tracking-widest opacity-60">
-                    {assignedProvider.jobs_count || 0} TRABAJOS
-                  </span>
+                  {job.final_amount > 0 && (
+                    <div className="bg-success/10 text-success text-xs font-black px-3 py-1 rounded-full uppercase tracking-tight border border-success/10 animate-in fade-in zoom-in duration-500">
+                      Monto: ${job.final_amount.toLocaleString("es-AR")}
+                    </div>
+                  )}
                 </div>
-              </div>
-              {(isOwner || isAdmin) && (job.status === "in_progress" || job.status === "finished" || job.status === "completed") && (
-                <a
-                  href={`tel:${assignedProvider.phone}`}
-                  className="size-12 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg shadow-primary/30 active:scale-90 transition-all"
-                  aria-label="Llamar"
-                >
-                  <MSymbol icon="call" size={24} />
-                </a>
-              )}
-            </div>
+                <div className="flex items-center gap-4">
+                  <Avatar className="size-14 border-2 border-primary/10 shadow-sm">
+                    <AvatarImage src={assignedProvider.avatar_url || ""} />
+                    <AvatarFallback className="bg-primary/5 text-primary font-black">
+                      {assignedProvider.full_name?.substring(0, 2).toUpperCase() || "AM"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-headline font-black text-lg text-on-surface leading-tight truncate">
+                      {assignedProvider.full_name}
+                    </p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className="flex items-center gap-0.5 text-amber-600 font-black text-xs">
+                        <MSymbol icon="star" size={14} filled />
+                        {assignedProvider.rating || 5}
+                      </div>
+                      <span className="text-outline-variant">•</span>
+                      <span className="text-[10px] text-on-surface-variant font-black uppercase tracking-widest opacity-60">
+                        {assignedProvider.jobs_count || 0} TRABAJOS
+                      </span>
+                    </div>
+                  </div>
+                  {(job.status === "paid" || job.status === "in_progress" || job.status === "finished" || job.status === "completed") && (
+                    <a
+                      href={`tel:${assignedProvider.phone}`}
+                      className="size-12 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg shadow-primary/30 active:scale-90 transition-all"
+                      aria-label="Llamar"
+                    >
+                      <MSymbol icon="call" size={24} />
+                    </a>
+                  )}
+                </div>
+              </>
+            ) : (
+              // Vista para el colaborador: Mostrar datos del solicitante
+              <>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2 text-primary uppercase text-[10px] font-black tracking-widest opacity-80">
+                    <MSymbol icon="person" size={14} filled />
+                    Solicitante
+                  </div>
+                  {job.final_amount > 0 && (
+                    <div className="bg-success/10 text-success text-xs font-black px-3 py-1 rounded-full uppercase tracking-tight border border-success/10 animate-in fade-in zoom-in duration-500">
+                      Oferta: ${job.final_amount.toLocaleString("es-AR")}
+                    </div>
+                  )}
+                </div>
+                <div className="flex items-center gap-4">
+                  <Avatar className="size-14 border-2 border-primary/10 shadow-sm">
+                    <AvatarImage src={clientData?.avatar_url || ""} />
+                    <AvatarFallback className="bg-primary/5 text-primary font-black">
+                      {clientData?.full_name?.substring(0, 2).toUpperCase() || "AM"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-headline font-black text-lg text-on-surface leading-tight truncate">
+                      {clientData?.full_name}
+                    </p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-[10px] text-on-surface-variant font-black uppercase tracking-widest opacity-60">
+                        DUEÑO DEL TRABAJO
+                      </span>
+                    </div>
+                  </div>
+                  {(job.status === "paid" || job.status === "in_progress" || job.status === "finished" || job.status === "completed") && (
+                    <a
+                      href={`tel:${clientData?.phone}`}
+                      className="size-12 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg shadow-primary/30 active:scale-90 transition-all"
+                      aria-label="Llamar"
+                    >
+                      <MSymbol icon="call" size={24} />
+                    </a>
+                  )}
+                </div>
+              </>
+            )}
 
             {(job.status === "in_progress" || job.status === "finished") && (
               <div className="mt-6 pt-5 border-t border-outline-variant/10">

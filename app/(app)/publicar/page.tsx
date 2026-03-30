@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import NextImage from "next/image";
 import dynamic from 'next/dynamic';
+import { cn } from "@/lib/utils";
 
 const MapaAproximado = dynamic(
   () => import('@/components/amano/mapa-aproximado'),
@@ -22,10 +23,10 @@ const BARRIOS_FORMOSA = [
   "12 de Octubre", "16 de Julio", "17 de Octubre", "2 de Abril",
   "7 de Mayo", "8 de Marzo", "Altos de Caacupé", "Antenor Gauna",
   "Arturo Illia", "Barrio Militar", "Barrio Municipal", "Barrio Piero",
-  "Barrio Vial", "Belgrano", "Caracolito", "Collucio",
+  "Barrio Vial", "Belgrano", "Caracolito", "Collucio", "Covifol",
   "Divino Niño Jesús", "Don Bosco", "Dr. Ricardo Balbín", "El Mistol",
   "El Palomar", "El Resguardo", "Emilio Tomas", "Eva Perón",
-  "Facundo Quiroga", "Federación", "Guadalupe", "Hipólito Irigoyen",
+  "Facundo Quiroga", "Federación", "Fontana", "Guadalupe", "Hipólito Irigoyen",
   "Independencia", "Islas Malvinas", "J.F. Kennedy", "Juan D. Perón",
   "Juan M. de Rosas", "La Floresta", "La Nueva Formosa", "La Paz",
   "La Santa Rosa", "La Virgen Niña", "Las Delicias", "La Estrella",
@@ -61,6 +62,7 @@ export default function PublicarPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const categoryRef = useRef<HTMLDivElement>(null);
   const barrioRef = useRef<HTMLDivElement>(null);
+  const skipNextSearch = useRef(false);
   
   // Navigation State
   const [step, setStep] = useState(1);
@@ -77,7 +79,7 @@ export default function PublicarPage() {
   const [barrioSearch, setBarrioSearch] = useState("");
   
   // Schedule State
-  const [scheduleMode, setScheduleMode] = useState<"specific" | "flexible">("flexible");
+  const [scheduleMode, setScheduleMode] = useState<"specific" | "flexible">("specific");
   const [scheduledDate, setScheduledDate] = useState("");
   const [scheduledTime, setScheduledTime] = useState("");
   const [flexibleDays, setFlexibleDays] = useState<string[]>([]);
@@ -106,6 +108,14 @@ export default function PublicarPage() {
   // Geocoding & Suggestions effect
   useEffect(() => {
     const timer = setTimeout(async () => {
+      // Si acabamos de seleccionar una sugerencia, no busquemos de nuevo
+      if (skipNextSearch.current) {
+        skipNextSearch.current = false;
+        setSuggestions([]);
+        setShowSuggestions(false);
+        return;
+      }
+
       // Coordenadas constantes para Formosa Capital (West, North, East, South)
       const VIEWBOX = '-58.25,-26.10,-58.10,-26.25';
       
@@ -144,15 +154,29 @@ export default function PublicarPage() {
         
         // Si no hay dirección pero hay barrio, mostramos el mapa del barrio
         if (barrio) {
-          const query = `${barrio}, Ciudad de Formosa, Argentina`;
+          // Intentamos buscarlo específicamente como barrio para mayor precisión
+          const query = `Barrio ${barrio}, Ciudad de Formosa, Argentina`;
           const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1&viewbox=${VIEWBOX}&bounded=1`;
           try {
             const res = await fetch(url);
             const data = await res.json();
             if (data[0]) {
               setCoords({ lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) });
+            } else {
+              // Si falla con el prefijo 'Barrio', intentamos la búsqueda general en la capital
+              const fallbackUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(`${barrio}, Ciudad de Formosa, Argentina`)}&format=json&limit=1&viewbox=${VIEWBOX}&bounded=1`;
+              const fallbackRes = await fetch(fallbackUrl);
+              const fallbackData = await fallbackRes.json();
+              if (fallbackData[0]) {
+                setCoords({ lat: parseFloat(fallbackData[0].lat), lng: parseFloat(fallbackData[0].lon) });
+              } else {
+                // Fallback final: Centro de Formosa Capital
+                setCoords({ lat: -26.185, lng: -58.175 });
+              }
             }
-          } catch (e) {}
+          } catch (e) {
+            setCoords({ lat: -26.185, lng: -58.175 });
+          }
         }
       }
     }, 500);
@@ -169,6 +193,7 @@ export default function PublicarPage() {
       ? `${result.shortName} ${userNumber}` 
       : result.shortName;
 
+    skipNextSearch.current = true;
     setAddress(finalAddress);
     setCoords(result.center);
     setShowSuggestions(false);
@@ -287,9 +312,11 @@ export default function PublicarPage() {
     let lng = coords?.lng || null;
     
     if (!lat || !lng) {
+      const VIEWBOX = '-58.25,-26.10,-58.10,-26.25';
       const geocode = async (query: string) => {
         try {
-          const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`);
+          const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1&viewbox=${VIEWBOX}&bounded=1`;
+          const res = await fetch(url);
           const data = await res.json();
           if (data[0]) return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
         } catch (e) {}
@@ -301,7 +328,7 @@ export default function PublicarPage() {
       
       // Fallback to just Barrio if full address fails
       if (!geo) {
-        geo = await geocode(`${barrio}, Formosa, Argentina`);
+        geo = await geocode(`Barrio ${barrio}, Ciudad de Formosa, Argentina`);
       }
 
       if (geo) { lat = geo.lat; lng = geo.lon; }
@@ -728,7 +755,7 @@ export default function PublicarPage() {
       </div>
 
       {/* Footer Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 px-5 pb-8 pt-4 bg-surface/90 backdrop-blur-md border-t border-outline-variant/10 max-w-md md:max-w-3xl lg:max-w-full mx-auto">
+      <div className="fixed bottom-0 left-0 right-0 z-40 px-5 pt-4 bg-surface/90 backdrop-blur-md border-t border-outline-variant/10 max-w-md md:max-w-3xl lg:max-w-full mx-auto pb-[calc(2rem+env(safe-area-inset-bottom,0px))]">
         <div className="flex gap-3">
           {step > 1 && (
             <button
@@ -739,9 +766,37 @@ export default function PublicarPage() {
             </button>
           )}
           <button
-            disabled={!canGoNext() || loading}
-            onClick={step === totalSteps ? handlePublish : nextStep}
-            className={`py-4 bg-cta-gradient text-on-primary font-headline font-bold text-sm rounded-xl shadow-lg shadow-primary/25 uppercase tracking-wider disabled:opacity-40 transition-all active:scale-[0.98] ${step > 1 ? "flex-[2]" : "w-full"}`}
+            onClick={() => {
+              if (!canGoNext()) {
+                if (step === 1) {
+                  if (!selectedCategory) toast.error("Por favor, elegí una categoría.");
+                  else if (title.trim().length < 5) toast.error("El título debe tener al menos 5 caracteres.");
+                  else if (description.trim().length < 10) toast.error("La descripción debe tener al menos 10 caracteres.");
+                } else if (step === 3) {
+                  if (!barrio) toast.error("Por favor, seleccioná tu barrio.");
+                  else if (address.trim().length < 3) toast.error("Por favor, ingresá un domicilio válido (mínimo 3 letras).");
+                  else if (scheduleMode === "specific") {
+                    if (!scheduledDate) toast.error("Por favor, elegí una fecha para la visita.");
+                    else if (!scheduledTime) toast.error("Por favor, elegí un horario para la visita.");
+                  } else {
+                    if (flexibleDays.length === 0) toast.error("Por favor, seleccioná al menos un día disponible.");
+                    else if (!flexibleTimeSlot) toast.error("Por favor, elegí una franja horaria (mañana, tarde o todo el día).");
+                  }
+                }
+                return;
+              }
+              if (step === totalSteps) {
+                handlePublish();
+              } else {
+                nextStep();
+              }
+            }}
+            disabled={loading}
+            className={cn(
+              "py-4 bg-cta-gradient text-on-primary font-headline font-bold text-sm rounded-xl shadow-lg shadow-primary/25 uppercase tracking-wider transition-all active:scale-[0.98]",
+              step > 1 ? "flex-[2]" : "w-full",
+              !canGoNext() && "opacity-40"
+            )}
           >
             {loading ? "Publicando..." : step === totalSteps ? "Publicar Pedido" : "Siguiente"}
           </button>
