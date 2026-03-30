@@ -41,7 +41,6 @@ export default function RootLayout({
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
-          suppressHydrationWarning
         >
           {children}
           <Toaster position="top-center" offset={200} />

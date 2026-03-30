@@ -365,24 +365,31 @@ export default function PublicarPage() {
       toast.error("Error al publicar el pedido: " + error.message);
       setLoading(false);
     } else {
-      const { data: matchingProviders } = await supabase
-        .from("profiles")
-        .select("id")
-        .eq("is_provider", true)
-        .contains("categories", [selectedCategory]);
-
-      if (matchingProviders && matchingProviders.length > 0) {
-        const notifications = matchingProviders.map(p => ({
-          user_id: p.id,
-          type: "new_job_available",
-          title: "¡Nuevo trabajo disponible!",
-          content: `Se publicó un nuevo pedido de ${selectedCategoryData?.label} en ${barrio}: ${title}`,
-          link: `/trabajos/${jobData.id}`,
-        }));
-        await supabase.from("notifications").insert(notifications);
-      }
+      // REDIRECCIÓN INMEDIATA para mejor UX
       toast.success("¡Pedido publicado exitosamente!");
-      router.push("/dashboard");
+      const targetPath = `/trabajos/${jobData.id}`;
+      router.prefetch(targetPath);
+      router.push(targetPath);
+
+      // Lógica de notificaciones en SEGUNDO PLANO (sin await)
+      (async () => {
+        const { data: matchingProviders } = await supabase
+          .from("profiles")
+          .select("id")
+          .eq("is_provider", true)
+          .contains("categories", [selectedCategory]);
+
+        if (matchingProviders && matchingProviders.length > 0) {
+          const notifications = matchingProviders.map(p => ({
+            user_id: p.id,
+            type: "new_job_available",
+            title: "¡Nuevo trabajo disponible!",
+            content: `Se publicó un nuevo pedido de ${selectedCategoryData?.label} en ${barrio}: ${title}`,
+            link: targetPath,
+          }));
+          await supabase.from("notifications").insert(notifications);
+        }
+      })().catch(err => console.error("Background notification error:", err));
     }
   };
 
@@ -395,7 +402,25 @@ export default function PublicarPage() {
   };
 
   return (
-    <div className="bg-surface flex flex-col max-w-md md:max-w-3xl lg:max-w-full mx-auto relative">
+    <div className="bg-surface flex flex-col max-w-md md:max-w-3xl lg:max-w-full mx-auto relative min-h-screen">
+      {/* Loading Overlay */}
+      {loading && (
+        <div className="fixed inset-0 z-[100] bg-surface/80 backdrop-blur-md flex flex-col items-center justify-center animate-in fade-in duration-300">
+          <div className="relative">
+             <div className="size-24 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
+             <div className="absolute inset-0 flex items-center justify-center">
+                <MSymbol icon="auto_awesome" size={32} className="text-primary animate-pulse" filled />
+             </div>
+          </div>
+          <h2 className="mt-8 font-headline font-black text-2xl text-on-surface tracking-tight animate-bounce">
+            Creando tu pedido...
+          </h2>
+          <p className="mt-2 text-on-surface-variant text-sm font-medium opacity-60">
+            Buscando a los mejores profesionales
+          </p>
+        </div>
+      )}
+
       {/* Header & Progress Indicator */}
       <div className="px-5 pt-5 pb-2 sticky top-0 bg-surface z-50">
         <div className="flex items-center justify-between mb-4">

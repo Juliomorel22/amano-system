@@ -18,7 +18,7 @@ export function ThemeProvider({
   }
 
   return (
-    <NextThemesProvider {...props} suppressHydrationWarning>
+    <NextThemesProvider {...props}>
       {children}
     </NextThemesProvider>
   )
