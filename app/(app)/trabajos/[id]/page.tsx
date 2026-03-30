@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import NextImage from "next/image";
 import { cn } from "@/lib/utils";
 import dynamic from 'next/dynamic';
-import { formatDistanceToNow, isToday, isYesterday } from "date-fns";
+import { formatDistanceToNow, isToday, isYesterday, format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -91,6 +91,7 @@ function TrabajoDetalleContent({ params }: { params: Promise<{ id: string }> }) 
   const [userId, setUserId] = useState<string | null>(null);
   const [clientData, setClientData] = useState<any>(null);
   const [assignedProvider, setAssignedProvider] = useState<any>(null);
+  const [completedAt, setCompletedAt] = useState<string | null>(null);
 
   // Estado para la nueva oferta
   const [offerAmount, setOfferAmount] = useState("");
@@ -103,6 +104,12 @@ function TrabajoDetalleContent({ params }: { params: Promise<{ id: string }> }) 
 
   // Estado para zoom de imagen
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  // Estado para el diálogo de reseña
+  const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState("");
+  const [submittingReview, setSubmittingReview] = useState(false);
 
   const loadData = useCallback(async () => {
     const supabase = createClient();
@@ -127,6 +134,19 @@ function TrabajoDetalleContent({ params }: { params: Promise<{ id: string }> }) 
 
     if (jobData) {
       setJob(jobData);
+
+      // Si el trabajo está completado, buscar la fecha de finalización en las reseñas
+      if (jobData.status === "completed") {
+        const { data: reviewData } = await supabase
+          .from("reviews")
+          .select("created_at")
+          .eq("job_id", id)
+          .single();
+        
+        if (reviewData) {
+          setCompletedAt(reviewData.created_at);
+        }
+      }
 
       // Siempre cargar info del cliente para mostrar quién publica
       const { data: cData } = await supabase.from("profiles").select("*").eq("id", jobData.client_id).single();
@@ -369,6 +389,61 @@ function TrabajoDetalleContent({ params }: { params: Promise<{ id: string }> }) 
     setSubmittingOffer(false);
   };
 
+  const handleSubmitReview = async () => {
+    if (!assignedProvider) return;
+    setSubmittingReview(true);
+    const supabase = createClient();
+
+    try {
+      // 1. Insertar la reseña
+      const { error: reviewError } = await supabase.from("reviews").insert({
+        job_id: id,
+        reviewer_id: userId,
+        reviewed_id: assignedProvider.id,
+        rating,
+        comment: comment.trim(),
+      });
+
+      if (reviewError) throw reviewError;
+
+      // 2. Marcar el trabajo como completado
+      const { error: jobError } = await supabase
+        .from("jobs")
+        .update({ status: "completed" })
+        .eq("id", id);
+
+      if (jobError) throw jobError;
+
+      // 3. Obtener todas las reseñas del proveedor para recalcular el promedio
+      const { data: allReviews } = await supabase
+        .from("reviews")
+        .select("rating")
+        .eq("reviewed_id", assignedProvider.id);
+
+      if (allReviews && allReviews.length > 0) {
+        const totalRating = allReviews.reduce((acc, curr) => acc + curr.rating, 0);
+        const avgRating = totalRating / allReviews.length;
+
+        // 4. Actualizar el perfil del proveedor
+        await supabase
+          .from("profiles")
+          .update({
+            rating: avgRating,
+            jobs_count: allReviews.length
+          })
+          .eq("id", assignedProvider.id);
+      }
+
+      toast.success("¡Gracias por tu reseña! Trabajo finalizado.");
+      setIsReviewDialogOpen(false);
+      loadData();
+    } catch (error: any) {
+      toast.error("Error al enviar la reseña: " + error.message);
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
+
   if (loading) return <TrabajoDetalleSkeleton />;
   if (!job) return <div className="min-h-screen bg-surface p-5 text-center flex flex-col items-center justify-center gap-4">
     <MSymbol icon="error" size={48} className="text-error" />
@@ -476,6 +551,24 @@ function TrabajoDetalleContent({ params }: { params: Promise<{ id: string }> }) 
 
       {/* Mensajes de estado Críticos para la Publicación */}
       <section className="px-5 mt-4">
+        {job.status === "completed" && (
+           <div className="mb-4 p-5 bg-success/10 border border-success/30 rounded-[2rem] flex flex-col items-center text-center gap-3 animate-in fade-in zoom-in duration-700">
+             <div className="size-14 bg-success/20 rounded-full flex items-center justify-center mb-1">
+               <MSymbol icon="task_alt" size={32} className="text-success" filled />
+             </div>
+             <div>
+               <p className="text-lg font-headline font-black text-success leading-tight mb-1">
+                 ¡Tarea finalizada exitosamente!
+               </p>
+               {completedAt && (
+                 <p className="text-sm font-bold text-on-surface-variant/80">
+                   Completado el {format(new Date(completedAt), "dd-MM-yyyy 'a las' HH:mm", { locale: es })}hs
+                 </p>
+               )}
+             </div>
+           </div>
+        )}
+
         {(job.status === "paid" || job.status === "in_progress") && isAuthorized && (
            <div className="mb-4 p-4 bg-success-container/30 border border-success/20 rounded-2xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-500">
              <MSymbol icon="verified" size={20} className="text-success mt-0.5" filled />
@@ -707,14 +800,14 @@ function TrabajoDetalleContent({ params }: { params: Promise<{ id: string }> }) 
       {job.lat && job.lng && (
         <section className="px-5 pb-8">
           <p className="text-[10px] uppercase font-black tracking-widest text-primary/60 mb-3 px-1">
-            Ubicación aproximada
+            {isOwner ? "Tu ubicación del trabajo" : "Ubicación aproximada"}
           </p>
           <MapaAproximado
             lat={Number(job.lat)}
             lng={Number(job.lng)}
-            exact={job.status === 'paid' || job.status === 'in_progress' || job.status === 'completed' || job.status === 'finished'}
+            exact={isOwner || ['accepted', 'payment_under_review', 'paid', 'in_progress', 'completed', 'finished'].includes(job.status)}
           />
-          {(job.status === 'paid' || job.status === 'in_progress' || job.status === 'completed' || job.status === 'finished') && (
+          {(isOwner || ['accepted', 'payment_under_review', 'paid', 'in_progress', 'completed', 'finished'].includes(job.status)) && (
             <div className="flex items-center gap-3 mt-4 px-4 py-3 bg-primary/5 rounded-2xl border border-primary/10">
               <MSymbol icon="location_on" size={20} className="text-primary" filled />
               <p className="text-sm font-bold text-on-surface leading-tight">{job.address}</p>
@@ -796,6 +889,14 @@ function TrabajoDetalleContent({ params }: { params: Promise<{ id: string }> }) 
                       className="w-full py-4 bg-cta-gradient text-on-primary rounded-2xl font-headline font-black text-sm uppercase tracking-widest shadow-lg shadow-primary/20 active:scale-95 transition-all"
                     >
                       Confirmar llegada al domicilio
+                    </button>
+                  ) : job.status === "finished" ? (
+                    <button
+                      onClick={() => setIsReviewDialogOpen(true)}
+                      className="w-full py-4 bg-cta-gradient text-on-primary rounded-2xl font-headline font-black text-sm uppercase tracking-widest shadow-lg shadow-primary/20 active:scale-95 transition-all flex items-center justify-center gap-2"
+                    >
+                      <MSymbol icon="rate_review" size={20} filled />
+                      Calificar y Cerrar Trabajo
                     </button>
                   ) : (
                     <div className="flex items-center gap-2.5 text-success font-black text-[11px] uppercase tracking-wider bg-success/5 px-4 py-3 rounded-xl border border-success/10">
@@ -969,6 +1070,71 @@ function TrabajoDetalleContent({ params }: { params: Promise<{ id: string }> }) 
               className="w-full py-5 bg-cta-gradient text-on-primary font-headline font-black text-base rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest transition-all hover:opacity-95 active:scale-95"
             >
               Ir a pagar ahora
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Diálogo de Reseña y Calificación */}
+      <Dialog open={isReviewDialogOpen} onOpenChange={setIsReviewDialogOpen}>
+        <DialogContent className="max-w-[95vw] md:max-w-md rounded-[2.5rem] p-6 md:p-8 border-none shadow-2xl max-h-[92vh] overflow-y-auto overflow-x-hidden scrollbar-hide">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 pointer-events-none" />
+          
+          <DialogHeader className="relative z-10">
+            <div className="mx-auto w-16 h-16 md:w-20 md:h-20 bg-primary/10 rounded-3xl flex items-center justify-center mb-4 md:mb-6 rotate-3">
+              <MSymbol icon="star" size={32} className="text-primary md:size-10" filled />
+            </div>
+            <DialogTitle className="text-center font-headline font-black text-2xl md:text-3xl tracking-tight leading-none mb-2">
+              ¿Cómo fue tu experiencia?
+            </DialogTitle>
+            <DialogDescription className="text-center text-on-surface-variant text-sm md:text-base font-medium">
+              Calificá el trabajo de <span className="text-primary font-black">{assignedProvider?.full_name}</span> para ayudar a otros vecinos.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-6 md:space-y-8 mt-4 relative z-10">
+            {/* Star Rating Selector */}
+            <div className="flex items-center justify-center gap-1 md:gap-2 py-3 md:py-4 bg-surface-container-low rounded-[2rem] border border-outline-variant/10">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  onClick={() => setRating(star)}
+                  className="p-1 transition-all active:scale-90"
+                >
+                  <MSymbol 
+                    icon="star" 
+                    size={36} 
+                    filled={star <= rating} 
+                    className={cn(
+                      "transition-all md:size-10",
+                      star <= rating ? "text-amber-500 drop-shadow-sm scale-110" : "text-outline-variant opacity-30"
+                    )}
+                  />
+                </button>
+              ))}
+            </div>
+
+            {/* Comment Area */}
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-on-surface-variant/60 ml-4">
+                Comentario (opcional)
+              </label>
+              <textarea
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Ej: Excelente trabajo, muy puntual y prolijo..."
+                className="w-full h-24 md:h-32 bg-surface-container rounded-3xl p-4 md:p-5 text-sm font-medium outline-none focus:ring-2 focus:ring-primary/20 transition-all resize-none border border-outline-variant/10"
+              />
+            </div>
+          </div>
+
+          <DialogFooter className="mt-6 md:mt-8 relative z-10 border-none bg-transparent p-0 m-0">
+            <button
+              onClick={handleSubmitReview}
+              disabled={submittingReview}
+              className="w-full py-4 md:py-5 bg-cta-gradient text-on-primary font-headline font-black text-sm md:text-base rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest transition-all hover:opacity-95 active:scale-95 disabled:opacity-50 mb-2"
+            >
+              {submittingReview ? "Enviando..." : "Finalizar y Calificar"}
             </button>
           </DialogFooter>
         </DialogContent>

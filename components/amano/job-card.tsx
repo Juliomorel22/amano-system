@@ -61,7 +61,7 @@ export function JobCard({ id, category, title, description, barrio, status, offe
 
   const badgeColor = isRejected 
     ? (isPaymentError && isProviderView ? "bg-amber-500 text-amber-950" : "bg-error text-on-error")
-    : (isAssigned || isAccepted) 
+    : (isAssigned || isAccepted || status === "completed" || status === "finished") 
       ? "bg-success text-on-success" 
       : "bg-primary text-on-primary shadow-sm";
 

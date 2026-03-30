@@ -31,6 +31,8 @@ export default function PerfilPage() {
   const [avatarUrl, setAvatarUrl] = useState("");
   const [rating, setRating] = useState<number | null>(null);
 
+  const [reviews, setReviews] = useState<any[]>([]);
+
   useEffect(() => {
     async function loadProfile() {
       const supabase = createClient();
@@ -58,14 +60,24 @@ export default function PerfilPage() {
         setAvatarUrl(profile.avatar_url || "");
         setRating(profile.rating || null);
 
+        // Si es proveedor, cargar sus reseñas
+        if (profile.is_provider) {
+          const { data: reviewsData } = await supabase
+            .from("reviews")
+            .select(`
+              *,
+              reviewer:profiles!reviews_reviewer_id_fkey(full_name, avatar_url)
+            `)
+            .eq("reviewed_id", user.id)
+            .order("created_at", { ascending: false });
+          
+          if (reviewsData) setReviews(reviewsData);
+        }
+
         // Si faltan datos obligatorios, es modo onboarding
         if (!profile.full_name || !profile.phone || !profile.barrio) {
           setIsOnboarding(true);
         } else {
-          // Si el perfil está completo y el usuario entró a /perfil, 
-          // lo dejamos estar aquí si quiere editar, 
-          // PERO si viene directo del login (sin intención de editar),
-          // podríamos redirigirlo. Por ahora, si tiene datos, NO es onboarding.
           setIsOnboarding(false);
         }
       } else {
@@ -461,6 +473,83 @@ export default function PerfilPage() {
                 </div>
               )}
             </section>
+
+            {/* Section: Mis Reseñas (Solo para prestadores) */}
+            {isProvider && (
+              <section className="bg-surface-container-lowest p-6 md:p-8 rounded-[2.5rem] border border-outline-variant/10 shadow-sm">
+                <div className="flex items-center justify-between mb-8">
+                  <div className="flex items-center gap-3">
+                    <div className="size-10 bg-warning/10 rounded-xl flex items-center justify-center">
+                      <MSymbol icon="reviews" size={22} className="text-warning" filled />
+                    </div>
+                    <h3 className="font-headline font-bold text-xl text-on-surface">Mis Reseñas</h3>
+                  </div>
+                  {reviews.length > 0 && (
+                    <div className="flex items-center gap-1.5 bg-warning/10 px-3 py-1 rounded-full border border-warning/10">
+                      <MSymbol icon="star" size={14} className="text-warning" filled />
+                      <span className="text-xs font-black text-warning">
+                        {rating?.toFixed(1) || "5.0"} ({reviews.length})
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {reviews.length === 0 ? (
+                  <div className="py-12 flex flex-col items-center justify-center text-center px-4 bg-surface-container-low rounded-3xl border border-dashed border-outline-variant/20">
+                    <div className="size-16 rounded-full bg-surface-container flex items-center justify-center mb-4">
+                      <MSymbol icon="rate_review" size={32} className="text-outline-variant opacity-30" />
+                    </div>
+                    <p className="text-on-surface-variant font-bold text-sm">Aún no tenés reseñas.</p>
+                    <p className="text-[11px] text-on-surface-variant/60 mt-1 max-w-[200px]">
+                      Las calificaciones aparecerán aquí cuando completes trabajos.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {reviews.map((review) => (
+                      <div key={review.id} className="p-5 bg-surface-container-low rounded-3xl border border-outline-variant/10 hover:border-primary/20 transition-all group">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex items-center gap-3">
+                            <Avatar className="size-10 border-2 border-surface shadow-sm">
+                              <AvatarImage src={review.reviewer?.avatar_url} />
+                              <AvatarFallback className="bg-primary/5 text-primary text-[10px] font-black">
+                                {review.reviewer?.full_name?.substring(0, 2).toUpperCase() || "AM"}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <p className="text-sm font-bold text-on-surface leading-tight">
+                                {review.reviewer?.full_name || "Vecino"}
+                              </p>
+                              <div className="flex items-center gap-1 mt-0.5">
+                                {[...Array(5)].map((_, i) => (
+                                  <MSymbol 
+                                    key={i} 
+                                    icon="star" 
+                                    size={12} 
+                                    filled={i < review.rating} 
+                                    className={cn(i < review.rating ? "text-warning" : "text-outline-variant opacity-20")} 
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                          <span className="text-[9px] font-black text-on-surface-variant/40 uppercase tracking-tighter">
+                            {new Date(review.created_at).toLocaleDateString("es-AR", { day: 'numeric', month: 'short' })}
+                          </span>
+                        </div>
+                        {review.comment && (
+                          <div className="mt-3 pl-13">
+                            <p className="text-sm text-on-surface-variant italic leading-relaxed font-medium">
+                              "{review.comment}"
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </section>
+            )}
           </div>
 
           {/* Right Column: Actions */}

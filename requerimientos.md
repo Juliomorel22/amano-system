@@ -194,8 +194,9 @@ Antes de poder operar (publicar o cotizar), todo usuario debe completar:
 - **Teléfono:** Número de contacto
 - **Ubicación:** Barrio (dropdown de barrios de Formosa Capital)
 - **Categorías (solo Prestador):** Selección múltiple:
-  - Cerrajero · Electricista · Plomero · Community Manager · Piletero
-  - Jardinero · Limpieza doméstica · Albañil · Changuitas · Pinturería a domicilio
+  - Cerrajería · Electricidad · Plomería · Servicios digitales · Piletero
+  - Jardinería · Limpieza doméstica · Albañilería · Changuitas · Pinturería a domicilio
+  - Aire acondicionados · Reparación electrodomésticos · Carpintería
 
 ---
 

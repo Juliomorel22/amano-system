@@ -1,17 +1,8 @@
 'use client'
 import { useMemo } from 'react'
-import { MapContainer, TileLayer, Circle } from 'react-leaflet'
+import { MapContainer, TileLayer, Circle, useMap } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
-
-// Fix default marker icon issue in Leaflet with Next.js
-// @ts-expect-error - Leaflet internal property access
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-});
 
 interface Props {
   lat: number
@@ -19,7 +10,24 @@ interface Props {
   exact?: boolean
 }
 
+function ChangeView({ center }: { center: [number, number] }) {
+  const map = useMap();
+  map.setView(center);
+  return null;
+}
+
 export default function MapaAproximado({ lat, lng, exact = false }: Props) {
+  // Fix default marker icon issue in Leaflet with Next.js (Safe for SSR)
+  if (typeof window !== 'undefined') {
+    // @ts-expect-error - Leaflet internal property access
+    delete L.Icon.Default.prototype._getIconUrl;
+    L.Icon.Default.mergeOptions({
+      iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+      iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+    });
+  }
+
   const coords = useMemo(() => {
     if (exact) return { lat, lng }
     
@@ -48,14 +56,15 @@ export default function MapaAproximado({ lat, lng, exact = false }: Props) {
         doubleClickZoom={false}
         touchZoom={false}
       >
+        <ChangeView center={[coords.lat, coords.lng]} />
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         <Circle
           center={[coords.lat, coords.lng]}
-          radius={exact ? 20 : 400}
+          radius={exact ? 25 : 400}
           pathOptions={{ 
-            color: '#003f87', 
-            fillColor: '#003f87', 
-            fillOpacity: exact ? 0.4 : 0.12, 
+            color: '#0056b3', 
+            fillColor: '#0056b3', 
+            fillOpacity: exact ? 0.35 : 0.2, 
             weight: 2 
           }}
         />

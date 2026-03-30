@@ -5,14 +5,17 @@ export const CATEGORIES = [
   { id: "plomeria", label: "Plomería", icon: "water_drop" },
   { id: "changuitas", label: "Changuitas", icon: "handyman" },
   { id: "electricidad", label: "Electricidad", icon: "bolt" },
-  { id: "pintura", label: "Pintura", icon: "format_paint" },
+  { id: "pintura", label: "Pinturería", icon: "format_paint" },
   { id: "limpieza", label: "Limpieza", icon: "mop" },
   { id: "fletes", label: "Fletes", icon: "local_shipping" },
   { id: "jardineria", label: "Jardinería", icon: "yard" },
   { id: "albanileria", label: "Albañilería", icon: "construction" },
   { id: "cerrajeria", label: "Cerrajería", icon: "key" },
   { id: "piletero", label: "Piletero", icon: "pool" },
-  { id: "community-manager", label: "Community Manager", icon: "smartphone" },
+  { id: "aire-acondicionado", label: "Aire acondicionados", icon: "ac_unit" },
+  { id: "reparacion-electro", label: "Reparación electrodomesticos", icon: "home_repair_service" },
+  { id: "carpinteria", label: "Carpintería", icon: "carpenter" },
+  { id: "servicios-digitales", label: "Servicios digitales", icon: "smartphone" },
 ] as const;
 
 export type CategoryId = (typeof CATEGORIES)[number]["id"];

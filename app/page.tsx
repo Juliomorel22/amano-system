@@ -98,7 +98,7 @@ export default function LandingPage() {
         </div>
         <div className="lp-hero-stats">
           <div className="lp-stat">
-            <div className="lp-stat-number">11</div>
+            <div className="lp-stat-number">14</div>
             <div className="lp-stat-label">Categorías</div>
           </div>
           <div className="lp-stat">
@@ -114,6 +114,7 @@ export default function LandingPage() {
             <div className="lp-stat-label">Pago seguro</div>
           </div>
         </div>
+
       </header>
 
       {/* CÓMO FUNCIONA */}
@@ -402,7 +403,16 @@ export default function LandingPage() {
               <span className="material-symbols-outlined">handyman</span>Manos Útiles
             </div>
             <div className="lp-cat-chip">
-              <span className="material-symbols-outlined">smartphone</span>Community Manager
+              <span className="material-symbols-outlined">ac_unit</span>Aire acondicionados
+            </div>
+            <div className="lp-cat-chip">
+              <span className="material-symbols-outlined">home_repair_service</span>Electrodomésticos
+            </div>
+            <div className="lp-cat-chip">
+              <span className="material-symbols-outlined">carpenter</span>Carpintería
+            </div>
+            <div className="lp-cat-chip">
+              <span className="material-symbols-outlined">smartphone</span>Servicios digitales
             </div>
           </div>
         </div>

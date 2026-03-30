@@ -6,6 +6,7 @@ import Link from "next/link";
 interface OfferCardProps {
   id: string;
   jobId: string;
+  providerId: string;
   providerName: string;
   providerAvatar?: string;
   rating: number;
@@ -17,6 +18,7 @@ interface OfferCardProps {
 
 export function OfferCard({
   jobId,
+  providerId,
   providerName,
   providerAvatar,
   rating,
@@ -40,15 +42,19 @@ export function OfferCard({
       isAccepted ? "border-success/30 bg-success/5 shadow-ambient" : "border-outline-variant/10 hover:shadow-ambient"
     )}>
       <div className="flex items-center gap-4">
-        <Avatar className="size-14 border-2 border-primary/5 shadow-sm shrink-0">
-          <AvatarImage src={providerAvatar} className="object-cover" />
-          <AvatarFallback className="bg-primary/5 text-primary font-black text-base">
-            {initials}
-          </AvatarFallback>
-        </Avatar>
+        <Link href={`/perfil/${providerId}`} className="shrink-0 active:scale-95 transition-transform">
+          <Avatar className="size-14 border-2 border-primary/5 shadow-sm">
+            <AvatarImage src={providerAvatar} className="object-cover" />
+            <AvatarFallback className="bg-primary/5 text-primary font-black text-base">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+        </Link>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-0.5">
-            <p className="font-headline font-black text-lg text-on-surface truncate">{providerName}</p>
+            <Link href={`/perfil/${providerId}`} className="hover:underline decoration-primary/30">
+              <p className="font-headline font-black text-lg text-on-surface truncate">{providerName}</p>
+            </Link>
             {isAccepted && (
               <span className="bg-success text-on-success text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter shrink-0 border border-success/20">
                 Elegido
