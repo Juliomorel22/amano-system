@@ -6,10 +6,12 @@ import { CATEGORIES } from "@/components/amano/category-chip";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import NextImage from "next/image";
 import dynamic from 'next/dynamic';
 import { cn } from "@/lib/utils";
+import { sendNotification } from "@/lib/supabase/notifications";
+import { format, addHours } from "date-fns";
 
 const MapaAproximado = dynamic(
   () => import('@/components/amano/mapa-aproximado'),
@@ -59,6 +61,9 @@ interface MediaFile {
 
 export default function PublicarPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isUrgentParam = searchParams.get("urgent") === "true";
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const categoryRef = useRef<HTMLDivElement>(null);
   const barrioRef = useRef<HTMLDivElement>(null);
@@ -78,10 +83,13 @@ export default function PublicarPage() {
   const [barrioDropdownOpen, setBarrioDropdownOpen] = useState(false);
   const [barrioSearch, setBarrioSearch] = useState("");
   
+  // Urgent State
+  const [isUrgent, setIsUrgent] = useState(isUrgentParam);
+
   // Schedule State
   const [scheduleMode, setScheduleMode] = useState<"specific" | "flexible">("specific");
-  const [scheduledDate, setScheduledDate] = useState("");
-  const [scheduledTime, setScheduledTime] = useState("");
+  const [scheduledDate, setScheduledDate] = useState(isUrgentParam ? format(new Date(), 'yyyy-MM-dd') : "");
+  const [scheduledTime, setScheduledTime] = useState(isUrgentParam ? format(new Date(), 'HH:mm') : "");
   const [flexibleDays, setFlexibleDays] = useState<string[]>([]);
   const [flexibleTimeSlot, setFlexibleTimeSlot] = useState<"mañana" | "tarde" | "todo-el-dia" | null>(null);
 
@@ -357,6 +365,8 @@ export default function PublicarPage() {
         availability,
         photos_urls: photosUrls.length > 0 ? photosUrls : null,
         status: "open",
+        is_urgent: isUrgent,
+        urgent_expires_at: isUrgent ? format(addHours(new Date(), 2), "yyyy-MM-dd'T'HH:mm:ssXXX") : null,
       })
       .select()
       .single();
@@ -366,7 +376,7 @@ export default function PublicarPage() {
       setLoading(false);
     } else {
       // REDIRECCIÓN INMEDIATA para mejor UX
-      toast.success("¡Pedido publicado exitosamente!");
+      toast.success(isUrgent ? "¡Pedido URGENTE publicado!" : "¡Pedido publicado exitosamente!");
       const targetPath = `/trabajos/${jobData.id}`;
       router.prefetch(targetPath);
       router.push(targetPath);
@@ -380,14 +390,16 @@ export default function PublicarPage() {
           .contains("categories", [selectedCategory]);
 
         if (matchingProviders && matchingProviders.length > 0) {
-          const notifications = matchingProviders.map(p => ({
-            user_id: p.id,
-            type: "new_job_available",
-            title: "¡Nuevo trabajo disponible!",
-            content: `Se publicó un nuevo pedido de ${selectedCategoryData?.label} en ${barrio}: ${title}`,
-            link: targetPath,
-          }));
-          await supabase.from("notifications").insert(notifications);
+          const notificationPromises = matchingProviders.map(p => 
+            sendNotification({
+              userId: p.id,
+              type: "new_job_available",
+              title: isUrgent ? "🚨 ¡TRABAJO URGENTE DISPONIBLE!" : "¡Nuevo trabajo disponible!",
+              content: `${isUrgent ? "[URGENTE] " : ""}Se publicó un nuevo pedido de ${selectedCategoryData?.label} en ${barrio}: ${title}`,
+              link: targetPath,
+            })
+          );
+          await Promise.all(notificationPromises);
         }
       })().catch(err => console.error("Background notification error:", err));
     }
@@ -451,6 +463,18 @@ export default function PublicarPage() {
         
         {step === 1 && (
           <div className="space-y-6 px-5 py-4 pb-32">
+            {isUrgent && (
+              <div className="bg-amber-500/10 border border-amber-500/20 p-4 rounded-2xl flex gap-3 items-start animate-in fade-in slide-in-from-top-2 duration-500">
+                <MSymbol icon="bolt" size={24} className="text-amber-600 shrink-0" filled />
+                <div>
+                  <h3 className="text-sm font-bold text-amber-900 leading-none mb-1">Modalidad Urgente Activa</h3>
+                  <p className="text-xs text-amber-800/80 leading-tight">
+                    Tu pedido será priorizado. Garantizamos que recibirás ofertas y tendrás un profesional asignado en menos de 2 horas.
+                  </p>
+                </div>
+              </div>
+            )}
+            
             <section>
               <h1 className="font-headline font-extrabold text-2xl text-on-surface tracking-tight leading-tight mb-2">
                 ¿Qué necesitás solucionar?

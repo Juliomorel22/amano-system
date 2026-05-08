@@ -12,6 +12,8 @@ interface OfferCardProps {
   rating: number;
   jobsCount: number;
   amount: number;
+  minAmount?: number;
+  maxAmount?: number;
   status: string;
   onAccept?: () => void;
 }
@@ -24,6 +26,8 @@ export function OfferCard({
   rating,
   jobsCount,
   amount,
+  minAmount,
+  maxAmount,
   status,
   onAccept,
 }: OfferCardProps) {
@@ -35,6 +39,8 @@ export function OfferCard({
     .toUpperCase();
 
   const isAccepted = status === "accepted";
+
+  const hasRange = minAmount !== undefined && maxAmount !== undefined && minAmount !== maxAmount;
 
   return (
     <div className={cn(
@@ -78,10 +84,20 @@ export function OfferCard({
 
       <div className="mt-6 flex flex-col gap-4">
         <div className="flex items-baseline justify-between px-1">
-          <span className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest opacity-60">Presupuesto total</span>
-          <p className="font-headline text-3xl font-black text-primary tracking-tighter">
-            ${amount.toLocaleString("es-AR")}
-          </p>
+          <span className="text-[10px] font-black text-on-surface-variant uppercase tracking-widest opacity-60">
+            {hasRange ? "Rango de presupuesto" : "Presupuesto total"}
+          </span>
+          <div className="text-right">
+            {hasRange ? (
+              <p className="font-headline text-2xl font-black text-primary tracking-tighter">
+                ${minAmount.toLocaleString("es-AR")} - ${maxAmount.toLocaleString("es-AR")}
+              </p>
+            ) : (
+              <p className="font-headline text-3xl font-black text-primary tracking-tighter">
+                ${amount.toLocaleString("es-AR")}
+              </p>
+            )}
+          </div>
         </div>
         
         <button

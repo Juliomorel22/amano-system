@@ -175,8 +175,8 @@ function DashboardContent() {
         
         if (providerStatus) {
           if (isMeAssigned) {
-            // Soy el elegido: si el job está en 'open' o 'accepted', aún falta el pago/validación
-            displayStatus = (j.status === 'open' || j.status === 'accepted') ? 'accepted' : j.status;
+            // Soy el elegido
+            displayStatus = j.status;
           } else if (j.provider_id && j.provider_id !== currentUserId) {
             // Eligieron a otro
             displayStatus = 'offer_rejected';
@@ -195,7 +195,9 @@ function DashboardContent() {
           clientName: j.client?.full_name,
           clientPhone: j.client?.phone,
           providerName: j.provider?.full_name,
-          createdAt: j.created_at
+          createdAt: j.created_at,
+          is_urgent: j.is_urgent,
+          urgent_expires_at: j.urgent_expires_at
         };
       }));
     }
@@ -250,6 +252,28 @@ function DashboardContent() {
               className="w-full bg-surface-container-lowest rounded-xl pl-11 pr-4 py-3.5 text-sm text-on-surface placeholder-outline-variant outline-none focus:bg-surface-container-high focus:ring-2 focus:ring-primary/20 transition-all"
             />
           </div>
+
+          {!isProvider && (
+            <div className="flex gap-3 mt-6">
+              <Link 
+                href="/publicar" 
+                className="flex-1 flex items-center justify-center gap-2 py-4 bg-surface-container-high text-on-surface font-headline font-bold text-sm rounded-2xl active:scale-[0.98] transition-all border border-outline-variant/10 shadow-sm"
+              >
+                <MSymbol icon="add" size={20} className="text-primary" />
+                Publicar
+              </Link>
+              <Link 
+                href="/publicar?urgent=true" 
+                className="flex-1 flex items-center justify-center gap-2 py-4 bg-cta-gradient text-white font-headline font-bold text-sm rounded-2xl shadow-lg shadow-primary/25 active:scale-[0.98] transition-all relative overflow-hidden"
+              >
+                <div className="absolute top-0 right-0 bg-white/20 px-2 py-0.5 rounded-bl-lg text-[9px] font-black tracking-tighter uppercase">
+                  SLA 2hs
+                </div>
+                <MSymbol icon="bolt" size={20} className="text-white" filled />
+                Urgente
+              </Link>
+            </div>
+          )}
         </section>
       )}
 

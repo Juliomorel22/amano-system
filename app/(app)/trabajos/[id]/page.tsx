@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, use, useCallback, Suspense } from "react";
+import { useEffect, useState, use, useCallback, Suspense, useRef } from "react";
 import { MSymbol } from "@/components/amano/m-symbol";
 import { OfferCard } from "@/components/amano/offer-card";
 import { Badge } from "@/components/ui/badge";
@@ -23,6 +23,8 @@ const MapaAproximado = dynamic(
     loading: () => <div className="h-[220px] rounded-2xl bg-surface-container-low animate-pulse" />
   }
 )
+
+import { sendNotification, notifyAdmin } from "@/lib/supabase/notifications";
 
 import {
   Avatar,
@@ -94,13 +96,17 @@ function TrabajoDetalleContent({ params }: { params: Promise<{ id: string }> }) 
   const [completedAt, setCompletedAt] = useState<string | null>(null);
 
   // Estado para la nueva oferta
-  const [offerAmount, setOfferAmount] = useState("");
+  const [minAmount, setMinAmount] = useState("");
+  const [maxAmount, setMaxAmount] = useState("");
   const [submittingOffer, setSubmittingOffer] = useState(false);
   const [isEditingOffer, setIsEditingOffer] = useState(false);
 
   // Estado para el diálogo de aceptación
   const [isAcceptDialogOpen, setIsAcceptDialogOpen] = useState(false);
   const [selectedOfferId, setSelectedOfferId] = useState<string | null>(null);
+  const [finalAmount, setFinalAmount] = useState("");
+
+  const selectedOffer = offers.find(o => o.id === selectedOfferId);
 
   // Estado para zoom de imagen
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -167,6 +173,8 @@ function TrabajoDetalleContent({ params }: { params: Promise<{ id: string }> }) 
         rating: o.provider?.rating || 5,
         jobsCount: o.provider?.jobs_count || 0,
         amount: o.amount,
+        minAmount: o.min_amount,
+        maxAmount: o.max_amount,
         status: o.status,
         providerData: o.provider
       })) : [];
@@ -248,18 +256,26 @@ function TrabajoDetalleContent({ params }: { params: Promise<{ id: string }> }) 
   };
 
   const handleSubmitOffer = async () => {
-    if (!offerAmount) return toast.error("Ingresá un monto para tu oferta.");
+    if (!minAmount || !maxAmount) return toast.error("Ingresá el rango de tu oferta.");
+    if (parseFloat(maxAmount) < parseFloat(minAmount)) return toast.error("El precio máximo no puede ser menor al mínimo.");
+    
     setSubmittingOffer(true);
     const supabase = createClient();
 
     const myOffer = offers.find(o => o.providerId === userId);
     let error;
 
+    const offerData = {
+      min_amount: parseFloat(minAmount),
+      max_amount: parseFloat(maxAmount),
+      amount: parseFloat(maxAmount), // Usamos el máximo como monto de referencia por ahora
+    };
+
     if (myOffer) {
       // Actualizar oferta existente
       const { error: updateError } = await supabase
         .from("offers")
-        .update({ amount: parseFloat(offerAmount) })
+        .update(offerData)
         .eq("id", myOffer.id);
       error = updateError;
     } else {
@@ -267,8 +283,8 @@ function TrabajoDetalleContent({ params }: { params: Promise<{ id: string }> }) 
       const { error: insertError } = await supabase.from("offers").insert({
         job_id: id,
         provider_id: userId,
-        amount: parseFloat(offerAmount),
         status: "pending",
+        ...offerData
       });
       error = insertError;
     }
@@ -281,17 +297,18 @@ function TrabajoDetalleContent({ params }: { params: Promise<{ id: string }> }) 
 
       // Notificar al dueño del trabajo
       if (currentJob?.client_id) {
-        await supabase.from("notifications").insert({
-          user_id: currentJob.client_id,
+        await sendNotification({
+          userId: currentJob.client_id,
           type: "new_offer",
           title: myOffer ? "Oferta modificada" : "Nueva oferta recibida",
-          content: `${myOffer ? "Se actualizó la oferta a" : "Recibiste una oferta de"} $${parseFloat(offerAmount).toLocaleString("es-AR")} para: ${currentJob.title || currentJob.description}`,
+          content: `${myOffer ? "Se actualizó la oferta a" : "Recibiste una oferta de"} $${parseFloat(minAmount).toLocaleString("es-AR")} - $${parseFloat(maxAmount).toLocaleString("es-AR")} para: ${currentJob.title || currentJob.description}`,
           link: `/trabajos/${id}`,
         });
       }
 
       toast.success(myOffer ? "Oferta actualizada." : "Oferta enviada.");
-      setOfferAmount("");
+      setMinAmount("");
+      setMaxAmount("");
       setIsEditingOffer(false);
       loadData();
     }
@@ -299,13 +316,60 @@ function TrabajoDetalleContent({ params }: { params: Promise<{ id: string }> }) 
   };
 
   const handleOpenAcceptDialog = (offerId: string) => {
+    const offer = offers.find(o => o.id === offerId);
     setSelectedOfferId(offerId);
+    // Inicializar el monto final con el máximo o el único monto
+    setFinalAmount(offer?.maxAmount?.toString() || offer?.amount?.toString() || "");
     setIsAcceptDialogOpen(true);
   };
 
-  const handleConfirmAccept = () => {
-    if (selectedOfferId) {
-      router.push(`/trabajos/${id}/pago?offer=${selectedOfferId}`);
+  const handleConfirmAccept = async () => {
+    if (!selectedOfferId || !selectedOffer) return;
+    if (!finalAmount || parseFloat(finalAmount) <= 0) {
+      return toast.error("Por favor ingresá el monto acordado.");
+    }
+
+    setSubmittingOffer(true);
+    const supabase = createClient();
+
+    try {
+      // 1. Actualizar el monto final y estado en la oferta
+      await supabase
+        .from("offers")
+        .update({ 
+          amount: parseFloat(finalAmount),
+          status: "accepted" 
+        })
+        .eq("id", selectedOfferId);
+
+      // 2. Actualizar el trabajo: Asignar proveedor, monto final y pasar a in_progress
+      const { error: jobError } = await supabase
+        .from("jobs")
+        .update({ 
+          status: "in_progress", 
+          final_amount: parseFloat(finalAmount),
+          provider_id: selectedOffer.providerId
+        })
+        .eq("id", id);
+
+      if (jobError) throw jobError;
+
+      // 3. Notificar al proveedor que fue elegido
+      await sendNotification({
+        userId: selectedOffer.providerId,
+        type: "job_started",
+        title: "¡Oferta aceptada!",
+        content: `¡El cliente aceptó tu propuesta para "${job?.title || job?.description}"! Los datos de contacto ya están disponibles para coordinar el trabajo.`,
+        link: `/trabajos/${id}`,
+      });
+
+      toast.success("¡Oferta aceptada! Los datos de contacto ya están liberados.");
+      setIsAcceptDialogOpen(false);
+      loadData(); // Recargar para ver los cambios y datos desbloqueados
+    } catch (error: any) {
+      toast.error("Error al aceptar oferta: " + error.message);
+    } finally {
+      setSubmittingOffer(false);
     }
   };
 
@@ -321,8 +385,8 @@ function TrabajoDetalleContent({ params }: { params: Promise<{ id: string }> }) 
     } else {
       // Notificar al prestador
       if (job.provider_id) {
-        await supabase.from("notifications").insert({
-          user_id: job.provider_id,
+        await sendNotification({
+          userId: job.provider_id,
           type: "arrival_confirmed",
           title: "Llegada confirmada",
           content: `El cliente confirmó que ya estás en su domicilio para: ${job.title || job.description}. Ya podés finalizar el trabajo cuando termines.`,
@@ -340,8 +404,6 @@ function TrabajoDetalleContent({ params }: { params: Promise<{ id: string }> }) 
     setSubmittingOffer(true);
     const supabase = createClient();
 
-    console.log("Intentando finalizar trabajo:", id);
-
     // 1. Intentar actualizar en DB
     const { error } = await supabase
       .from("jobs")
@@ -349,27 +411,21 @@ function TrabajoDetalleContent({ params }: { params: Promise<{ id: string }> }) 
       .eq("id", id);
 
     if (!error) {
-      console.log("Trabajo finalizado exitosamente en DB");
-
       // Actualización inmediata del estado local para feedback visual
       setJob((prev: any) => prev ? ({ ...prev, status: "finished" }) : prev);
 
       // Notificar al admin sobre la finalización
-      const { data: adminUser } = await supabase.from("profiles").select("id").eq("email", "administrator@amano.com").single();
-      if (adminUser) {
-        await supabase.from("notifications").insert({
-          user_id: adminUser.id,
-          type: "job_finished_review",
-          title: "Trabajo por cerrar",
-          content: `El prestador marcó como terminado el servicio: ${job.title || job.description}. Por favor, validá para cerrar.`,
-          link: `/admin`,
-        });
-      }
+      await notifyAdmin({
+        type: "job_finished_review",
+        title: "Trabajo por cerrar",
+        content: `El prestador marcó como terminado el servicio: ${job.title || job.description}. Por favor, validá para cerrar.`,
+        link: `/admin`,
+      });
 
       // Notificar al cliente
       if (job?.client_id) {
-        await supabase.from("notifications").insert({
-          user_id: job.client_id,
+        await sendNotification({
+          userId: job.client_id,
           type: "job_status",
           title: "Trabajo terminado por prestador",
           content: `El colaborador informó que terminó la tarea. Administración validará el cierre en breve.`,
@@ -383,7 +439,6 @@ function TrabajoDetalleContent({ params }: { params: Promise<{ id: string }> }) 
       const { data: updatedJob } = await supabase.from("jobs").select("*").eq("id", id).single();
       if (updatedJob) setJob(updatedJob);
     } else {
-      console.error("Error al finalizar trabajo:", error);
       toast.error("No se pudo finalizar: " + error.message);
     }
     setSubmittingOffer(false);
@@ -433,6 +488,15 @@ function TrabajoDetalleContent({ params }: { params: Promise<{ id: string }> }) 
           })
           .eq("id", assignedProvider.id);
       }
+
+      // 5. Notificar al prestador sobre la nueva reseña
+      await sendNotification({
+        userId: assignedProvider.id,
+        type: "new_review",
+        title: "¡Recibiste una calificación!",
+        content: `El cliente te calificó con ${rating} estrellas por: ${job.title || job.description}`,
+        link: `/trabajos/${id}`,
+      });
 
       toast.success("¡Gracias por tu reseña! Trabajo finalizado.");
       setIsReviewDialogOpen(false);
@@ -569,12 +633,12 @@ function TrabajoDetalleContent({ params }: { params: Promise<{ id: string }> }) 
            </div>
         )}
 
-        {(job.status === "paid" || job.status === "in_progress") && isAuthorized && (
+        {(job.status === "in_progress" || job.status === "finished") && isAuthorized && (
            <div className="mb-4 p-4 bg-success-container/30 border border-success/20 rounded-2xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-500">
              <MSymbol icon="verified" size={20} className="text-success mt-0.5" filled />
              <div>
                <p className="text-sm font-black text-on-success-container uppercase tracking-tight mb-0.5">
-                 ¡Pago aprobado por administración!
+                 ¡Trabajo en curso!
                </p>
                <p className="text-sm font-semibold text-on-success-container/90 text-pretty leading-snug">
                  {isAssignedProvider ? (
@@ -582,51 +646,11 @@ function TrabajoDetalleContent({ params }: { params: Promise<{ id: string }> }) 
                      La dirección del trabajo es en <span className="font-black text-on-success-container underline decoration-success/30 underline-offset-2">{job.address}</span> y el horario es <span className="font-black text-on-success-container underline decoration-success/30 underline-offset-2">{job.availability || "a convenir"}</span>.
                    </>
                  ) : (
-                   "El pago ha sido aprobado. El domicilio y los celulares ahora están visibles para ambas partes."
+                   "La oferta fue aceptada. El domicilio y los celulares ahora están visibles para ambas partes."
                  )}
                </p>
              </div>
            </div>
-        )}
-
-        {job.status === "payment_under_review" && isAuthorized && (
-           <div className="mb-4 p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-500">
-             <MSymbol icon="history" size={20} className="text-amber-600 mt-0.5" filled />
-             <div>
-               <p className="text-sm font-black text-amber-900 uppercase tracking-tight mb-0.5">
-                 Pago bajo revisión
-               </p>
-               <p className="text-sm font-medium text-amber-800 text-pretty leading-snug">
-                 El pago está siendo revisado por el equipo de Amano. Una vez aceptado se brindarán los datos exactos.
-               </p>
-             </div>
-           </div>
-        )}
-
-        {job.status === "payment_rejected" && isAuthorized && (
-          <div className={cn(
-            "mb-4 p-4 border rounded-2xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-500",
-            isOwner ? "bg-error-container/30 border-error/20" : "bg-amber-50 border-amber-200"
-          )}>
-            <MSymbol icon={isOwner ? "error" : "schedule"} size={20} className={isOwner ? "text-error mt-0.5" : "text-amber-600 mt-0.5"} filled />
-            <div>
-              <p className={cn(
-                "text-sm font-black uppercase tracking-tight mb-0.5",
-                isOwner ? "text-on-error-container" : "text-amber-900"
-              )}>
-                {isOwner ? "Pago Rechazado" : "Pago en espera"}
-              </p>
-              <p className={cn(
-                "text-sm font-medium text-pretty leading-snug",
-                isOwner ? "text-on-error-container" : "text-amber-800"
-              )}>
-                {isOwner
-                  ? "Tu comprobante fue rechazado. Estaremos en contacto con vos para resolverlo."
-                  : "El pago del solicitante fue rechazado. Aguardamos una nueva transferencia."
-                }
-              </p>
-            </div>
-          </div>
         )}
       </section>
 
@@ -688,38 +712,6 @@ function TrabajoDetalleContent({ params }: { params: Promise<{ id: string }> }) 
                 </div>
               )}
             </div>
-
-            {/* Payment Proof Audit */}
-            {job.payment_proof_url && (
-              <div className="col-span-1 md:col-span-2 bg-surface-container-lowest p-4 rounded-2xl border border-outline-variant/10 shadow-sm">
-                <div className="flex items-center gap-2 mb-3 text-on-surface-variant uppercase text-[10px] font-black tracking-widest opacity-60">
-                  <MSymbol icon="receipt_long" size={14} />
-                  Comprobante de Pago
-                </div>
-                <div
-                  className="relative h-40 w-full rounded-xl overflow-hidden border border-outline-variant/20 bg-surface-container cursor-pointer hover:opacity-90 active:scale-[0.99] transition-all"
-                  onClick={() => setSelectedImage(job.payment_proof_url)}
-                >
-                  {job.payment_proof_url.toLowerCase().endsWith('.pdf') ? (
-                    <div className="w-full h-full flex flex-col items-center justify-center gap-2">
-                      <MSymbol icon="picture_as_pdf" size={32} className="text-error" filled />
-                      <span className="text-[10px] font-black uppercase tracking-widest">Ver PDF</span>
-                    </div>
-                  ) : (
-                    <NextImage
-                      src={job.payment_proof_url}
-                      alt="Comprobante de pago"
-                      fill
-                      unoptimized
-                      className="object-cover"
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-black/5 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                    <MSymbol icon="zoom_in" size={24} className="text-white drop-shadow-md" />
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
 
           <button
@@ -840,8 +832,7 @@ function TrabajoDetalleContent({ params }: { params: Promise<{ id: string }> }) 
       )}
 
       {/* Datos de Contacto */}
-      {(assignedProvider && isAuthorized) && (
-        <section className="px-5 mb-8">
+      {(assignedProvider && isAuthorized) && (        <section className="px-5 mb-8">
           <div className="bg-surface-container-lowest border border-outline-variant/10 rounded-3xl p-5 shadow-ambient">
             {isOwner || isAdmin ? (
               // Vista para el dueño o admin: Mostrar datos del colaborador
@@ -921,7 +912,7 @@ function TrabajoDetalleContent({ params }: { params: Promise<{ id: string }> }) 
                       </span>
                     </div>
                   </div>
-                  {(job.status === "paid" || job.status === "in_progress" || job.status === "finished" || job.status === "completed") && (
+                  {(job.status === "in_progress" || job.status === "finished" || job.status === "completed") && (
                     <a
                       href={`tel:${clientData?.phone}`}
                       className="size-12 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg shadow-primary/30 active:scale-90 transition-all"
@@ -1037,7 +1028,7 @@ function TrabajoDetalleContent({ params }: { params: Promise<{ id: string }> }) 
                           <div>
                             <h3 className="font-headline font-black text-2xl text-on-surface">¡Te eligieron!</h3>
                             <p className="text-sm text-on-surface-variant mt-2 font-medium leading-relaxed">
-                              El cliente seleccionó tu oferta. Estamos verificando el pago para asignarte oficialmente.
+                              El cliente seleccionó tu oferta. Los datos de contacto ya están disponibles para coordinar el trabajo.
                             </p>
                           </div>
                         </div>
@@ -1049,7 +1040,7 @@ function TrabajoDetalleContent({ params }: { params: Promise<{ id: string }> }) 
                       <div className="bg-primary/5 w-full p-6 rounded-2xl border border-primary/10">
                         <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-1 opacity-60">Tu Propuesta</p>
                         <p className="text-4xl font-black text-primary font-headline tracking-tighter">
-                          ${myOffer?.amount?.toLocaleString("es-AR")}
+                          ${myOffer?.minAmount?.toLocaleString("es-AR")} - ${myOffer?.maxAmount?.toLocaleString("es-AR")}
                         </p>
                       </div>
                       <div className="px-4">
@@ -1058,12 +1049,13 @@ function TrabajoDetalleContent({ params }: { params: Promise<{ id: string }> }) 
                       </div>
                       <button 
                         onClick={() => {
-                          setOfferAmount(myOffer?.amount?.toString() || "");
+                          setMinAmount(myOffer?.minAmount?.toString() || "");
+                          setMaxAmount(myOffer?.maxAmount?.toString() || "");
                           setIsEditingOffer(true);
                         }}
                         className="text-[10px] font-black text-primary uppercase tracking-widest mt-4 border-b-2 border-primary/10 pb-1 hover:border-primary transition-all active:scale-95"
                       >
-                        Modificar monto de oferta
+                        Modificar rango de oferta
                       </button>
                     </div>
                   );
@@ -1081,15 +1073,29 @@ function TrabajoDetalleContent({ params }: { params: Promise<{ id: string }> }) 
                     )}
                   </div>
                   <div className="flex flex-col gap-4">
-                    <div className="relative">
-                      <span className="absolute left-5 top-1/2 -translate-y-1/2 text-on-surface font-headline font-black text-xl opacity-40">$</span>
-                      <input
-                        type="number"
-                        value={offerAmount}
-                        onChange={(e) => setOfferAmount(e.target.value)}
-                        placeholder="Ingresá el monto"
-                        className="w-full bg-surface-container rounded-2xl pl-10 pr-6 py-5 text-xl font-headline font-black text-on-surface outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-outline-variant/50 shadow-inner"
-                      />
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface font-headline font-black text-base opacity-40">$</span>
+                        <input
+                          type="number"
+                          value={minAmount}
+                          onChange={(e) => setMinAmount(e.target.value)}
+                          placeholder="Mínimo"
+                          className="w-full bg-surface-container rounded-2xl pl-8 pr-4 py-4 text-base font-headline font-black text-on-surface outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-outline-variant/50 shadow-inner"
+                        />
+                        <span className="absolute -top-2 left-4 bg-surface px-1 text-[9px] font-black text-primary uppercase tracking-widest">Desde</span>
+                      </div>
+                      <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface font-headline font-black text-base opacity-40">$</span>
+                        <input
+                          type="number"
+                          value={maxAmount}
+                          onChange={(e) => setMaxAmount(e.target.value)}
+                          placeholder="Máximo"
+                          className="w-full bg-surface-container rounded-2xl pl-8 pr-4 py-4 text-base font-headline font-black text-on-surface outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-outline-variant/50 shadow-inner"
+                        />
+                        <span className="absolute -top-2 left-4 bg-surface px-1 text-[9px] font-black text-primary uppercase tracking-widest">Hasta</span>
+                      </div>
                     </div>
                     <button
                       disabled={submittingOffer}
@@ -1115,15 +1121,38 @@ function TrabajoDetalleContent({ params }: { params: Promise<{ id: string }> }) 
             </div>
             <DialogTitle className="text-center font-headline font-black text-3xl tracking-tight">Confirmar elección</DialogTitle>
             <DialogDescription className="text-center text-on-surface-variant text-base leading-relaxed mt-4 font-medium px-2">
-              Al aceptar, deberás transferir el monto a la cuenta de Amano. Tu dinero estará seguro hasta que el trabajo se complete.
+              Al aceptar esta oferta, se liberarán los datos de contacto mutuos para coordinar el trabajo.
             </DialogDescription>
           </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="relative">
+              <span className="absolute left-5 top-1/2 -translate-y-1/2 text-on-surface font-headline font-black text-xl opacity-40">$</span>
+              <input
+                type="number"
+                value={finalAmount}
+                onChange={(e) => setFinalAmount(e.target.value)}
+                placeholder="Monto final acordado"
+                className="w-full bg-surface-container rounded-2xl pl-10 pr-6 py-5 text-xl font-headline font-black text-on-surface outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-outline-variant/50 shadow-inner"
+              />
+            </div>
+            <p className="text-[10px] text-center font-black text-on-surface-variant uppercase tracking-widest opacity-60">
+              Confirmá el monto acordado para el registro del trabajo.
+            </p>
+            {selectedOffer?.minAmount && selectedOffer?.maxAmount && (
+              <p className="text-[10px] text-center font-black text-primary uppercase tracking-widest opacity-60">
+                Rango ofrecido: ${selectedOffer.minAmount.toLocaleString("es-AR")} - ${selectedOffer.maxAmount.toLocaleString("es-AR")}
+              </p>
+            )}
+          </div>
+
           <DialogFooter className="sm:justify-center">
             <button
               onClick={handleConfirmAccept}
-              className="w-full py-5 bg-cta-gradient text-on-primary font-headline font-black text-base rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest transition-all hover:opacity-95 active:scale-95"
+              disabled={submittingOffer}
+              className="w-full py-5 bg-cta-gradient text-on-primary font-headline font-black text-base rounded-2xl shadow-xl shadow-primary/30 uppercase tracking-widest transition-all hover:opacity-95 active:scale-95 disabled:opacity-50"
             >
-              Ir a pagar ahora
+              {submittingOffer ? "..." : "Aceptar y Ver Contacto"}
             </button>
           </DialogFooter>
         </DialogContent>

@@ -156,8 +156,8 @@ export default function LandingPage() {
                   check_circle
                 </span>
               </div>
-              <h3>Elegís y pagás</h3>
-              <p>Aceptás la oferta que preferís y transferís el monto al equipo de A mano.</p>
+              <h3>Elegís y aceptás</h3>
+              <p>Aceptás la oferta que preferís y automáticamente se liberan los datos de contacto.</p>
             </div>
             <div className="lp-step">
               <div className="lp-step-number">04</div>
@@ -167,7 +167,7 @@ export default function LandingPage() {
                 </span>
               </div>
               <h3>Trabajo listo</h3>
-              <p>El equipo coordina la visita. Cuando confirmás el trabajo, liberamos el pago al trabajador.</p>
+              <p>Coordinás directamente con el profesional. Cuando confirmás el trabajo, liberamos el pago al trabajador.</p>
             </div>
           </div>
         </div>
@@ -545,7 +545,7 @@ export default function LandingPage() {
                 </span>
               </div>
               <h3>Datos privados hasta el final</h3>
-              <p>Tu dirección exacta solo se revela al prestador una vez que el pago es confirmado por el equipo.</p>
+              <p>Tu dirección exacta solo se revela al prestador una vez que aceptás su oferta directamente.</p>
             </div>
             <div className="lp-garantia-card">
               <div className="lp-icon">
@@ -583,15 +583,15 @@ export default function LandingPage() {
           {[
             {
               q: "¿Cuánto cuesta publicar un pedido?",
-              a: "Publicar es completamente gratis para los solicitantes. Solo pagás el monto acordado con el prestador cuando aceptás una oferta. No hay costos ocultos ni comisiones adicionales para vos.",
+              a: "Publicar es completamente gratis para los solicitantes. No hay costos ocultos ni comisiones para vos.",
             },
             {
               q: "¿Cómo sé que el trabajador es de confianza?",
-              a: "Todos los prestadores registrados en A mano completaron su perfil con foto, nombre y datos de contacto. Además, cada trabajo completado genera una calificación pública que podés consultar antes de aceptar una oferta. El equipo de A mano monitorea la actividad de la plataforma.",
+              a: "Todos los prestadores registrados en A mano completaron su perfil con foto, nombre y datos de contacto. Además, cada trabajo completado genera una calificación pública que podés consultar antes de aceptar una oferta.",
             },
             {
               q: "¿Qué pasa si el trabajo no se realiza bien?",
-              a: "El pago no se libera hasta que vos confirmás que el trabajo fue realizado correctamente. Si hay algún problema, el equipo de A mano interviene como mediador. Tu dinero está seguro en todo momento.",
+              a: "El pago final solo se libera cuando confirmás que el trabajo fue realizado correctamente. Si hay algún problema, el equipo de A mano interviene como mediador.",
             },
             {
               q: "¿Cuánto cobra A mano al prestador?",

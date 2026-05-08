@@ -14,13 +14,13 @@ export const STATUS_LABELS: Record<JobStatus, string> = {
   pending_offer: "Oferta Enviada",
   offer_rejected: "Oferta Rechazada",
   accepted: "Oferta Aceptada",
-  payment_under_review: "Pago en Revisión",
-  paid: "Pago Verificado",
+  payment_under_review: "En revisión",
+  paid: "Confirmado",
   in_progress: "En Proceso",
   finished: "Por cerrar (Admin)",
   completed: "Completado",
   cancelled: "Cancelado",
-  payment_rejected: "Pago Rechazado",
+  payment_rejected: "Rechazado",
 };
 
 interface JobCardProps {
@@ -36,9 +36,11 @@ interface JobCardProps {
   clientName?: string;
   createdAt?: string;
   showDescription?: boolean;
+  is_urgent?: boolean;
+  urgent_expires_at?: string;
 }
 
-export function JobCard({ id, category, title, description, barrio, status, offersCount = 0, photos_urls, isAssigned, clientName, createdAt, showDescription }: JobCardProps) {
+export function JobCard({ id, category, title, description, barrio, status, offersCount = 0, photos_urls, isAssigned, clientName, createdAt, showDescription, is_urgent, urgent_expires_at }: JobCardProps) {
   const cat = CATEGORIES.find((c) => c.id === category);
   const isAccepted = status === "accepted" || status === "paid" || status === "in_progress";
   const isRejected = status === "offer_rejected" || status === "cancelled" || status === "payment_rejected";
@@ -63,7 +65,9 @@ export function JobCard({ id, category, title, description, barrio, status, offe
     ? (isPaymentError && isProviderView ? "bg-amber-500 text-amber-950" : "bg-error text-on-error")
     : (isAssigned || isAccepted || status === "completed" || status === "finished") 
       ? "bg-success text-on-success" 
-      : "bg-primary text-on-primary shadow-sm";
+      : is_urgent
+        ? "bg-amber-600 text-white animate-pulse shadow-[0_0_10px_rgba(217,119,6,0.5)]"
+        : "bg-primary text-on-primary shadow-sm";
 
   const cardBg = isRejected 
     ? (isPaymentError && isProviderView ? "bg-amber-500/10 border-amber-500/30 ring-1 ring-amber-500/10" : "bg-error-container/15 border-error/30 ring-1 ring-error/10")
@@ -71,7 +75,9 @@ export function JobCard({ id, category, title, description, barrio, status, offe
       ? "bg-primary/5 border-primary/30 ring-1 ring-primary/20" 
       : isAccepted 
         ? "bg-success-container/10 border-success/20" 
-        : "bg-surface-container-lowest";
+        : is_urgent
+          ? "bg-amber-50/50 border-amber-500/20"
+          : "bg-surface-container-lowest";
 
   const firstPhoto = photos_urls && photos_urls.length > 0 ? photos_urls[0] : null;
 
@@ -83,7 +89,14 @@ export function JobCard({ id, category, title, description, barrio, status, offe
         cardBg
       )}
     >
-      {isAssigned && !isRejected && (
+      {is_urgent && status === "open" && (
+        <div className="absolute top-0 right-0 bg-amber-600 text-white text-[9px] font-black px-3 py-1 rounded-bl-xl rounded-tr-xl uppercase tracking-tighter z-10 shadow-sm flex items-center gap-1">
+          <MSymbol icon="bolt" size={10} filled />
+          Urgente 2h
+        </div>
+      )}
+
+      {isAssigned && !isRejected && !is_urgent && (
         <div className="absolute top-0 right-0 bg-primary text-on-primary text-[10px] font-black px-3 py-1 rounded-bl-xl rounded-tr-xl uppercase tracking-tight z-10 shadow-sm">
           Fuiste elegido
         </div>

@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import NextImage from "next/image";
+import { sendNotification } from "@/lib/supabase/notifications";
 import {
   Dialog,
   DialogContent,
@@ -199,8 +200,8 @@ export default function AdminPage() {
 
     if (jobUpdateError) return toast.error(jobUpdateError.message);
 
-    await supabase.from("notifications").insert({
-      user_id: jobData.provider_id,
+    await sendNotification({
+      userId: jobData.provider_id,
       type: "payment_verified",
       title: "Pago verificado",
       content: `¡El pago fue verificado! Ya fuiste asignado oficialmente al trabajo. Ya podés ver los datos de contacto y comenzar.`,
@@ -208,8 +209,8 @@ export default function AdminPage() {
     });
 
     if (jobData.client_id) {
-      await supabase.from("notifications").insert({
-        user_id: jobData.client_id,
+      await sendNotification({
+        userId: jobData.client_id,
         type: "payment_verified",
         title: "Pago aprobado",
         content: `Tu pago para "${jobData.title || jobData.description || jobData.category}" fue aprobado. El colaborador ya tiene tus datos y se pondrá en contacto.`,
@@ -244,8 +245,8 @@ export default function AdminPage() {
       .single();
 
     if (jobData?.client_id) {
-      await supabase.from("notifications").insert({
-        user_id: jobData.client_id,
+      await sendNotification({
+        userId: jobData.client_id,
         type: "payment_rejected",
         title: "Pago rechazado",
         content: `Tu comprobante para "${jobData.title || jobData.description || jobData.category}" fue rechazado. Por favor, subí uno válido.`,
@@ -287,8 +288,8 @@ export default function AdminPage() {
 
     if (jobData) {
       if (jobData.provider_id) {
-        await supabase.from("notifications").insert({
-          user_id: jobData.provider_id,
+        await sendNotification({
+          userId: jobData.provider_id,
           type: "job_closed",
           title: "Trabajo cerrado con éxito",
           content: `¡Felicidades! La administración cerró el trabajo "${jobData.title || jobData.description || jobData.category}". Tu saldo será acreditado en breve.`,
@@ -297,8 +298,8 @@ export default function AdminPage() {
       }
 
       if (jobData.client_id) {
-        await supabase.from("notifications").insert({
-          user_id: jobData.client_id,
+        await sendNotification({
+          userId: jobData.client_id,
           type: "job_closed",
           title: "Trabajo finalizado",
           content: `El trabajo "${jobData.title || jobData.description || jobData.category}" ha sido cerrado definitivamente por administración. ¡Gracias por confiar en Amano!`,

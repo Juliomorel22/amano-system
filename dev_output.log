@@ -1,0 +1,18 @@
+
+> amano@0.0.1 dev
+> next dev
+
+▲ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.54:3000
+- Environments: .env.local
+✓ Ready in 351ms
+⨯ Another next dev server is already running.
+
+- Local:        http://localhost:3001
+- PID:          33767
+- Dir:          /Users/julio/Documents/amano/amano
+- Log:          .next/dev/logs/next-development.log
+
+Run kill 33767 to stop it.
+[?25h
